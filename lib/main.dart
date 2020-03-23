@@ -35,6 +35,8 @@ IconData getCameraLensIcon(CameraLensDirection direction) {
 void logError(String code, String message) =>
     print('Error: $code\nError Message: $message');
 
+/// Home Screen of the application
+/// Displays the camera and a few buttons that performs the actions of the camera
 class _CameraExampleHomeState extends State<CameraExampleHome>
     with WidgetsBindingObserver {
   CameraController controller;
