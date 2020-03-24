@@ -73,8 +73,10 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     }
   }
 
+  /// Messages for the snack bar
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
+  /// Builds the application. Sets the layout and functionality of the application.
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -111,7 +113,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
                 _cameraTogglesRowWidget(),
-                _thumbnailWidget(),
+                //_thumbnailWidget(),
               ],
             ),
           ),
@@ -139,6 +141,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     }
   }
 
+
   /// Toggle recording audio
   Widget _toggleAudioWidget() {
     return Padding(
@@ -161,6 +164,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   }
 
   /// Display the thumbnail of the captured image or video.
+  /// Might not be needed.
   Widget _thumbnailWidget() {
     return Expanded(
       child: Align(
@@ -193,7 +197,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       ),
     );
   }
-
+  
   /// Display the control bar with buttons to take pictures and record videos.
   Widget _captureControlRowWidget() {
     return Row(
@@ -271,12 +275,14 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     return Row(children: toggles);
   }
 
+  /// Timestamp when a picture or video is taken.
   String timestamp() => DateTime.now().millisecondsSinceEpoch.toString();
 
   void showInSnackBar(String message) {
     _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(message)));
   }
 
+  // Dispose of CameraController and reinitialize new when a different camera is selected.
   void onNewCameraSelected(CameraDescription cameraDescription) async {
     if (controller != null) {
       await controller.dispose();
@@ -347,6 +353,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     });
   }
 
+  /// Sets the path and starts the recording process.
   Future<String> startVideoRecording() async {
     if (!controller.value.isInitialized) {
       showInSnackBar('Error: select a camera first.');
