@@ -13,7 +13,6 @@ import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:video_player/video_player.dart';
 import 'package:device_info/device_info.dart';
-import 'package:serial_number/serial_number.dart';
 
 class CameraExampleHome extends StatefulWidget {
   @override
@@ -73,10 +72,9 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       if (Platform.isAndroid) {
         deviceData = _readAndroidBuildData(await deviceInfoPlugin.androidInfo);
         deviceId = deviceData['id'];
-
       } else if (Platform.isIOS) {
         deviceData = _readIosDeviceInfo(await deviceInfoPlugin.iosInfo);
-        deviceId = await SerialNumber.serialNumber;
+        deviceId = deviceData['identifierForVendor'];
       }
     } on PlatformException {
       deviceData = <String, dynamic>{
