@@ -28,6 +28,8 @@ dependencies:
   path:
   video_player:
   esys_flutter_share:
+  device_info:
+  serial_number:
 
 dev_dependencies:
   flutter_test:
