@@ -13,6 +13,7 @@ import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:video_player/video_player.dart';
 import 'package:device_info/device_info.dart';
+import 'package:gallery_saver/gallery_saver.dart';
 
 class CameraExampleHome extends StatefulWidget {
   @override
@@ -400,7 +401,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
           videoController?.dispose();
           videoController = null;
         });
-        if (filePath != null) showInSnackBar('Picture saved to $filePath');
+        if (filePath != null) showInSnackBar('Picture saved to gallery.');
       }
     });
   }
@@ -408,28 +409,28 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   void onVideoRecordButtonPressed() {
     startVideoRecording().then((String filePath) {
       if (mounted) setState(() {});
-      if (filePath != null) showInSnackBar('Saving video to $filePath');
+      if (filePath != null) showInSnackBar('Video recording started.');
     });
   }
 
   void onStopButtonPressed() {
     stopVideoRecording().then((_) {
       if (mounted) setState(() {});
-      showInSnackBar('Video recorded to: $videoPath');
+      showInSnackBar('Video recorded to gallery.');
     });
   }
 
   void onPauseButtonPressed() {
     pauseVideoRecording().then((_) {
       if (mounted) setState(() {});
-      showInSnackBar('Video recording paused');
+      showInSnackBar('Video recording paused.');
     });
   }
 
   void onResumeButtonPressed() {
     resumeVideoRecording().then((_) {
       if (mounted) setState(() {});
-      showInSnackBar('Video recording resumed');
+      showInSnackBar('Video recording resumed.');
     });
   }
 
@@ -468,6 +469,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
 
     try {
       await controller.stopVideoRecording();
+      GallerySaver.saveVideo(videoPath);
     } on CameraException catch (e) {
       _showCameraException(e);
       return null;
@@ -516,6 +518,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     await vcontroller.setLooping(true);
     await vcontroller.initialize();
     await videoController?.dispose();
+    final VideoPlayerController oldController = videoController;
     if (mounted) {
       setState(() {
         imagePath = null;
@@ -523,6 +526,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       });
     }
     await vcontroller.play();
+    await oldController?.dispose();
   }
 
   Future<String> takePicture() async {
@@ -542,6 +546,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
 
     try {
       await controller.takePicture(filePath);
+      GallerySaver.saveImage(filePath);
     } on CameraException catch (e) {
       _showCameraException(e);
       return null;

@@ -29,6 +29,7 @@ dependencies:
   video_player:
   esys_flutter_share:
   device_info:
+  gallery_saver:
 
 dev_dependencies:
   flutter_test:
