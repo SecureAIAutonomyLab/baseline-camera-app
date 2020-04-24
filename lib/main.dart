@@ -14,6 +14,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:video_player/video_player.dart';
 import 'package:device_info/device_info.dart';
 import 'package:gallery_saver/gallery_saver.dart';
+import 'package:location/location.dart';
 
 class CameraExampleHome extends StatefulWidget {
   @override
@@ -49,6 +50,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   VoidCallback videoPlayerListener;
   bool enableAudio = true;
   String deviceId;
+  String latitudeAndLongitude;          //latittude-longitude
   
   static final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
   Map<String, dynamic> _deviceData = <String, dynamic>{};
@@ -68,7 +70,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
 
   Future<void> initPlatformState() async {
     Map<String, dynamic> deviceData;
-
+    
+    // Checks the device type. (Android or ios)
     try {
       if (Platform.isAndroid) {
         deviceData = _readAndroidBuildData(await deviceInfoPlugin.androidInfo);
@@ -83,13 +86,36 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       };
     }
 
-    if (!mounted) return;
+    // Gets the initial location of user. It serves as a permission grantor.
+    Location location = new Location();
 
+    bool _serviceEnabled;
+    PermissionStatus _permissionGranted;
+    LocationData _locationData;
+
+    _serviceEnabled = await location.serviceEnabled();
+    if (!_serviceEnabled) {
+      _serviceEnabled = await location.requestService();
+      if (!_serviceEnabled) {
+        return;
+      }
+    }
+
+    _permissionGranted = await location.hasPermission();
+    if (_permissionGranted == PermissionStatus.denied) {
+      _permissionGranted = await location.requestPermission();
+      if (_permissionGranted != PermissionStatus.granted) {
+        return;
+      }
+    }
+
+    if (!mounted) return;
     setState(() {
       _deviceData = deviceData;
     });
   }
-
+  
+  // Maps the android information.
   Map<String, dynamic> _readAndroidBuildData(AndroidDeviceInfo build) {
     return <String, dynamic>{
       'version.securityPatch': build.version.securityPatch,
@@ -122,6 +148,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     };
   }
 
+  // Maps ios information.
   Map<String, dynamic> _readIosDeviceInfo(IosDeviceInfo data) {
     return <String, dynamic>{
       'name': data.name,
@@ -442,10 +469,14 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       return null;
     }
 
+    Location location = new Location();
+    LocationData myLocation = await location.getLocation();
+    String latitudeAndLongitude = myLocation.latitude.toString() + myLocation.longitude.toString();
+
     final Directory extDir = await getApplicationDocumentsDirectory();
     final String dirPath = '${extDir.path}/Movies/flutter_test';
     await Directory(dirPath).create(recursive: true);
-    final String filePath = '$dirPath/$deviceId${timestamp()}.mp4';
+    final String filePath = '$dirPath/$deviceId$latitudeAndLongitude${timestamp()}.mp4';
 
     if (controller.value.isRecordingVideo) {
       // A recording is already started, do nothing.
@@ -534,10 +565,15 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       showInSnackBar('Error: select a camera first.');
       return null;
     }
+
+    Location location = new Location();
+    LocationData myLocation = await location.getLocation();
+    String latitudeAndLongitude = myLocation.latitude.toString() + myLocation.longitude.toString();
+
     final Directory extDir = await getApplicationDocumentsDirectory();
     final String dirPath = '${extDir.path}/Pictures/flutter_test';
     await Directory(dirPath).create(recursive: true);
-    final String filePath = '$dirPath/$deviceId${timestamp()}.jpg';
+    final String filePath = '$dirPath/$deviceId$latitudeAndLongitude${timestamp()}.jpg';
 
     if (controller.value.isTakingPicture) {
       // A capture is already pending, do nothing.
@@ -581,3 +617,4 @@ Future<void> main() async {
   }
   runApp(CameraApp());
 }
+

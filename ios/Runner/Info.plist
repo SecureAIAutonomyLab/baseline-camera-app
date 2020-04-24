@@ -5,6 +5,10 @@
 
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Need microphone access for uploading videos</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Need location access.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Need location access always.</string>
 
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>

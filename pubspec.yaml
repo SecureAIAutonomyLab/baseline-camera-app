@@ -30,6 +30,7 @@ dependencies:
   esys_flutter_share:
   device_info:
   gallery_saver:
+  location:
 
 dev_dependencies:
   flutter_test:
