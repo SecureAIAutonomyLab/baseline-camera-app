@@ -2,14 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-
-	<key>NSMicrophoneUsageDescription</key>
-	<string>Need microphone access for uploading videos</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Need location access.</string>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Need location access always.</string>
-
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleExecutable</key>
@@ -32,6 +24,12 @@
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>Message for permission to access camera</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Need location access always.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Need location access.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Need microphone access for uploading videos</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Message for permission to access gallery</string>
 	<key>UILaunchStoryboardName</key>
