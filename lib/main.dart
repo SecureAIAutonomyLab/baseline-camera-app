@@ -52,6 +52,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   bool enableAudio = true;
   String deviceId;
   String latitudeAndLongitude;          //latittude-longitude
+  int cameraDescriptionIndex = 0;
   
   static final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
   Map<String, dynamic> _deviceData = <String, dynamic>{};
@@ -193,13 +194,23 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
           trailing: IconButton(
               icon: Icon(Icons.flip_camera_ios),
               onPressed: () {
-
+                  _cameraToggleButtonPressed();
               },
           ),
       );
     }
     else {
-      return AppBar(title: Text("Camera Example"));
+      return AppBar(
+          title: Text("Camera Example"),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.flip_camera_android),
+            onPressed: () {
+              _cameraToggleButtonPressed();
+            },
+          )
+        ],
+      );
     }
   }
 
@@ -233,16 +244,6 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
           ),
           _captureControlRowWidget(),
           _toggleAudioWidget(),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(25, 20, 20, 20),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                _cameraTogglesRowWidget(),
-                //_thumbnailWidget(),
-              ],
-            ),
-          ),
         ],
       ),
     );
@@ -251,14 +252,19 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   /// Display the preview from the camera (or a message if the preview is not available).
   Widget _cameraPreviewWidget() {
     if (controller == null || !controller.value.isInitialized) {
-      return const Text(
-        'Tap a camera',
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: 24.0,
-          fontWeight: FontWeight.w900,
-        ),
-      );
+      if (cameras.isNotEmpty) {
+        onNewCameraSelected(cameras[cameraDescriptionIndex]);
+      }
+      else {
+        return const Text(
+          'No cameras detected',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 24.0,
+            fontWeight: FontWeight.w900,
+          ),
+        );
+      }
     } else {
       return AspectRatio(
         aspectRatio: controller.value.aspectRatio,
@@ -271,10 +277,13 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   /// Toggle recording audio
   Widget _toggleAudioWidget() {
     return Padding(
-      padding: const EdgeInsets.only(left: 25),
+      padding: const EdgeInsets.only(left: 25, top: 10, bottom: 10),
       child: Row(
         children: <Widget>[
-          const Text('Enable Audio:'),
+          const Text(
+            'Enable Audio:',
+            style: TextStyle(fontSize: 15),
+          ),
           SizedBox(width: 5,),
           _enableAudioSwitchType(),
         ],
@@ -394,30 +403,23 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   }
 
   /// Display a row of toggle to select the camera (or a message if no camera is available).
-  Widget _cameraTogglesRowWidget() {
-    final List<Widget> toggles = <Widget>[];
-
+  void _cameraToggleButtonPressed() {
+    print("Button pressed");
     if (cameras.isEmpty) {
-      return const Text('No camera found');
+      return;
     } else {
-      for (CameraDescription cameraDescription in cameras) {
-        toggles.add(
-          SizedBox(
-            width: 90.0,
-            child: RadioListTile<CameraDescription>(
-              title: Icon(getCameraLensIcon(cameraDescription.lensDirection)),
-              groupValue: controller?.description,
-              value: cameraDescription,
-              onChanged: controller != null && controller.value.isRecordingVideo
-                  ? null
-                  : onNewCameraSelected,
-            ),
-          ),
-        );
+      if (controller != null && controller.value.isRecordingVideo) {
+        return;
+      }
+      else {
+        print("active new camera");
+        cameraDescriptionIndex++;
+        if (cameraDescriptionIndex == cameras.length) {
+          cameraDescriptionIndex = 0;
+        }
+        onNewCameraSelected(cameras[cameraDescriptionIndex]);
       }
     }
-
-    return Row(children: toggles);
   }
 
   /// Timestamp when a picture or video is taken.
