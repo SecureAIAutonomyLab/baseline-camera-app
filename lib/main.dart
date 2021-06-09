@@ -15,6 +15,7 @@ import 'package:video_player/video_player.dart';
 import 'package:device_info/device_info.dart';
 import 'package:gallery_saver/gallery_saver.dart';
 import 'package:location/location.dart';
+import 'package:flutter/cupertino.dart';
 
 class CameraExampleHome extends StatefulWidget {
   @override
@@ -184,19 +185,36 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   /// Messages for the snack bar
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
+  /// Chooses the appbar based on platform
+  Widget _chooseAppBar() {
+    if (Theme.of(context).platform == TargetPlatform.iOS) {
+      return CupertinoNavigationBar(
+          middle: Text("Camera Example"),
+          trailing: IconButton(
+              icon: Icon(Icons.flip_camera_ios),
+              onPressed: () {
+
+              },
+          ),
+      );
+    }
+    else {
+      return AppBar(title: Text("Camera Example"));
+    }
+  }
+
   /// Builds the application. Sets the layout and functionality of the application.
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      appBar: AppBar(
-        title: const Text('Camera example'), 
-      ),
+      appBar: _chooseAppBar(),
       body: Column(
         children: <Widget>[
           Expanded(
             child: Container(
               child: Padding(
+                // box around camera preview
                 padding: const EdgeInsets.all(1.0),
                 child: Center(
                   child: _cameraPreviewWidget(),
@@ -216,7 +234,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
           _captureControlRowWidget(),
           _toggleAudioWidget(),
           Padding(
-            padding: const EdgeInsets.all(5.0),
+            padding: const EdgeInsets.fromLTRB(25, 20, 20, 20),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
@@ -257,18 +275,37 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       child: Row(
         children: <Widget>[
           const Text('Enable Audio:'),
-          Switch(
-            value: enableAudio,
-            onChanged: (bool value) {
-              enableAudio = value;
-              if (controller != null) {
-                onNewCameraSelected(controller.description);
-              }
-            },
-          ),
+          SizedBox(width: 5,),
+          _enableAudioSwitchType(),
         ],
       ),
     );
+  }
+
+  /// Choose the type of switch depending on platform
+  Widget _enableAudioSwitchType() {
+    if (Theme.of(context).platform == TargetPlatform.iOS) {
+      return CupertinoSwitch(
+        value: enableAudio,
+        onChanged: (bool value) {
+          enableAudio = value;
+          if (controller != null) {
+            onNewCameraSelected(controller.description);
+          }
+        },
+      );
+    }
+    else {
+      return Switch(
+        value: enableAudio,
+        onChanged: (bool value) {
+          enableAudio = value;
+          if (controller != null) {
+            onNewCameraSelected(controller.description);
+          }
+        },
+      );
+    }
   }
 
   /// Display the thumbnail of the captured image or video.
@@ -387,7 +424,9 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   String timestamp() => DateTime.now().millisecondsSinceEpoch.toString();
 
   void showInSnackBar(String message) {
-    _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(message)));
+    // create the snackbar and display in Scaffold
+    SnackBar bar = SnackBar(content: Text(message));
+    ScaffoldMessenger.of(context).showSnackBar(bar);
   }
 
   // Dispose of CameraController and reinitialize new when a different camera is selected.
@@ -506,7 +545,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       return null;
     }
 
-    await _startVideoPlayer();
+    // for video playback
+    //await _startVideoPlayer();
   }
 
   Future<void> pauseVideoRecording() async {
