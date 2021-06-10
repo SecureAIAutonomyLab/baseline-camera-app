@@ -200,6 +200,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       );
     }
     else {
+      // andriod platform
       return AppBar(
           title: Text("Camera Example"),
         actions: [
@@ -277,7 +278,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   /// Toggle recording audio
   Widget _toggleAudioWidget() {
     return Padding(
-      padding: const EdgeInsets.only(left: 25, top: 10, bottom: 10),
+      padding: const EdgeInsets.only(left: 25, top: 10, bottom: 25),
       child: Row(
         children: <Widget>[
           const Text(
