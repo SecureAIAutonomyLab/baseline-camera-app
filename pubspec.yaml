@@ -34,6 +34,7 @@ dependencies:
   device_info:
   gallery_saver:
   location:
+  flutter_bloc: ^7.0.1
 
 dev_dependencies:
   flutter_test:
