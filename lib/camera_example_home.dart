@@ -1,4 +1,8 @@
 
+import 'package:camera_app/auth/auth_cubit.dart';
+import 'package:camera_app/auth/auth_navigator.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'auth/login/login_view.dart';
 import 'main.dart';
 import 'dart:async';
@@ -161,6 +165,14 @@ class CameraExampleHomeState extends State<CameraExampleHome>
   /// Messages for the snack bar
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
+  /// Create bloc provider for navigator
+  Widget _setLoginNavigator() {
+    return BlocProvider(
+      create: (context) => AuthCubit(),
+      child: AuthNavigator(context),
+    );
+  }
+
   /// Chooses the appbar based on platform
   Widget _chooseAppBar() {
     if (Theme.of(context).platform == TargetPlatform.iOS) {
@@ -169,7 +181,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
           child: Text("Login", style: TextStyle(fontSize: 16),),
           onPressed: () {
             // Switch to login view page
-            Navigator.push(context, MaterialPageRoute(builder: (context) => LoginView()));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => _setLoginNavigator()));
           },
         ),
         middle: Text("Camera Example"),

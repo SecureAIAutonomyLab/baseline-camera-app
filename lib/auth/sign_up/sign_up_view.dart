@@ -2,23 +2,17 @@
 import 'package:camera_app/auth/auth_repository.dart';
 import 'package:camera_app/auth/form_submission_status.dart';
 import 'package:camera_app/auth/login/login_event.dart';
-import 'package:camera_app/main.dart';
+import 'package:camera_app/auth/sign_up/sign_up_event.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../auth_cubit.dart';
-import 'login_bloc.dart';
-import 'login_state.dart';
+import 'sign_up_bloc.dart';
+import 'sign_up_state.dart';
 
-class LoginView extends StatelessWidget {
+class SignUpView extends StatelessWidget {
   final _formKey = GlobalKey<FormState>();
-  BuildContext homeContext;
-
-  // Only for navigating back to home
-  LoginView(BuildContext c) {
-    this.homeContext = c;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,34 +24,21 @@ class LoginView extends StatelessWidget {
           // check target platform
           appBar: Theme.of(context).platform == TargetPlatform.iOS ?
           CupertinoNavigationBar(
-            middle: Text("Login View"),
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back_ios),
-              onPressed: () {
-                // go back to camera, needs fixing
-                Navigator.pop(homeContext);
-              },
-            ),
+            middle: Text("Sign up View"),
           )
           : AppBar(
-            title: Text("Login View"),
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back_ios),
-              onPressed: () {
-                // go back to home screen
-                Navigator.pop(homeContext);
-              },
-            ),
+            title: Text("Sign up View"),
           ),
           /// Create bloc to change UI based on state
           body: BlocProvider (
-            create: (context) => LoginBloc(
+            create: (context) => SignUpBloc(
               authRepo: context.read<AuthRepository>(),
               authCubit: context.read<AuthCubit>(),
             ),
             child: Stack (
-                children: [_loginForm(),
-                  _signUpButton(context)
+                children: [
+                  _SignUpForm(),
+                  _LoginButton(context)
                 ],
               alignment: Alignment.bottomCenter,
             )
@@ -68,9 +49,9 @@ class LoginView extends StatelessWidget {
     );
   }
 
-  Widget _loginForm() {
+  Widget _SignUpForm() {
     // Listen for bloc event submission failed
-    return BlocListener<LoginBloc, LoginState>(
+    return BlocListener<SignUpBloc, SignUpState>(
       listener: (context, state) {
         final status = state.formStatus;
         // if submission failed print the message
@@ -87,7 +68,7 @@ class LoginView extends StatelessWidget {
             children: [
               _usernameField(),
               _passwordField(),
-              _loginButton(),
+              _signUpButton(),
             ],
           ),
         ),
@@ -97,7 +78,7 @@ class LoginView extends StatelessWidget {
 
   Widget _usernameField() {
     // blocbuilder to update the state
-    return BlocBuilder<LoginBloc, LoginState>(builder: (context, state) {
+    return BlocBuilder<SignUpBloc, SignUpState>(builder: (context, state) {
        return TextFormField(
         decoration: InputDecoration(
           icon: Icon(Icons.person),
@@ -107,7 +88,7 @@ class LoginView extends StatelessWidget {
         validator: (value) => state.isValidUsername ? null : 'Length must be greater than 3',
         // add an event to the login bloc
         onChanged: (value) {
-          context.read<LoginBloc>().add(LoginUsernameChanged(username: value));
+          context.read<SignUpBloc>().add(SignUpUsernameChanged(username: value));
         },
       );
     });
@@ -115,7 +96,7 @@ class LoginView extends StatelessWidget {
 
 
   Widget _passwordField() {
-    return BlocBuilder<LoginBloc, LoginState> (builder: (context, state) {
+    return BlocBuilder<SignUpBloc, SignUpState> (builder: (context, state) {
       return TextFormField(
         obscureText: true,
         decoration: InputDecoration(
@@ -124,32 +105,32 @@ class LoginView extends StatelessWidget {
         ),
         validator: (value) => state.isValidPassword ? null : 'Length must be greater than 6',
         onChanged: (value) {
-          context.read<LoginBloc>().add(LoginPasswordChanged(password: value));
+          context.read<SignUpBloc>().add(SignUpPasswordChanged(password: value));
         },
       );
     });
   }
 
-  Widget _loginButton() {
-    return BlocBuilder<LoginBloc, LoginState>(builder: (context, state) {
+  Widget _signUpButton() {
+    return BlocBuilder<SignUpBloc, SignUpState>(builder: (context, state) {
       return state.formStatus is FormSubmitting ? CircularProgressIndicator()
       : ElevatedButton(
         onPressed: () {
           // check if all forms are valid
           if (_formKey.currentState.validate()) {
-            context.read<LoginBloc>().add(LoginSubmitted());
+            context.read<SignUpBloc>().add(SignUpSubmitted());
           }
         },
-        child: Text("Login"),
+        child: Text("Sign Up"),
       );
     });
   }
 
-  Widget _signUpButton(BuildContext context) {
+  Widget _LoginButton(BuildContext context) {
     return SafeArea(
       child: TextButton(
-        child: Text("Don't have an account? Sign up."),
-        onPressed: () => context.read<AuthCubit>().showSignUp(),
+        child: Text("Already have an account? Sign in."),
+        onPressed: () => context.read<AuthCubit>().showLogin(),
       ),
     );
   }
