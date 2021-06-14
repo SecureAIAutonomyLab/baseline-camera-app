@@ -4,7 +4,6 @@ import 'package:camera_app/auth/auth_navigator.dart';
 import 'package:camera_app/loading_view.dart';
 import 'package:camera_app/main.dart';
 import 'package:camera_app/session_state.dart';
-import 'package:camera_app/session_view.dart';
 import 'package:camera_app/sesssion_cubit.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -32,13 +31,13 @@ class AppNavigator extends StatelessWidget {
             MaterialPage(
               child: BlocProvider(
                 create: (context) => AuthCubit(sessionCubit: context.read<SessionCubit>()),
-                child: AuthNavigator(homeContext),
+                child: AuthNavigator(),
               ),
             ),
 
           // show the session
           if (state is Authenticated)
-            MaterialPage(child: SessionView()),
+            MaterialPage(child: CameraExampleHome()),
         ],
         onPopPage: (route, result) => route.didPop(result),
       );

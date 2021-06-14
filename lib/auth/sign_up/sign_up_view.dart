@@ -59,6 +59,8 @@ class SignUpView extends StatelessWidget {
           _showSnackBar(context, status.exception.toString());
         } else if (status is SubmissionSuccess) {
           _showSnackBar(context, "Sign up Successful");
+          // set form status back to initial
+          state.formStatus = InitialFormStatus();
         }
       },
       child: Form(

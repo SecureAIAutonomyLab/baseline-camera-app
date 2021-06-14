@@ -7,10 +7,13 @@
 import 'dart:async';
 
 import 'package:camera/camera.dart';
+import 'package:camera_app/sesssion_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
-import 'auth/login/login_view.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'app_navigator.dart';
+import 'auth/auth_repository.dart';
 import 'camera_example_home.dart';
 
 class CameraExampleHome extends StatefulWidget {
@@ -56,7 +59,18 @@ class CameraApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: CameraExampleHome(),
+      home: _setupApp(context),
+    );
+  }
+
+  /// Setup providers and navigators
+  Widget _setupApp(BuildContext context) {
+    return RepositoryProvider(
+      create: (context) => AuthRepository(),
+      child: BlocProvider(
+        create: (context) => SessionCubit(repo: context.read<AuthRepository>()),
+        child: AppNavigator(context),
+      ),
     );
   }
 }

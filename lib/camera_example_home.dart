@@ -184,11 +184,8 @@ class CameraExampleHomeState extends State<CameraExampleHome>
     if (Theme.of(context).platform == TargetPlatform.iOS) {
       return CupertinoNavigationBar(
         leading: TextButton(
-          child: Text("Login", style: TextStyle(fontSize: 16),),
-          onPressed: () {
-            // Switch to login view page
-            Navigator.push(context, MaterialPageRoute(builder: (context) => _setLoginNavigator()));
-          },
+          child: Text("Sign Out", style: TextStyle(fontSize: 16),),
+          onPressed: () => BlocProvider.of<SessionCubit>(context).signOut(),
         ),
         middle: Text("Camera Example"),
         trailing: IconButton(
@@ -200,7 +197,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
       );
     }
     else {
-      // andriod platform
+      // android platform
       return AppBar(
         title: Text("Camera Example"),
         actions: [

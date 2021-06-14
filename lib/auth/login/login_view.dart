@@ -13,12 +13,8 @@ import 'login_state.dart';
 
 class LoginView extends StatelessWidget {
   final _formKey = GlobalKey<FormState>();
-  BuildContext homeContext;
 
   // Only for navigating back to home
-  LoginView(BuildContext c) {
-    this.homeContext = c;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,23 +25,9 @@ class LoginView extends StatelessWidget {
           appBar: Theme.of(context).platform == TargetPlatform.iOS ?
           CupertinoNavigationBar(
             middle: Text("Login View"),
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back_ios),
-              onPressed: () {
-                // go back to camera, needs fixing
-                Navigator.pop(homeContext);
-              },
-            ),
           )
           : AppBar(
             title: Text("Login View"),
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back_ios),
-              onPressed: () {
-                // go back to home screen
-                Navigator.pop(homeContext);
-              },
-            ),
           ),
           /// Create bloc to change UI based on state
           body: BlocProvider (
@@ -77,8 +59,6 @@ class LoginView extends StatelessWidget {
           _showSnackBar(context, "Login Success");
           // set form status back to initial
           state.formStatus = InitialFormStatus();
-          // navigate back to home removed for now
-          // Navigator.pop(homeContext);
         }
       },
       child: Form(

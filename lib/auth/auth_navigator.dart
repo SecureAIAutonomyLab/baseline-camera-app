@@ -9,18 +9,13 @@ import 'package:camera_app/main.dart';
 
 class AuthNavigator extends StatelessWidget {
 
-  AuthNavigator(BuildContext c) {
-    this.homeContext = c;
-  }
-  BuildContext homeContext;
-
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AuthCubit, AuthState>(builder: (context, state) {
       return Navigator(
         pages: [
           // show login
-          if (state == AuthState.login) MaterialPage(child: LoginView(homeContext)),
+          if (state == AuthState.login) MaterialPage(child: LoginView()),
           // show signup
           if (state == AuthState.signUp) MaterialPage(child: SignUpView()),
         ],
