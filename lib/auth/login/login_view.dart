@@ -23,9 +23,7 @@ class LoginView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // provide repository for later use in the widget tree
-    return RepositoryProvider(
-      create: (context) => AuthRepository(),
-      child: MaterialApp(
+      return MaterialApp(
         home: Scaffold(
           // check target platform
           appBar: Theme.of(context).platform == TargetPlatform.iOS ?
@@ -64,8 +62,7 @@ class LoginView extends StatelessWidget {
           ),
           backgroundColor: Colors.cyan[200],
         ),
-      ),
-    );
+      );
   }
 
   Widget _loginForm() {
@@ -76,6 +73,12 @@ class LoginView extends StatelessWidget {
         // if submission failed print the message
         if (status is SubmissionFailed) {
           _showSnackBar(context, status.exception.toString());
+        } else if (status is SubmissionSuccess) {
+          _showSnackBar(context, "Login Success");
+          // set form status back to initial
+          state.formStatus = InitialFormStatus();
+          // navigate back to home removed for now
+          // Navigator.pop(homeContext);
         }
       },
       child: Form(

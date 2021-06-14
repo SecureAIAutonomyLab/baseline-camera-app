@@ -4,18 +4,24 @@ import 'package:flutter/cupertino.dart';
 
 /// Contact repository and login
 class AuthRepository {
-  Future<void> login({
+
+  Future<String> attemptAutoLogin() async {
+    await Future.delayed(Duration(seconds: 1));
+    throw Exception('not signed in');
+  }
+
+  Future<String> login({
     @required String username,
     @required String password,
   }) async {
     // print("Attempting Login");
-    // await Future.delayed(Duration(seconds: 3));
+    await Future.delayed(Duration(seconds: 3));
     // print("logged in");
     // throw Exception("Failed login");
 
   }
 
-  Future<void> signUp({
+  Future<String> signUp({
     @required String username,
     @required String password,
   }) async {

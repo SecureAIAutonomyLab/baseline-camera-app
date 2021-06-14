@@ -1,12 +1,8 @@
 
-import 'package:camera_app/auth/auth_cubit.dart';
-import 'package:camera_app/auth/auth_navigator.dart';
+
 import 'package:camera_app/sesssion_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'app_navigator.dart';
-import 'auth/auth_repository.dart';
-import 'auth/login/login_view.dart';
 import 'main.dart';
 import 'dart:async';
 import 'dart:io';
@@ -21,10 +17,17 @@ import 'package:gallery_saver/gallery_saver.dart';
 import 'package:location/location.dart';
 import 'package:flutter/cupertino.dart';
 
+class SessionView extends StatefulWidget {
+  @override
+  SessionViewState createState() {
+    return SessionViewState();
+  }
+}
+
 
 /// Home Screen of the application
 /// Displays the camera and a few buttons that performs the actions of the camera
-class CameraExampleHomeState extends State<CameraExampleHome>
+class SessionViewState extends State<SessionView>
     with WidgetsBindingObserver {
   CameraController controller;
   String imagePath;
@@ -168,27 +171,15 @@ class CameraExampleHomeState extends State<CameraExampleHome>
   /// Messages for the snack bar
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  /// Create bloc provider for navigator
-  Widget _setLoginNavigator() {
-    return RepositoryProvider(
-      create: (context) => AuthRepository(),
-      child: BlocProvider(
-        create: (context) => SessionCubit(repo: context.read<AuthRepository>()),
-        child: AppNavigator(context),
-      ),
-    );
-  }
 
   /// Chooses the appbar based on platform
   Widget _chooseAppBar() {
     if (Theme.of(context).platform == TargetPlatform.iOS) {
       return CupertinoNavigationBar(
         leading: TextButton(
-          child: Text("Login", style: TextStyle(fontSize: 16),),
-          onPressed: () {
-            // Switch to login view page
-            Navigator.push(context, MaterialPageRoute(builder: (context) => _setLoginNavigator()));
-          },
+          child: Text("Sign Out", style: TextStyle(fontSize: 16),),
+          // sign out
+          onPressed: () => BlocProvider.of<SessionCubit>(context).signOut(),
         ),
         middle: Text("Camera Example"),
         trailing: IconButton(

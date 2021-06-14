@@ -1,4 +1,5 @@
 
+import 'package:camera_app/auth/auth_credentials.dart';
 import 'package:camera_app/auth/auth_repository.dart';
 import 'package:camera_app/auth/form_submission_status.dart';
 
@@ -29,8 +30,10 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       yield state.copyWith(formStatus: FormSubmitting());
 
       try {
-        await authRepo.login(username: state.username, password: state.password);
+        final userID = await authRepo.login(username: state.username, password: state.password);
         yield state.copyWith(formStatus: SubmissionSuccess());
+
+        authCubit.launchSession(AuthCredentials(username: state.username, userId: userID));
       } catch (e) {
         yield state.copyWith(formStatus: SubmissionFailed(e));
       }

@@ -10,7 +10,7 @@ class LoginState {
   // getter for password
   bool get isValidPassword => password.length > 6;
 
-  final FormSubmissionStatus formStatus;
+  FormSubmissionStatus formStatus;
 
   /// constructor
   LoginState({
