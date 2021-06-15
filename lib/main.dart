@@ -6,20 +6,32 @@
 
 import 'dart:async';
 
+import 'package:amplify_api/amplify_api.dart';
+import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
+import 'package:amplify_datastore/amplify_datastore.dart';
+import 'package:amplify_flutter/amplify.dart';
 import 'package:camera/camera.dart';
+import 'package:camera_app/loading_view.dart';
 import 'package:camera_app/sesssion_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'amplifyconfiguration.dart';
 import 'app_navigator.dart';
 import 'auth/auth_repository.dart';
 import 'camera_example_home.dart';
+import 'data_repository.dart';
+import 'models/ModelProvider.dart';
 
 class CameraExampleHome extends StatefulWidget {
+
+  final String username;
+  CameraExampleHome({Key key, this.username}) : super(key: key);
+
   @override
   CameraExampleHomeState createState() {
-    return CameraExampleHomeState();
+    return CameraExampleHomeState(this.username);
   }
 }
 
@@ -46,8 +58,60 @@ void _setOrientation () {
   ]);
 }
 
+class _CameraAppState extends State<CameraApp> {
+  bool _isAmplifyConfigured = false;
 
-class CameraApp extends StatelessWidget {
+  @override
+  void initState() {
+    super.initState();
+    _configureAmplify();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      // TODO revert back to login
+      //home: _isAmplifyConfigured ? _setupApp(context) : LoadingView(),
+      home: _isAmplifyConfigured ? CameraExampleHome() : LoadingView(),
+    );
+  }
+
+  /// Setup providers and navigators
+  Widget _setupApp(BuildContext context) {
+    return MultiRepositoryProvider(
+      providers: [
+        RepositoryProvider(create: (context) => AuthRepository()),
+        RepositoryProvider(create: (context) => DataRepository()),
+      ],
+      child: BlocProvider(
+        create: (context) => SessionCubit(
+            authRepo: context.read<AuthRepository>(),
+            dataRepo: context.read<DataRepository>(),
+        ),
+        child: AppNavigator(context),
+      ),
+    );
+  }
+
+  Future<void> _configureAmplify() async {
+    try {
+      await Amplify.addPlugins([
+        AmplifyAuthCognito(),
+        AmplifyDataStore(modelProvider: ModelProvider.instance),
+        AmplifyAPI(),
+      ]);
+
+      await Amplify.configure(amplifyconfig);
+      setState(() {
+        _isAmplifyConfigured = true;
+      });
+    } catch (e) {
+      print(e);
+    }
+  }
+}
+
+class CameraApp extends StatefulWidget {
   // set orientation
   CameraApp() {
     SystemChrome.setPreferredOrientations([
@@ -55,24 +119,9 @@ class CameraApp extends StatelessWidget {
       DeviceOrientation.portraitUp,
     ]);
   }
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: _setupApp(context),
-    );
-  }
-
-  /// Setup providers and navigators
-  Widget _setupApp(BuildContext context) {
-    return RepositoryProvider(
-      create: (context) => AuthRepository(),
-      child: BlocProvider(
-        create: (context) => SessionCubit(repo: context.read<AuthRepository>()),
-        child: AppNavigator(context),
-      ),
-    );
-  }
+  
+  @override 
+  State<StatefulWidget> createState() => _CameraAppState();
 }
 
 List<CameraDescription> cameras = [];

@@ -33,18 +33,27 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
 
       try {
         // access userID from authrepo
-        final userID = await authRepo.signUp(username: state.username, password: state.password);
+        print("started");
+        await authRepo.signUp(username: state.username, password: state.password);
         yield state.copyWith(formStatus: SubmissionSuccess());
+        print("accessed user id");
 
         // set auth credentials
         authCubit.showConfirmSignUp(username: state.username, password: state.password);
+        print("set auth credentials");
 
         // get userID
         final credentials = authCubit.credentials;
-        credentials.userId = userID;
+        final userId = await authRepo.login(
+            username: credentials.username,
+            password: credentials.password,
+        );
+        credentials.userId = userId;
+        print("get userid");
 
         //launch the session
         authCubit.launchSession(credentials);
+        print("launched session");
 
       } catch (e) {
         yield state.copyWith(formStatus: SubmissionFailed(e));

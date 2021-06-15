@@ -37,7 +37,11 @@ class AppNavigator extends StatelessWidget {
 
           // show the session
           if (state is Authenticated)
-            MaterialPage(child: CameraExampleHome()),
+            MaterialPage(
+                child: CameraExampleHome(
+                  username: state.user.username,
+                )
+            ),
         ],
         onPopPage: (route, result) => route.didPop(result),
       );

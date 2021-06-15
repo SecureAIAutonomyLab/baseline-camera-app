@@ -35,15 +35,19 @@ class CameraExampleHomeState extends State<CameraExampleHome>
   String deviceId;
   String latitudeAndLongitude;          //latittude-longitude
   int cameraDescriptionIndex = 0;
+  String username; //username from user
 
   static final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
   Map<String, dynamic> _deviceData = <String, dynamic>{};
+
+  CameraExampleHomeState(String username);
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     initPlatformState();
+    onNewCameraSelected(cameras[cameraDescriptionIndex]);
   }
 
   @override
@@ -173,7 +177,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
     return RepositoryProvider(
       create: (context) => AuthRepository(),
       child: BlocProvider(
-        create: (context) => SessionCubit(repo: context.read<AuthRepository>()),
+        create: (context) => SessionCubit(authRepo: context.read<AuthRepository>()),
         child: AppNavigator(context),
       ),
     );

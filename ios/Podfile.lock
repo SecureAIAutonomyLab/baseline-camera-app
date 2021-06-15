@@ -2,6 +2,17 @@ PODS:
   - Amplify (1.9.3):
     - Amplify/Default (= 1.9.3)
   - Amplify/Default (1.9.3)
+  - amplify_api (0.0.1):
+    - Amplify
+    - amplify_core
+    - AmplifyPlugins/AWSAPIPlugin
+    - Flutter
+  - amplify_auth_cognito (0.0.1):
+    - Amplify
+    - amplify_core
+    - AmplifyPlugins/AWSCognitoAuthPlugin
+    - Flutter
+    - ObjectMapper
   - amplify_core (0.0.1):
     - Flutter
   - amplify_datastore (0.0.1):
@@ -15,6 +26,10 @@ PODS:
     - AmplifyPlugins/AWSCognitoAuthPlugin
     - AWSPluginsCore
     - Flutter
+  - AmplifyPlugins/AWSAPIPlugin (1.9.3):
+    - AppSyncRealTimeClient (~> 1.4)
+    - AWSCore (~> 2.24.0)
+    - AWSPluginsCore (= 1.9.3)
   - AmplifyPlugins/AWSCognitoAuthPlugin (1.9.3):
     - AWSAuthCore (~> 2.24.0)
     - AWSCognitoIdentityProvider (~> 2.24.0)
@@ -26,6 +41,8 @@ PODS:
     - AWSCore (~> 2.24.0)
     - AWSPluginsCore (= 1.9.3)
     - SQLite.swift (= 0.12.2)
+  - AppSyncRealTimeClient (1.5.0):
+    - Starscream (~> 3.1.1)
   - AWSAuthCore (2.24.2):
     - AWSCore (= 2.24.2)
   - AWSCognitoIdentityProvider (2.24.2):
@@ -52,15 +69,19 @@ PODS:
     - Flutter
   - location (0.0.1):
     - Flutter
+  - ObjectMapper (4.2.0)
   - path_provider (0.0.1):
     - Flutter
   - SQLite.swift (0.12.2):
     - SQLite.swift/standard (= 0.12.2)
   - SQLite.swift/standard (0.12.2)
+  - Starscream (3.1.1)
   - video_player (0.0.1):
     - Flutter
 
 DEPENDENCIES:
+  - amplify_api (from `.symlinks/plugins/amplify_api/ios`)
+  - amplify_auth_cognito (from `.symlinks/plugins/amplify_auth_cognito/ios`)
   - amplify_core (from `.symlinks/plugins/amplify_core/ios`)
   - amplify_datastore (from `.symlinks/plugins/amplify_datastore/ios`)
   - amplify_flutter (from `.symlinks/plugins/amplify_flutter/ios`)
@@ -77,15 +98,22 @@ SPEC REPOS:
   trunk:
     - Amplify
     - AmplifyPlugins
+    - AppSyncRealTimeClient
     - AWSAuthCore
     - AWSCognitoIdentityProvider
     - AWSCognitoIdentityProviderASF
     - AWSCore
     - AWSMobileClient
     - AWSPluginsCore
+    - ObjectMapper
     - SQLite.swift
+    - Starscream
 
 EXTERNAL SOURCES:
+  amplify_api:
+    :path: ".symlinks/plugins/amplify_api/ios"
+  amplify_auth_cognito:
+    :path: ".symlinks/plugins/amplify_auth_cognito/ios"
   amplify_core:
     :path: ".symlinks/plugins/amplify_core/ios"
   amplify_datastore:
@@ -111,10 +139,13 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Amplify: b2cc6f4f1a5868c8f86ed54db09809bdabb2b34f
+  amplify_api: 9a94aa18c1576ee0f3bae038b34c227e07b5c6ab
+  amplify_auth_cognito: 2e090a788d0ba4e08f6438170b1e7aac872782b4
   amplify_core: 8b38d20089fe4f225c14db6892f586bd03824a42
   amplify_datastore: e73979905bbee5c192e59f6afcd4e0692c3132bf
   amplify_flutter: d64b45e3a016e491bbb2e110fee57e150daf2164
   AmplifyPlugins: 6f3021cbc2df2ee9ae8ee74072f49fadffc5af76
+  AppSyncRealTimeClient: 2b4482b1770a3e5cf64f9714a6d198550017b5a2
   AWSAuthCore: d2cb921db598ea03d67284977a3c691e9a1aee83
   AWSCognitoIdentityProvider: f9d68c563718fa5aa76e077752df06c73810efba
   AWSCognitoIdentityProviderASF: 21681469334e286df6e5470f3cbab3b10edbf818
@@ -127,8 +158,10 @@ SPEC CHECKSUMS:
   Flutter: 434fef37c0980e73bb6479ef766c45957d4b510c
   gallery_saver: 9fc173c9f4fcc48af53b2a9ebea1b643255be542
   location: 3a2eed4dd2fab25e7b7baf2a9efefe82b512d740
+  ObjectMapper: 1eb41f610210777375fa806bf161dc39fb832b81
   path_provider: fb74bd0465e96b594bb3b5088ee4a4e7bb1f2a9d
   SQLite.swift: d2b4642190917051ce6bd1d49aab565fe794eea3
+  Starscream: 4bb2f9942274833f7b4d296a55504dcfc7edb7b0
   video_player: 69c5f029fac4ffe4fc8a85ea7f7b793709661549
 
 PODFILE CHECKSUM: 775997f741c536251164e3eacf6e34abf2eb7a17
