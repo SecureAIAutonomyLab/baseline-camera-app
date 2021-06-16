@@ -3,6 +3,7 @@ import 'package:amplify_flutter/amplify.dart';
 import 'package:amplify_storage_s3/amplify_storage_s3.dart';
 import 'package:camera_app/auth/auth_cubit.dart';
 import 'package:camera_app/auth/auth_navigator.dart';
+import 'package:camera_app/data_repository.dart';
 import 'package:camera_app/sesssion_cubit.dart';
 import 'package:camera_app/storage_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -63,6 +64,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
       ResolutionPreset.medium,
       enableAudio: enableAudio,
     );
+    controller.initialize();
     // initialize storage repository
     storageRepo = StorageRepository();
   }
@@ -194,7 +196,10 @@ class CameraExampleHomeState extends State<CameraExampleHome>
     return RepositoryProvider(
       create: (context) => AuthRepository(),
       child: BlocProvider(
-        create: (context) => SessionCubit(authRepo: context.read<AuthRepository>()),
+        create: (context) => SessionCubit(
+          authRepo: context.read<AuthRepository>(),
+          dataRepo: context.read<DataRepository>(),
+        ),
         child: AppNavigator(context),
       ),
     );
@@ -462,7 +467,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
       await controller.dispose();
     }
 
-    controller = new CameraController(
+    controller = CameraController(
       cameraDescription,
       ResolutionPreset.medium,
       enableAudio: enableAudio,
