@@ -1,7 +1,10 @@
 
+import 'package:amplify_flutter/amplify.dart';
+import 'package:amplify_storage_s3/amplify_storage_s3.dart';
 import 'package:camera_app/auth/auth_cubit.dart';
 import 'package:camera_app/auth/auth_navigator.dart';
 import 'package:camera_app/sesssion_cubit.dart';
+import 'package:camera_app/storage_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'app_navigator.dart';
@@ -21,6 +24,8 @@ import 'package:gallery_saver/gallery_saver.dart';
 import 'package:location/location.dart';
 import 'package:flutter/cupertino.dart';
 
+import 'models/User.dart';
+
 
 /// Home Screen of the application
 /// Displays the camera and a few buttons that performs the actions of the camera
@@ -35,7 +40,9 @@ class CameraExampleHomeState extends State<CameraExampleHome>
   String deviceId;
   String latitudeAndLongitude;          //latittude-longitude
   int cameraDescriptionIndex = 0;
-  String username; //username from user
+  StorageRepository storageRepo;
+  //String username; //username from user
+
 
   static final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
   Map<String, dynamic> _deviceData = <String, dynamic>{};
@@ -47,7 +54,14 @@ class CameraExampleHomeState extends State<CameraExampleHome>
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     initPlatformState();
-    onNewCameraSelected(cameras[cameraDescriptionIndex]);
+    // initialize camera controller
+    controller = CameraController(
+      cameras[cameraDescriptionIndex],
+      ResolutionPreset.medium,
+      enableAudio: enableAudio,
+    );
+    // initialize storage repository
+    storageRepo = StorageRepository();
   }
 
   @override
@@ -187,10 +201,10 @@ class CameraExampleHomeState extends State<CameraExampleHome>
   Widget _chooseAppBar() {
     if (Theme.of(context).platform == TargetPlatform.iOS) {
       return CupertinoNavigationBar(
-        leading: TextButton(
-          child: Text("Sign Out", style: TextStyle(fontSize: 16),),
-          onPressed: () => BlocProvider.of<SessionCubit>(context).signOut(),
-        ),
+        // leading: TextButton(
+        //   child: Text("Sign Out", style: TextStyle(fontSize: 16),),
+        //   onPressed: () => BlocProvider.of<SessionCubit>(context).signOut(),
+        // ), disabled for now
         middle: Text("Camera Example"),
         trailing: IconButton(
           icon: Icon(Icons.flip_camera_ios),
@@ -472,7 +486,9 @@ class CameraExampleHomeState extends State<CameraExampleHome>
           videoController?.dispose();
           videoController = null;
         });
-        if (filePath != null) showInSnackBar('Picture saved to gallery.');
+        if (filePath != null) {
+          showInSnackBar('Picture saved to gallery.');
+        }
       }
     });
   }
@@ -545,6 +561,14 @@ class CameraExampleHomeState extends State<CameraExampleHome>
     try {
       await controller.stopVideoRecording();
       GallerySaver.saveVideo(videoPath);
+      // Upload video to Amazon S3
+      try {
+        final video = File(videoPath);
+        final videoKey = await storageRepo.uploadFile(video, '.mp4');
+        showInSnackBar('Video Successfully Uploaded');
+      } on StorageException catch (e) {
+        print(e.message);
+      }
     } on CameraException catch (e) {
       _showCameraException(e);
       return null;
@@ -628,6 +652,14 @@ class CameraExampleHomeState extends State<CameraExampleHome>
     try {
       await controller.takePicture(filePath);
       GallerySaver.saveImage(filePath);
+      // upload image to Amazon S3
+      try {
+        File image = File(filePath);
+        final imageKey = await storageRepo.uploadFile(image, '.jpg');
+        showInSnackBar("Image Succesfully Uploaded");
+      } on StorageException catch (e) {
+        print(e.message);
+      }
     } on CameraException catch (e) {
       _showCameraException(e);
       return null;

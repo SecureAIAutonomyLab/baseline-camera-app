@@ -24,6 +24,7 @@ dependencies:
   amplify_datastore: <1.0.0
   amplify_api:
   amplify_auth_cognito:
+  amplify_storage_s3:
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -37,6 +38,7 @@ dependencies:
   gallery_saver:
   location:
   flutter_bloc: ^7.0.1
+  intl: ^0.17.0
 
 dev_dependencies:
   flutter_test:

@@ -23,6 +23,7 @@ import 'auth/auth_repository.dart';
 import 'camera_example_home.dart';
 import 'data_repository.dart';
 import 'models/ModelProvider.dart';
+import 'package:amplify_storage_s3/amplify_storage_s3.dart';
 
 class CameraExampleHome extends StatefulWidget {
 
@@ -99,6 +100,7 @@ class _CameraAppState extends State<CameraApp> {
         AmplifyAuthCognito(),
         AmplifyDataStore(modelProvider: ModelProvider.instance),
         AmplifyAPI(),
+        AmplifyStorageS3(),
       ]);
 
       await Amplify.configure(amplifyconfig);
