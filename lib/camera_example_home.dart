@@ -41,13 +41,16 @@ class CameraExampleHomeState extends State<CameraExampleHome>
   String latitudeAndLongitude;          //latittude-longitude
   int cameraDescriptionIndex = 0;
   StorageRepository storageRepo;
-  //String username; //username from user
+  bool isFileFinishedUploading = false;
+  String username; //username from user
 
 
   static final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
   Map<String, dynamic> _deviceData = <String, dynamic>{};
 
-  CameraExampleHomeState(String username);
+  CameraExampleHomeState(String username) {
+    this.username = username;
+  }
 
   @override
   void initState() {
@@ -175,7 +178,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
       return;
     }
     if (state == AppLifecycleState.inactive) {
-      controller?.dispose();
+      //controller?.dispose();
     } else if (state == AppLifecycleState.resumed) {
       if (controller != null) {
         onNewCameraSelected(controller.description);
@@ -205,6 +208,10 @@ class CameraExampleHomeState extends State<CameraExampleHome>
         //   child: Text("Sign Out", style: TextStyle(fontSize: 16),),
         //   onPressed: () => BlocProvider.of<SessionCubit>(context).signOut(),
         // ), disabled for now
+        leading: TextButton(
+          child: Text("Sign Out", style: TextStyle(fontSize: 16),),
+          onPressed: () => BlocProvider.of<SessionCubit>(context).signOut(),
+        ),
         middle: Text("Camera Example"),
         trailing: IconButton(
           icon: Icon(Icons.flip_camera_ios),
@@ -269,6 +276,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
   Widget _cameraPreviewWidget() {
     if (controller == null || !controller.value.isInitialized) {
       if (cameras.isNotEmpty) {
+        onNewCameraSelected(cameras[cameraDescriptionIndex]);
         onNewCameraSelected(cameras[cameraDescriptionIndex]);
       }
       else {
@@ -453,7 +461,8 @@ class CameraExampleHomeState extends State<CameraExampleHome>
     if (controller != null) {
       await controller.dispose();
     }
-    controller = CameraController(
+
+    controller = new CameraController(
       cameraDescription,
       ResolutionPreset.medium,
       enableAudio: enableAudio,
@@ -487,7 +496,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
           videoController = null;
         });
         if (filePath != null) {
-          showInSnackBar('Picture saved to gallery.');
+          //showInSnackBar('Picture saved to gallery.');
         }
       }
     });
@@ -503,7 +512,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
   void onStopButtonPressed() {
     stopVideoRecording().then((_) {
       if (mounted) setState(() {});
-      showInSnackBar('Video recorded to gallery.');
+      //showInSnackBar('Video recorded to gallery.');
     });
   }
 
@@ -564,8 +573,8 @@ class CameraExampleHomeState extends State<CameraExampleHome>
       // Upload video to Amazon S3
       try {
         final video = File(videoPath);
-        final videoKey = await storageRepo.uploadFile(video, '.mp4');
-        showInSnackBar('Video Successfully Uploaded');
+        final videoKey = await storageRepo.uploadFile(username, video, '.mp4');
+        showInSnackBar('Video Successfully Uploaded and Saved');
       } on StorageException catch (e) {
         print(e.message);
       }
@@ -634,7 +643,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
       showInSnackBar('Error: select a camera first.');
       return null;
     }
-
+    print("camera example home username: " + username);
     Location location = new Location();
     LocationData myLocation = await location.getLocation();
     String latitudeAndLongitude = myLocation.latitude.toString() + myLocation.longitude.toString();
@@ -652,11 +661,13 @@ class CameraExampleHomeState extends State<CameraExampleHome>
     try {
       await controller.takePicture(filePath);
       GallerySaver.saveImage(filePath);
+      isFileFinishedUploading = false;
       // upload image to Amazon S3
       try {
         File image = File(filePath);
-        final imageKey = await storageRepo.uploadFile(image, '.jpg');
-        showInSnackBar("Image Succesfully Uploaded");
+        final imageKey = await storageRepo.uploadFile(username, image, '.jpg');
+          isFileFinishedUploading = true;
+        showInSnackBar("Image Successfully Uploaded and Saved");
       } on StorageException catch (e) {
         print(e.message);
       }
@@ -666,6 +677,14 @@ class CameraExampleHomeState extends State<CameraExampleHome>
     }
     return filePath;
   }
+
+  // void _showUploadProgress() {
+  //    showDialog(context: context, builder: (context) {
+  //      return AlertDialog(
+  //        title: isFileFinishedUploading ? Text("Upload Complete") : Text("Uploading File"),
+  //      );
+  //    });
+  // }
 
   void _showCameraException(CameraException e) {
     logError(e.code, e.description);

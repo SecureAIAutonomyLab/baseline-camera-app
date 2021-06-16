@@ -41,11 +41,12 @@ class SessionCubit extends Cubit<SessionState> {
   void showAuth() => emit(Unauthenticated());
   void showSession(AuthCredentials credentials) async {
     try {
-      User user = await dataRepo.getUserById(credentials.userId);
-      if (user == null) {
-        user = await dataRepo.createUser(credentials.userId, credentials.username);
-      }
-
+      // TODO revert
+      // User user = await dataRepo.getUserById(credentials.userId);
+      // if (user == null) {
+      //   user = await dataRepo.createUser(credentials.userId, credentials.username);
+      // }
+      User user = User(username: credentials.username);
       emit(Authenticated(user: user));
     } catch (e) {
       throw e;
@@ -53,7 +54,7 @@ class SessionCubit extends Cubit<SessionState> {
   }
 
   void signOut() {
-    authRepo.signOut();
+    //authRepo.signOut();
     emit(Unauthenticated());
   }
 }

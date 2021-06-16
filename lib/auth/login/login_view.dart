@@ -37,7 +37,7 @@ class LoginView extends StatelessWidget {
             ),
             child: Stack (
                 children: [_loginForm(),
-                  _signUpButton(context)
+                  //_signUpButton(context)
                 ],
               alignment: Alignment.bottomCenter,
             )
@@ -69,7 +69,7 @@ class LoginView extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               _usernameField(),
-              _passwordField(),
+              //_passwordField(),
               _loginButton(),
             ],
           ),

@@ -35,12 +35,14 @@ class AuthRepository {
   }) async {
 
     try {
-      final result = await Amplify.Auth.signIn(
-          username: username.trim(),
-          password: password.trim(),
-      );
-
-      return result.isSignedIn ? (await _getUserIdFromAttributes()) : null;
+      // TODO revert back to auth sign in
+      // final result = await Amplify.Auth.signIn(
+      //     username: username.trim(),
+      //     password: password.trim(),
+      // );
+      //
+      // return result.isSignedIn ? (await _getUserIdFromAttributes()) : null;
+      return 'randomUserID';
     } catch (e) {
       throw e;
     }

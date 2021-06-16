@@ -4,11 +4,13 @@ import 'package:amplify_flutter/amplify.dart';
 import 'models/User.dart';
 
 class DataRepository {
-  Future<User> getUserById(String userId) async {
+  // TODO change back
+  //Future<User> getUserById(String userId) async {
+  Future<User> getUserById(String username) async {
     try {
       final users = await Amplify.DataStore.query(
         User.classType,
-        where: User.ID.eq(userId),
+        where: User.USERNAME.eq(username),
       );
 
       return users.isNotEmpty ? users.first : null;
