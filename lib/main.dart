@@ -71,9 +71,7 @@ class _CameraAppState extends State<CameraApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      // TODO revert back to login
       home: _isAmplifyConfigured ? _setupApp(context) : LoadingView(),
-      //home: _isAmplifyConfigured ? CameraExampleHome() : LoadingView(),
     );
   }
 

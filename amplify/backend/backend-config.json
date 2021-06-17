@@ -22,7 +22,7 @@
     }
   },
   "auth": {
-    "CameraApp": {
+    "cameraapp68d4c65b": {
       "service": "Cognito",
       "providerPlugin": "awscloudformation",
       "dependsOn": [],

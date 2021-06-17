@@ -5,6 +5,9 @@ import 'package:amplify_flutter/amplify.dart';
 class StorageRepository {
   Future<String> uploadFile(String username, File file, String extension) async {
     try {
+      if (username == null) {
+        username = "null";
+      }
       // name of uploaded file
       String fileName;
       username = username.trim();

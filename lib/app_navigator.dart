@@ -23,7 +23,7 @@ class AppNavigator extends StatelessWidget {
       return Navigator(
         pages: [
           // show loading screen
-          if (state is UnknownSesionState)
+          if (state is UnknownSessionState)
             MaterialPage(child: LoadingView()),
 
           // show the auth navigator

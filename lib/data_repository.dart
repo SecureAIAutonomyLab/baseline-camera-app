@@ -1,30 +1,27 @@
-
 import 'package:amplify_flutter/amplify.dart';
 
 import 'models/User.dart';
 
+
 class DataRepository {
-  // TODO change back
-  //Future<User> getUserById(String userId) async {
-  Future<User> getUserById(String username) async {
+  Future<User> getUserById(String userId) async {
     try {
       final users = await Amplify.DataStore.query(
         User.classType,
-        where: User.USERNAME.eq(username),
+        where: User.ID.eq(userId),
       );
-
       return users.isNotEmpty ? users.first : null;
     } catch (e) {
       throw e;
     }
   }
 
-  Future<User> createUser(
+  Future<User> createUser({
     String userId,
     String username,
-  ) async {
-    // TODO: add password?
-    final newUser = User(id: userId, username: username);
+    String email,
+  }) async {
+    final newUser = User(id: userId, username: username, email: email);
     try {
       await Amplify.DataStore.save(newUser);
       return newUser;

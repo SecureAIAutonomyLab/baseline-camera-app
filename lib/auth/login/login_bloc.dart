@@ -1,13 +1,10 @@
-
-import 'package:camera_app/auth/auth_credentials.dart';
-import 'package:camera_app/auth/auth_repository.dart';
-import 'package:camera_app/auth/form_submission_status.dart';
-
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../auth_credentials.dart';
 import '../auth_cubit.dart';
+import '../auth_repository.dart';
+import '../form_submission_status.dart';
 import 'login_event.dart';
 import 'login_state.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
   final AuthRepository authRepo;
@@ -17,27 +14,32 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
   @override
   Stream<LoginState> mapEventToState(LoginEvent event) async* {
-    // username changed
+    // Username updated
     if (event is LoginUsernameChanged) {
       yield state.copyWith(username: event.username);
 
-      // password changed
+      // Password updated
     } else if (event is LoginPasswordChanged) {
       yield state.copyWith(password: event.password);
 
-      // form submitted
+      // Form submitted
     } else if (event is LoginSubmitted) {
       yield state.copyWith(formStatus: FormSubmitting());
 
       try {
-        final userID = await authRepo.login(username: state.username, password: state.password);
+        final userId = await authRepo.login(
+          username: state.username,
+          password: state.password,
+        );
         yield state.copyWith(formStatus: SubmissionSuccess());
 
-        authCubit.launchSession(AuthCredentials(username: state.username, userId: userID));
+        authCubit.launchSession(AuthCredentials(
+          username: state.username,
+          userId: userId,
+        ));
       } catch (e) {
         yield state.copyWith(formStatus: SubmissionFailed(e));
       }
     }
   }
 }
-

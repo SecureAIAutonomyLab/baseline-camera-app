@@ -1,7 +1,4 @@
-
-abstract class LoginEvent {
-  
-}
+abstract class LoginEvent {}
 
 class LoginUsernameChanged extends LoginEvent {
   final String username;
@@ -15,6 +12,4 @@ class LoginPasswordChanged extends LoginEvent {
   LoginPasswordChanged({this.password});
 }
 
-class LoginSubmitted extends LoginEvent {
-
-}
+class LoginSubmitted extends LoginEvent {}

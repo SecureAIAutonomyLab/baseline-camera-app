@@ -436,6 +436,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
 
   /// Display a row of toggle to select the camera (or a message if no camera is available).
   void _cameraToggleButtonPressed() {
+    print(username);
     if (cameras.isEmpty) {
       return;
     } else {

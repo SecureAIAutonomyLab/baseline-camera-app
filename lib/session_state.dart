@@ -4,7 +4,7 @@ import 'models/User.dart';
 
 abstract class SessionState {}
 
-class UnknownSesionState extends SessionState {}
+class UnknownSessionState extends SessionState {}
 
 class Unauthenticated extends SessionState {}
 

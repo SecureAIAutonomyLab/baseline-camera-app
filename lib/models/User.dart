@@ -24,7 +24,7 @@ class User extends Model {
   static const classType = const _UserModelType();
   final String id;
   final String username;
-  final String password;
+  final String email;
 
   @override
   getInstanceType() => classType;
@@ -35,13 +35,11 @@ class User extends Model {
   }
 
   const User._internal(
-      {@required this.id, @required this.username, this.password});
+      {@required this.id, @required this.username, this.email});
 
-  factory User({String id, @required String username, String password}) {
+  factory User({String id, @required String username, String email}) {
     return User._internal(
-        id: id == null ? UUID.getUUID() : id,
-        username: username,
-        password: password);
+        id: id == null ? UUID.getUUID() : id, username: username, email: email);
   }
 
   bool equals(Object other) {
@@ -54,7 +52,7 @@ class User extends Model {
     return other is User &&
         id == other.id &&
         username == other.username &&
-        password == other.password;
+        email == other.email;
   }
 
   @override
@@ -67,30 +65,30 @@ class User extends Model {
     buffer.write("User {");
     buffer.write("id=" + "$id" + ", ");
     buffer.write("username=" + "$username" + ", ");
-    buffer.write("password=" + "$password");
+    buffer.write("email=" + "$email");
     buffer.write("}");
 
     return buffer.toString();
   }
 
-  User copyWith({String id, String username, String password}) {
+  User copyWith({String id, String username, String email}) {
     return User(
         id: id ?? this.id,
         username: username ?? this.username,
-        password: password ?? this.password);
+        email: email ?? this.email);
   }
 
   User.fromJson(Map<String, dynamic> json)
       : id = json['id'],
         username = json['username'],
-        password = json['password'];
+        email = json['email'];
 
   Map<String, dynamic> toJson() =>
-      {'id': id, 'username': username, 'password': password};
+      {'id': id, 'username': username, 'email': email};
 
   static final QueryField ID = QueryField(fieldName: "user.id");
   static final QueryField USERNAME = QueryField(fieldName: "username");
-  static final QueryField PASSWORD = QueryField(fieldName: "password");
+  static final QueryField EMAIL = QueryField(fieldName: "email");
   static var schema =
       Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = "User";
@@ -113,7 +111,7 @@ class User extends Model {
         ofType: ModelFieldType(ModelFieldTypeEnum.string)));
 
     modelSchemaDefinition.addField(ModelFieldDefinition.field(
-        key: User.PASSWORD,
+        key: User.EMAIL,
         isRequired: false,
         ofType: ModelFieldType(ModelFieldTypeEnum.string)));
   });
