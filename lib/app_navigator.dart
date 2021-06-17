@@ -40,6 +40,7 @@ class AppNavigator extends StatelessWidget {
             MaterialPage(
                 child: CameraExampleHome(
                   username: state.user.username,
+                  userID: state.user.id,
                 )
             ),
         ],

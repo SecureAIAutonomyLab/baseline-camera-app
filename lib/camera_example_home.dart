@@ -44,13 +44,15 @@ class CameraExampleHomeState extends State<CameraExampleHome>
   StorageRepository storageRepo;
   bool isFileFinishedUploading = false;
   String username; //username from user
+  String userID;
 
 
   static final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
   Map<String, dynamic> _deviceData = <String, dynamic>{};
 
-  CameraExampleHomeState(String username) {
+  CameraExampleHomeState(String username, String userID) {
     this.username = username;
+    this.userID = userID;
   }
 
   @override
@@ -436,7 +438,9 @@ class CameraExampleHomeState extends State<CameraExampleHome>
 
   /// Display a row of toggle to select the camera (or a message if no camera is available).
   void _cameraToggleButtonPressed() {
+    // TODO remove
     print(username);
+    print(userID);
     if (cameras.isEmpty) {
       return;
     } else {

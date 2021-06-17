@@ -21,8 +21,8 @@ class SessionCubit extends Cubit<SessionState> {
 
   void attemptAutoLogin() async {
     try {
-      final userId = await authRepo.attemptAutoLogin();
-      if (userId == null) {
+      final credentials = await authRepo.attemptAutoLogin();
+      if (credentials.userId == null) {
         throw Exception('User not logged in');
       }
 
@@ -33,8 +33,7 @@ class SessionCubit extends Cubit<SessionState> {
       //     username: 'User-${UUID()}',
       //   );
       // }
-      User user = User(id: userId);
-      print("authenticated at abnormal spot");
+      User user = User(id: credentials.userId, username: credentials.username);
       emit(Authenticated(user: user));
     } on Exception {
       emit(Unauthenticated());

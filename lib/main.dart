@@ -28,11 +28,12 @@ import 'package:amplify_storage_s3/amplify_storage_s3.dart';
 class CameraExampleHome extends StatefulWidget {
 
   final String username;
-  CameraExampleHome({Key key, this.username}) : super(key: key);
+  final String userID;
+  CameraExampleHome({Key key, this.username, this.userID}) : super(key: key);
 
   @override
   CameraExampleHomeState createState() {
-    return CameraExampleHomeState(this.username);
+    return CameraExampleHomeState(this.username, this.userID);
   }
 }
 

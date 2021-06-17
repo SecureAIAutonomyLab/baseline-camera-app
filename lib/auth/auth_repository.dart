@@ -1,5 +1,6 @@
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify.dart';
+import 'package:camera_app/auth/auth_credentials.dart';
 import 'package:flutter/foundation.dart';
 
 class AuthRepository {
@@ -15,11 +16,23 @@ class AuthRepository {
     }
   }
 
-  Future<String> attemptAutoLogin() async {
+  Future<String> _getUsername() async {
+    try {
+      final attributes = await Amplify.Auth.getCurrentUser();
+      print(attributes.username);
+      return attributes.username;
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  Future<AuthCredentials> attemptAutoLogin() async {
     try {
       final session = await Amplify.Auth.fetchAuthSession();
+      final username = await _getUsername();
+      final userId = await _getUserIdFromAttributes();
 
-      return session.isSignedIn ? (await _getUserIdFromAttributes()) : null;
+      return session.isSignedIn ? (AuthCredentials(username: username, userId: userId)) : null;
     } catch (e) {
       throw e;
     }

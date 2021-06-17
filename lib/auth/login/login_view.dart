@@ -9,8 +9,15 @@ import 'login_bloc.dart';
 import 'login_event.dart';
 import 'login_state.dart';
 
-class LoginView extends StatelessWidget {
+class LoginView extends StatefulWidget {
+
+  @override
+  _LoginViewState createState() => _LoginViewState();
+}
+
+class _LoginViewState extends State<LoginView> {
   final _formKey = GlobalKey<FormState>();
+  bool rememberSession = false;
 
   @override
   Widget build(BuildContext context) {
@@ -55,10 +62,27 @@ class LoginView extends StatelessWidget {
                 _usernameField(),
                 _passwordField(),
                 _loginButton(),
+                _checkBox(),
               ],
             ),
           ),
         ));
+  }
+
+  Widget _checkBox() {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 85),
+      child: CheckboxListTile(
+          secondary: Text("Remember Me"),
+          controlAffinity: ListTileControlAffinity.leading,
+          value: rememberSession,
+          onChanged: (bool changed) {
+            setState(() {
+              rememberSession = changed;
+            });
+          }
+      ),
+    );
   }
 
   Widget _usernameField() {
