@@ -9,9 +9,11 @@ class StorageRepository {
       String fileName;
       username = username.trim();
       if (extension == ".jpg") {
-        fileName = '$username/photos/' + DateTime.now().toIso8601String();
+        fileName = '$username/photos/${username}_' + DateTime.now().toIso8601String();
+        fileName = fileName.replaceAll('T', '_');
       } else {
-        fileName = '$username/videos/' + DateTime.now().toIso8601String();
+        fileName = '$username/videos/${username}_' + DateTime.now().toIso8601String();
+        fileName = fileName.replaceAll('T', '_');
       }
       final result = await Amplify.Storage.uploadFile(
         local: file,
