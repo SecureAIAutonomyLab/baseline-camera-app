@@ -427,7 +427,8 @@ class CameraExampleHomeState extends State<CameraExampleHome>
           color: Colors.blue,
           onPressed: controller != null &&
               controller.value.isInitialized &&
-              !controller.value.isRecordingVideo
+              !controller.value.isRecordingVideo &&
+              !isFileFinishedUploading.started // only if finished uploading
               ? onTakePictureButtonPressed
               : null,
         ),
@@ -436,7 +437,8 @@ class CameraExampleHomeState extends State<CameraExampleHome>
           color: Colors.blue,
           onPressed: controller != null &&
               controller.value.isInitialized &&
-              !controller.value.isRecordingVideo
+              !controller.value.isRecordingVideo &&
+              !isFileFinishedUploading.started // only if finished uploading
               ? onVideoRecordButtonPressed
               : null,
         ),
