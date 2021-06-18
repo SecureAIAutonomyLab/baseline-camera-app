@@ -2,9 +2,10 @@ import 'dart:io';
 
 import 'package:amplify_flutter/amplify.dart';
 import 'package:amplify_storage_s3/amplify_storage_s3.dart';
+import 'package:camera_app/camera_example_home.dart';
 
 class StorageRepository {
-  Future<String> uploadFile(String username, File file, String extension, String userId) async {
+  Future<String> uploadFile(String username, File file, String extension, String userId, BooleanWrap finished) async {
     try {
       if (username == null) {
         username = "null";

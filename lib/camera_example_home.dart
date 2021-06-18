@@ -27,6 +27,15 @@ import 'package:flutter/cupertino.dart';
 
 import 'models/User.dart';
 
+class BooleanWrap {
+  BooleanWrap(bool c, bool d) {
+    this.finished = c;
+    this.started = d;
+  }
+  bool finished;
+  bool started;
+}
+
 
 /// Home Screen of the application
 /// Displays the camera and a few buttons that performs the actions of the camera
@@ -42,7 +51,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
   String latitudeAndLongitude;          //latittude-longitude
   int cameraDescriptionIndex = 0;
   StorageRepository storageRepo;
-  bool isFileFinishedUploading = false;
+  BooleanWrap isFileFinishedUploading;
   String username; //username from user
   String userID;
 
@@ -69,6 +78,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
     controller.initialize();
     // initialize storage repository
     storageRepo = StorageRepository();
+    isFileFinishedUploading = BooleanWrap(false, false);
   }
 
   @override
@@ -281,6 +291,26 @@ class CameraExampleHomeState extends State<CameraExampleHome>
 
   /// Display the preview from the camera (or a message if the preview is not available).
   Widget _cameraPreviewWidget() {
+    if (isFileFinishedUploading.started) {
+      if (isFileFinishedUploading.finished) {
+        return Text(
+          "Upload Complete",
+          style: TextStyle(color: Colors.white, fontSize: 30),
+        );
+      } else {
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+                "File Uploading",
+              style: TextStyle(color: Colors.white, fontSize: 30),
+            ),
+            SizedBox(height: 40),
+            CircularProgressIndicator(),
+          ],
+        );
+      }
+    }
     if (controller == null || !controller.value.isInitialized) {
       if (cameras.isNotEmpty) {
         onNewCameraSelected(cameras[cameraDescriptionIndex]);
@@ -438,9 +468,6 @@ class CameraExampleHomeState extends State<CameraExampleHome>
 
   /// Display a row of toggle to select the camera (or a message if no camera is available).
   void _cameraToggleButtonPressed() {
-    // TODO remove
-    print(username);
-    print(userID);
     if (cameras.isEmpty) {
       return;
     } else {
@@ -573,6 +600,9 @@ class CameraExampleHomeState extends State<CameraExampleHome>
   }
 
   Future<void> stopVideoRecording() async {
+    // change state of camera preview
+    isFileFinishedUploading.finished = false;
+    setState(() {isFileFinishedUploading.started = true;});
     if (!controller.value.isRecordingVideo) {
       return null;
     }
@@ -583,8 +613,17 @@ class CameraExampleHomeState extends State<CameraExampleHome>
       // Upload video to Amazon S3
       try {
         final video = File(videoPath);
-        final videoKey = await storageRepo.uploadFile(username, video, '.mp4', userID);
-        showInSnackBar('Video Successfully Uploaded and Saved');
+        final videoKey = await storageRepo.uploadFile(
+          username,
+          video,
+          '.mp4',
+          userID,
+          isFileFinishedUploading,
+        );
+        setState(() {isFileFinishedUploading.finished = true;});
+        await _wait();
+        setState(() {isFileFinishedUploading.started = false;});
+        //showInSnackBar('Video Successfully Uploaded and Saved');
       } on StorageException catch (e) {
         print(e.message);
       }
@@ -649,6 +688,9 @@ class CameraExampleHomeState extends State<CameraExampleHome>
   }
 
   Future<String> takePicture() async {
+    // change state of camera preview
+    isFileFinishedUploading.finished = false;
+    setState(() {isFileFinishedUploading.started = true;});
     if (!controller.value.isInitialized) {
       showInSnackBar('Error: select a camera first.');
       return null;
@@ -671,13 +713,20 @@ class CameraExampleHomeState extends State<CameraExampleHome>
     try {
       await controller.takePicture(filePath);
       GallerySaver.saveImage(filePath);
-      isFileFinishedUploading = false;
       // upload image to Amazon S3
       try {
         File image = File(filePath);
-        final imageKey = await storageRepo.uploadFile(username, image, '.jpg', userID);
-          isFileFinishedUploading = true;
-        showInSnackBar("Image Successfully Uploaded and Saved");
+        final imageKey = await storageRepo.uploadFile(
+            username,
+            image,
+            '.jpg',
+            userID,
+            isFileFinishedUploading
+        );
+        setState(() {isFileFinishedUploading.finished = true;});
+        await _wait();
+        setState(() {isFileFinishedUploading.started = false;});
+        //showInSnackBar("Image Successfully Uploaded and Saved");
       } on StorageException catch (e) {
         print(e.message);
       }
@@ -688,16 +737,12 @@ class CameraExampleHomeState extends State<CameraExampleHome>
     return filePath;
   }
 
-  // void _showUploadProgress() {
-  //    showDialog(context: context, builder: (context) {
-  //      return AlertDialog(
-  //        title: isFileFinishedUploading ? Text("Upload Complete") : Text("Uploading File"),
-  //      );
-  //    });
-  // }
-
   void _showCameraException(CameraException e) {
     logError(e.code, e.description);
     showInSnackBar('Error: ${e.code}\n${e.description}');
+  }
+
+  Future<void> _wait() {
+    return Future.delayed(Duration(seconds: 2));
   }
 }
