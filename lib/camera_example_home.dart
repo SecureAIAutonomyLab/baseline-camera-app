@@ -79,6 +79,11 @@ class CameraExampleHomeState extends State<CameraExampleHome>
     // initialize storage repository
     storageRepo = StorageRepository();
     isFileFinishedUploading = BooleanWrap(false, false);
+    // set preferred orientations
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeRight,
+      DeviceOrientation.portraitUp,
+    ]);
   }
 
   @override

@@ -4,6 +4,7 @@ import 'package:amplify_flutter/amplify.dart';
 import 'package:camera_app/models/User.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -23,11 +24,15 @@ class LoginView extends StatefulWidget {
 class _LoginViewState extends State<LoginView> {
   final _formKey = GlobalKey<FormState>();
   bool rememberSession = false;
+  bool showIcon = true;
 
   @override
   void initState() {
     super.initState();
     _storeRememberSession();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+    ]);
   }
 
   Widget _chooseAppBar(String title) {
@@ -59,6 +64,10 @@ class _LoginViewState extends State<LoginView> {
           children: [
             _loginForm(),
             _showSignUpButton(context),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 560),
+              child: showIcon ? Icon(Icons.camera_alt, size: 200, color: Colors.grey[600],) : null,
+            ),
           ],
         ),
       ),
@@ -86,6 +95,8 @@ class _LoginViewState extends State<LoginView> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                _googleLogin(),
+                _facebookLogin(),
                 _usernameField(),
                 _passwordField(),
                 _loginButton(),
@@ -123,6 +134,70 @@ class _LoginViewState extends State<LoginView> {
     // print(await file.readAsString());
   }
 
+  Widget _googleLogin() {
+    return DecoratedBox(
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.all(Radius.circular(10)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(
+              width: 35,
+              height: 35,
+              child: Image(
+                image: AssetImage("assets/google.png"),
+              ),
+            ),
+            SizedBox(width: 20),
+            Text(
+              "Sign In with Google",
+              style: TextStyle(
+                fontSize: 20,
+                color: Colors.grey[700],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _facebookLogin() {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: Colors.blue[700],
+        borderRadius: BorderRadius.all(Radius.circular(10)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(
+              width: 35,
+              height: 35,
+              child: Image(
+                image: AssetImage("assets/facebook.png"),
+              ),
+            ),
+            SizedBox(width: 20),
+            Text(
+              "Sign In with Facebook",
+              style: TextStyle(
+                fontSize: 20,
+                color: Colors.white,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _usernameField() {
     return BlocBuilder<LoginBloc, LoginState>(builder: (context, state) {
       return TextFormField(
@@ -135,6 +210,11 @@ class _LoginViewState extends State<LoginView> {
         onChanged: (value) => context.read<LoginBloc>().add(
           LoginUsernameChanged(username: value),
         ),
+        onTap: () {setState(() {showIcon = false;});},
+        onEditingComplete: () {
+          FocusScope.of(context).unfocus();
+          setState(() {showIcon = true;});
+        },
       );
     });
   }
@@ -152,6 +232,11 @@ class _LoginViewState extends State<LoginView> {
         onChanged: (value) => context.read<LoginBloc>().add(
           LoginPasswordChanged(password: value),
         ),
+        onTap: () {setState(() {showIcon = false;});},
+        onEditingComplete: () {
+          FocusScope.of(context).unfocus();
+          setState(() {showIcon = true;});
+        },
       );
     });
   }

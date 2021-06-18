@@ -53,13 +53,6 @@ IconData getCameraLensIcon(CameraLensDirection direction) {
 void logError(String code, String message) =>
     print('Error: $code\nError Message: $message');
 
-void _setOrientation () {
-  SystemChrome.setPreferredOrientations([
-    DeviceOrientation.landscapeLeft,
-    DeviceOrientation.portraitUp,
-  ]);
-}
-
 class _CameraAppState extends State<CameraApp> {
   bool _isAmplifyConfigured = false;
 
