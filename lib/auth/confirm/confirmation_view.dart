@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../auth_cubit.dart';
@@ -10,9 +11,25 @@ import 'confirmation_state.dart';
 class ConfirmationView extends StatelessWidget {
   final _formKey = GlobalKey<FormState>();
 
+  Widget _chooseAppBar(String title, BuildContext context) {
+    if (Theme.of(context).platform == TargetPlatform.iOS) {
+      return CupertinoNavigationBar(
+        middle: Text(title),
+      );
+    }
+    else {
+      // android platform
+      return AppBar(
+        title: Text(title),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: _chooseAppBar("Confirm Signup", context),
+      backgroundColor: Colors.cyan[200],
       body: BlocProvider(
         create: (context) => ConfirmationBloc(
           authRepo: context.read<AuthRepository>(),

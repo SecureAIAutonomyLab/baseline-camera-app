@@ -1,6 +1,7 @@
 import 'package:camera_app/auth/sign_up/sign_up_bloc.dart';
 import 'package:camera_app/auth/sign_up/sign_up_event.dart';
 import 'package:camera_app/auth/sign_up/sign_up_state.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -11,9 +12,25 @@ import '../form_submission_status.dart';
 class SignUpView extends StatelessWidget {
   final _formKey = GlobalKey<FormState>();
 
+  Widget _chooseAppBar(String title, BuildContext context) {
+    if (Theme.of(context).platform == TargetPlatform.iOS) {
+      return CupertinoNavigationBar(
+        middle: Text(title),
+      );
+    }
+    else {
+      // android platform
+      return AppBar(
+        title: Text(title),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: _chooseAppBar("Sign Up", context),
+      backgroundColor: Colors.cyan[200],
       body: BlocProvider(
         create: (context) => SignUpBloc(
           authRepo: context.read<AuthRepository>(),

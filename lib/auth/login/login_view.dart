@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify.dart';
 import 'package:camera_app/models/User.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path_provider/path_provider.dart';
@@ -29,9 +30,25 @@ class _LoginViewState extends State<LoginView> {
     _storeRememberSession();
   }
 
+  Widget _chooseAppBar(String title) {
+    if (Theme.of(context).platform == TargetPlatform.iOS) {
+      return CupertinoNavigationBar(
+        middle: Text(title),
+      );
+    }
+    else {
+      // android platform
+      return AppBar(
+        title: Text(title),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: _chooseAppBar("Login"),
+      backgroundColor: Colors.cyan[200],
       body: BlocProvider(
         create: (context) => LoginBloc(
           authRepo: context.read<AuthRepository>(),

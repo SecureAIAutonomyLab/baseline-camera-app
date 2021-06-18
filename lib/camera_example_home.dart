@@ -221,10 +221,6 @@ class CameraExampleHomeState extends State<CameraExampleHome>
   Widget _chooseAppBar() {
     if (Theme.of(context).platform == TargetPlatform.iOS) {
       return CupertinoNavigationBar(
-        // leading: TextButton(
-        //   child: Text("Sign Out", style: TextStyle(fontSize: 16),),
-        //   onPressed: () => BlocProvider.of<SessionCubit>(context).signOut(),
-        // ), disabled for now
         leading: TextButton(
           child: Text("Sign Out", style: TextStyle(fontSize: 16),),
           onPressed: () => BlocProvider.of<SessionCubit>(context).signOut(),
@@ -615,15 +611,10 @@ class CameraExampleHomeState extends State<CameraExampleHome>
       // Upload video to Amazon S3
       try {
         final video = File(videoPath);
-        final videoKey = await storageRepo.uploadFile(
-          username,
-          video,
-          '.mp4',
-          userID,
-          isFileFinishedUploading,
-        );
+        final videoKey = await storageRepo.uploadFile(username, video, '.mp4', userID);
+
         setState(() {isFileFinishedUploading.finished = true;});
-        await _wait();
+        await _wait(2);
         setState(() {isFileFinishedUploading.started = false;});
         //showInSnackBar('Video Successfully Uploaded and Saved');
       } on StorageException catch (e) {
@@ -718,15 +709,10 @@ class CameraExampleHomeState extends State<CameraExampleHome>
       // upload image to Amazon S3
       try {
         File image = File(filePath);
-        final imageKey = await storageRepo.uploadFile(
-            username,
-            image,
-            '.jpg',
-            userID,
-            isFileFinishedUploading
-        );
+        final imageKey = await storageRepo.uploadFile(username, image, '.jpg', userID);
+
         setState(() {isFileFinishedUploading.finished = true;});
-        await _wait();
+        await _wait(2);
         setState(() {isFileFinishedUploading.started = false;});
         //showInSnackBar("Image Successfully Uploaded and Saved");
       } on StorageException catch (e) {
@@ -744,7 +730,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
     showInSnackBar('Error: ${e.code}\n${e.description}');
   }
 
-  Future<void> _wait() {
-    return Future.delayed(Duration(seconds: 2));
+  Future<void> _wait(int seconds) {
+    return Future.delayed(Duration(seconds: seconds));
   }
 }
