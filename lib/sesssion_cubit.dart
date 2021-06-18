@@ -1,12 +1,13 @@
-import 'package:amplify_api/amplify_api.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:path_provider/path_provider.dart';
 
 import 'auth/auth_credentials.dart';
 import 'auth/auth_repository.dart';
 import 'data_repository.dart';
 import 'models/User.dart';
 import 'session_state.dart';
+import 'dart:io';
 
 class SessionCubit extends Cubit<SessionState> {
   final AuthRepository authRepo;
@@ -22,7 +23,7 @@ class SessionCubit extends Cubit<SessionState> {
   void attemptAutoLogin() async {
     try {
       final credentials = await authRepo.attemptAutoLogin();
-      if (credentials.userId == null) {
+      if (credentials == null) {
         throw Exception('User not logged in');
       }
 

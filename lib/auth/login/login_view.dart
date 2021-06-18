@@ -1,6 +1,10 @@
+import 'dart:io';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
+import 'package:amplify_flutter/amplify.dart';
+import 'package:camera_app/models/User.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:path_provider/path_provider.dart';
 
 import '../auth_cubit.dart';
 import '../auth_repository.dart';
@@ -18,6 +22,12 @@ class LoginView extends StatefulWidget {
 class _LoginViewState extends State<LoginView> {
   final _formKey = GlobalKey<FormState>();
   bool rememberSession = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _storeRememberSession();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -80,9 +90,20 @@ class _LoginViewState extends State<LoginView> {
             setState(() {
               rememberSession = changed;
             });
+            // save info on device
+            _storeRememberSession();
           }
       ),
     );
+  }
+
+  /// Store the value from the remember session checkbox
+  Future<void> _storeRememberSession() async {
+    final directory = await getApplicationDocumentsDirectory();
+    final path = directory.path;
+    File file = File('$path/rememberSession.txt');
+    file.writeAsString(rememberSession.toString());
+    // print(await file.readAsString());
   }
 
   Widget _usernameField() {

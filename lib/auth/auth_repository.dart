@@ -2,6 +2,8 @@ import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify.dart';
 import 'package:camera_app/auth/auth_credentials.dart';
 import 'package:flutter/foundation.dart';
+import 'package:path_provider/path_provider.dart';
+import 'dart:io';
 
 class AuthRepository {
   Future<String> _getUserIdFromAttributes() async {
@@ -26,15 +28,35 @@ class AuthRepository {
     }
   }
 
-  Future<AuthCredentials> attemptAutoLogin() async {
-    try {
-      final session = await Amplify.Auth.fetchAuthSession();
-      final username = await _getUsername();
-      final userId = await _getUserIdFromAttributes();
+  Future<String> _readRememberSession() async {
+    final directory = await getApplicationDocumentsDirectory();
+    final path = directory.path;
+    File file = File('$path/rememberSession.txt');
+    //print("session value: " + await file.readAsString());
+    return file.readAsString();
+  }
 
-      return session.isSignedIn ? (AuthCredentials(username: username, userId: userId)) : null;
-    } catch (e) {
-      throw e;
+  Future<AuthCredentials> attemptAutoLogin() async {
+    // If user asked to remember the session
+    if (await _readRememberSession() == "true") {
+      try {
+        final session = await Amplify.Auth.fetchAuthSession();
+        final username = await _getUsername();
+        final userId = await _getUserIdFromAttributes();
+
+        return session.isSignedIn ? (AuthCredentials(
+            username: username, userId: userId)) : null;
+      } catch (e) {
+        throw e;
+      }
+    } else {
+      try {
+        this.signOut();
+        //print("signed user out");
+      } on AuthException catch (e) {
+        throw (e);
+      }
+      return null;
     }
   }
 

@@ -583,7 +583,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
       // Upload video to Amazon S3
       try {
         final video = File(videoPath);
-        final videoKey = await storageRepo.uploadFile(username, video, '.mp4');
+        final videoKey = await storageRepo.uploadFile(username, video, '.mp4', userID);
         showInSnackBar('Video Successfully Uploaded and Saved');
       } on StorageException catch (e) {
         print(e.message);
@@ -675,7 +675,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
       // upload image to Amazon S3
       try {
         File image = File(filePath);
-        final imageKey = await storageRepo.uploadFile(username, image, '.jpg');
+        final imageKey = await storageRepo.uploadFile(username, image, '.jpg', userID);
           isFileFinishedUploading = true;
         showInSnackBar("Image Successfully Uploaded and Saved");
       } on StorageException catch (e) {
