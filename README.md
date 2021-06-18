@@ -29,6 +29,8 @@ NOTE: Camera does not work on ios emulator. Emulator does not have that capabili
     https://www.youtube.com/watch?v=Jn7o4Gy3F7Q&t=197s
 - "pod install" in the ios directory.
 - If "pod install" does not work delete Podfile and Podfile.lock from ios folder and run "flutter build ios" in project folder 
+- Install amplify cli
+    "curl -sL https://aws-amplify.github.io/amplify-cli/install | bash && $SHELL"
 
 - Submit to app store
     https://www.youtube.com/watch?v=YPLs3xrDcm0
