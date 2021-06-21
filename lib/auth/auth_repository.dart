@@ -29,11 +29,16 @@ class AuthRepository {
   }
 
   Future<String> _readRememberSession() async {
-    final directory = await getApplicationDocumentsDirectory();
-    final path = directory.path;
-    File file = File('$path/rememberSession.txt');
-    //print("session value: " + await file.readAsString());
-    return file.readAsString();
+    try {
+      final directory = await getApplicationDocumentsDirectory();
+      final path = directory.path;
+      File file = File('$path/rememberSession.txt');
+      //print("session value: " + await file.readAsString());
+      return file.readAsString();
+    } catch (e) {
+      print(e.toString());
+    }
+
   }
 
   Future<AuthCredentials> attemptAutoLogin() async {
@@ -52,7 +57,6 @@ class AuthRepository {
     } else {
       try {
         this.signOut();
-        //print("signed user out");
       } on AuthException catch (e) {
         throw (e);
       }
@@ -115,5 +119,6 @@ class AuthRepository {
 
   Future<void> signOut() async {
     await Amplify.Auth.signOut();
+    print("Should of signed out");
   }
 }

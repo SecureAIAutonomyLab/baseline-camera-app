@@ -36,6 +36,12 @@ NOTE: Camera does not work on ios emulator. Emulator does not have that capabili
     https://www.youtube.com/watch?v=YPLs3xrDcm0
 
 
+Steps to Connect to another backend.
+- Run "amplify delete" to remove all connections with current backend
+- Setup new backend on AWS
+- Install API, DataStore, and Auth in that order
+- Auth should be installed last
+
 Licenses
 - U.I. design, BSD License
     https://github.com/flutter/plugins/blob/master/packages/camera/example/lib/main.dart

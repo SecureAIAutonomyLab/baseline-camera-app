@@ -35,6 +35,7 @@ class SessionCubit extends Cubit<SessionState> {
       //   );
       // }
       User user = User(id: credentials.userId, username: credentials.username);
+      print("Emmit authenticated");
       emit(Authenticated(user: user));
     } on Exception {
       emit(Unauthenticated());

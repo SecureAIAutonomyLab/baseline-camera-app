@@ -1,20 +1,20 @@
 {
   "staging": {
     "awscloudformation": {
-      "AuthRoleName": "amplify-cameraapp-staging-155349-authRole",
-      "UnauthRoleArn": "arn:aws:iam::727984045941:role/amplify-cameraapp-staging-155349-unauthRole",
-      "AuthRoleArn": "arn:aws:iam::727984045941:role/amplify-cameraapp-staging-155349-authRole",
+      "AuthRoleName": "amplify-cameraapp2-staging-171509-authRole",
+      "UnauthRoleArn": "arn:aws:iam::727984045941:role/amplify-cameraapp2-staging-171509-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::727984045941:role/amplify-cameraapp2-staging-171509-authRole",
       "Region": "us-east-2",
-      "DeploymentBucketName": "amplify-cameraapp-staging-155349-deployment",
-      "UnauthRoleName": "amplify-cameraapp-staging-155349-unauthRole",
-      "StackName": "amplify-cameraapp-staging-155349",
-      "StackId": "arn:aws:cloudformation:us-east-2:727984045941:stack/amplify-cameraapp-staging-155349/e06d1630-cdf1-11eb-abf6-024630c32df4",
-      "AmplifyAppId": "d33sw9iauqils8",
+      "DeploymentBucketName": "amplify-cameraapp2-staging-171509-deployment",
+      "UnauthRoleName": "amplify-cameraapp2-staging-171509-unauthRole",
+      "StackName": "amplify-cameraapp2-staging-171509",
+      "StackId": "arn:aws:cloudformation:us-east-2:727984045941:stack/amplify-cameraapp2-staging-171509/3b7239e0-d2b4-11eb-85f6-06af3210f7fa",
+      "AmplifyAppId": "dytkddqujy912",
       "AuthTriggerTemplateURL": ""
     },
     "categories": {
       "auth": {
-        "cameraapp68d4c65b": {}
+        "cameraapp2db4e43f6": {}
       }
     }
   }

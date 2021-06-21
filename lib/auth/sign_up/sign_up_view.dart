@@ -54,6 +54,7 @@ class SignUpView extends StatelessWidget {
           if (formStatus is SubmissionFailed) {
             _showSnackBar(context, formStatus.exception.toString());
           }
+          state.formStatus = InitialFormStatus();
         },
         child: Form(
           key: _formKey,

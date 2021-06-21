@@ -95,10 +95,11 @@ class _LoginViewState extends State<LoginView> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                _googleLogin(),
+                //_googleLogin(),
                 _facebookLogin(),
                 _usernameField(),
                 _passwordField(),
+                SizedBox(height: 5,),
                 _loginButton(),
                 _checkBox(),
               ],
@@ -135,67 +136,77 @@ class _LoginViewState extends State<LoginView> {
   }
 
   Widget _googleLogin() {
-    return DecoratedBox(
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.all(Radius.circular(10)),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SizedBox(
-              width: 35,
-              height: 35,
-              child: Image(
-                image: AssetImage("assets/google.png"),
-              ),
+    return BlocBuilder<LoginBloc, LoginState>(builder: (context, state) {
+      return TextButton(
+        onPressed: () => context.read<LoginBloc>().add(LoginGoogle()),
+        child: DecoratedBox(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.all(Radius.circular(10)),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(
+                  width: 35,
+                  height: 35,
+                  child: Image(
+                    image: AssetImage("assets/google.png"),
+                  ),
+                ),
+                SizedBox(width: 20),
+                Text(
+                  "Sign In with Google",
+                  style: TextStyle(
+                    fontSize: 20,
+                    color: Colors.grey[700],
+                  ),
+                ),
+              ],
             ),
-            SizedBox(width: 20),
-            Text(
-              "Sign In with Google",
-              style: TextStyle(
-                fontSize: 20,
-                color: Colors.grey[700],
-              ),
-            ),
-          ],
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 
   Widget _facebookLogin() {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: Colors.blue[700],
-        borderRadius: BorderRadius.all(Radius.circular(10)),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SizedBox(
-              width: 35,
-              height: 35,
-              child: Image(
-                image: AssetImage("assets/facebook.png"),
-              ),
+    return BlocBuilder<LoginBloc, LoginState>(builder: (context, state) {
+      return TextButton(
+        onPressed: () => context.read<LoginBloc>().add(LoginFacebook()),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: Colors.blue[700],
+            borderRadius: BorderRadius.all(Radius.circular(10)),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(
+                  width: 35,
+                  height: 35,
+                  child: Image(
+                    image: AssetImage("assets/facebook.png"),
+                  ),
+                ),
+                SizedBox(width: 20),
+                Text(
+                  "Sign In with Facebook",
+                  style: TextStyle(
+                    fontSize: 20,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
             ),
-            SizedBox(width: 20),
-            Text(
-              "Sign In with Facebook",
-              style: TextStyle(
-                fontSize: 20,
-                color: Colors.white,
-              ),
-            ),
-          ],
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 
   Widget _usernameField() {
@@ -251,7 +262,11 @@ class _LoginViewState extends State<LoginView> {
             context.read<LoginBloc>().add(LoginSubmitted());
           }
         },
-        child: Text('Login'),
+        child: SizedBox(
+          height: 45,
+            width: 80,
+            child: Center(child: Text('Login',style: TextStyle(fontSize: 25),))
+        ),
       );
     });
   }

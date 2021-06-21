@@ -8,7 +8,14 @@ class LoadingView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
        body: Center(
-         child: CircularProgressIndicator(),
+         child: Column(
+             children: [
+               Image(image: AssetImage("assets/open_cloud.jpeg")),
+               Image(image: AssetImage("assets/camera_app.jpg")),
+               SizedBox(height: 100,),
+               CircularProgressIndicator(),
+             ]
+         ),
        ),
     );
   }

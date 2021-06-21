@@ -11,7 +11,7 @@ class SignUpState {
   final String password;
   bool get isValidPassword => password.length > 8;
 
-  final FormSubmissionStatus formStatus;
+  FormSubmissionStatus formStatus;
 
   SignUpState({
     this.username = '',
