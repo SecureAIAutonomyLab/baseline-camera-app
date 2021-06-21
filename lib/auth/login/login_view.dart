@@ -65,6 +65,14 @@ class _LoginViewState extends State<LoginView> {
             _loginForm(),
             _showSignUpButton(context),
             Padding(
+              padding: const EdgeInsets.only(bottom: 100),
+              child: SizedBox(
+                  width: 100,
+                  height: 100,
+                  child: Image(image: AssetImage("assets/open_cloud.jpeg"))
+              ),
+            ),
+            Padding(
               padding: const EdgeInsets.only(bottom: 560),
               child: showIcon ? Icon(Icons.camera_alt, size: 200, color: Colors.grey[600],) : null,
             ),
@@ -102,6 +110,7 @@ class _LoginViewState extends State<LoginView> {
                 SizedBox(height: 5,),
                 _loginButton(),
                 _checkBox(),
+
               ],
             ),
           ),

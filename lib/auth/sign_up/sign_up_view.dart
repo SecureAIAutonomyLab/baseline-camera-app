@@ -41,6 +41,14 @@ class SignUpView extends StatelessWidget {
           children: [
             _signUpForm(),
             _showLoginButton(context),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 100),
+              child: SizedBox(
+                  width: 100,
+                  height: 100,
+                  child: Image(image: AssetImage("assets/open_cloud.jpeg"))
+              ),
+            ),
           ],
         ),
       ),
@@ -66,6 +74,7 @@ class SignUpView extends StatelessWidget {
                 _usernameField(),
                 _emailField(),
                 _passwordField(),
+                SizedBox(height: 5,),
                 _signUpButton(),
               ],
             ),
@@ -131,7 +140,10 @@ class SignUpView extends StatelessWidget {
             context.read<SignUpBloc>().add(SignUpSubmitted());
           }
         },
-        child: Text('Sign Up'),
+        child: SizedBox(
+          height: 45,
+          width: 100,
+          child: Center(child: Text('Sign Up',style: TextStyle(fontSize: 25),)))
       );
     });
   }

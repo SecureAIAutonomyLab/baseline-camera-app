@@ -56,6 +56,7 @@ class ConfirmationView extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 _codeField(),
+                SizedBox(height: 5,),
                 _confirmButton(),
                 Text("Note: You must confirm your email address for "
                     "your account to be activated", textAlign: TextAlign.center,),
@@ -93,7 +94,11 @@ class ConfirmationView extends StatelessWidget {
                   context.read<ConfirmationBloc>().add(ConfirmationSubmitted());
                 }
               },
-              child: Text('Confirm'),
+              child: SizedBox(
+                height: 45,
+                width: 80,
+                child: Center(child: Text('Confirm',style: TextStyle(fontSize: 25),))
+              ),
             );
     });
   }
