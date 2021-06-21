@@ -47,7 +47,22 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     } else if (event is LoginFacebook) {
       // facebook login
       print("facebook event");
-      //yield state.copyWith(formStatus: FormSubmitting());
+      yield state.copyWith(formStatus: FormSubmitting());
+
+      try {
+        var res = await Amplify.Auth.signInWithWebUI(provider: AuthProvider.facebook);
+
+        yield state.copyWith(formStatus: SubmissionSuccess());
+
+        String username = await _getUsername();
+        String userId = await _getUserIdFromAttributes();
+        authCubit.launchSession(AuthCredentials(
+          username: username,
+          userId: userId,
+        ));
+      } on AmplifyException catch (e) {
+        print(e.message);
+      }
 
     } else if (event is LoginGoogle) {
       // google login

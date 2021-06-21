@@ -1,6 +1,7 @@
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify.dart';
 import 'package:camera_app/auth/auth_credentials.dart';
+import 'package:camera_app/session_state.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
@@ -55,11 +56,12 @@ class AuthRepository {
         throw e;
       }
     } else {
-      try {
-        this.signOut();
-      } on AuthException catch (e) {
-        throw (e);
-      }
+        // loop until social sign out succeeds
+        bool result;
+        do {
+          result = await this.signOut();
+        } while (!result);
+
       return null;
     }
   }
@@ -117,8 +119,14 @@ class AuthRepository {
     }
   }
 
-  Future<void> signOut() async {
-    await Amplify.Auth.signOut();
-    print("Should of signed out");
+  Future<bool> signOut() async {
+    try {
+      await Amplify.Auth.signOut();
+      // sign out succeeded
+      return true;
+    } on AuthException catch (e) {
+      print(e.message);
+      return false;
+    }
   }
 }

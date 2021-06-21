@@ -1,3 +1,5 @@
+import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
+import 'package:amplify_flutter/amplify.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path_provider/path_provider.dart';
@@ -46,15 +48,6 @@ class SessionCubit extends Cubit<SessionState> {
 
   void showSession(AuthCredentials credentials) async {
     try {
-      // User user = await dataRepo.getUserById(credentials.userId);
-      //
-      // if (user == null) {
-      //   user = await dataRepo.createUser(
-      //     userId: credentials.userId,
-      //     username: credentials.username,
-      //     email: credentials.email,
-      //   );
-      // }
       User user = User(id: credentials.userId, username: credentials.username);
       emit(Authenticated(user: user));
     } catch (e) {
@@ -62,8 +55,14 @@ class SessionCubit extends Cubit<SessionState> {
     }
   }
 
-  void signOut() {
-    authRepo.signOut();
-    emit(Unauthenticated());
+  void signOut() async {
+    bool result = await authRepo.signOut();
+
+    // if sign out failed emit unauthenticated
+    if (result) {
+      emit(Unauthenticated());
+      print("Unauthenticated");
+    }
   }
+
 }
