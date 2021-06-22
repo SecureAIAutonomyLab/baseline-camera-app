@@ -54,6 +54,8 @@ class CameraExampleHomeState extends State<CameraExampleHome>
   BooleanWrap isFileFinishedUploading;
   String username; //username from user
   String userID; // userId from user
+  String uploadMessage; // Message when uploading
+  static const VIDEO_TIME_LIMIT = 120;
 
 
   static final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
@@ -82,6 +84,8 @@ class CameraExampleHomeState extends State<CameraExampleHome>
     storageRepo = StorageRepository();
     // initialize boolean wrap
     isFileFinishedUploading = BooleanWrap(false, false, false);
+    // set upload default message;
+    uploadMessage = "Upload";
     // set preferred orientations
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.landscapeRight,
@@ -545,6 +549,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
 
   /// Set variables accordingly for taking a picture, calls takePicture()
   void onTakePictureButtonPressed() {
+    uploadMessage = "Upload";
     takePicture().then((String filePath) {
       if (mounted) {
         setState(() {
@@ -562,9 +567,22 @@ class CameraExampleHomeState extends State<CameraExampleHome>
   /// Starts video recording and displays a snack bar,
   /// calls startVideoRecording()
   void onVideoRecordButtonPressed() {
-    startVideoRecording().then((String filePath) {
+    uploadMessage = "Upload";
+    startVideoRecording().then((String filePath) async {
       if (mounted) setState(() {});
       if (filePath != null) showInSnackBar('Video recording started.');
+
+      // video time limit
+      String path = videoPath;
+      print("Started waiting");
+      await _wait(VIDEO_TIME_LIMIT);
+      print("Finished waiting");
+      // If the controller is still recording the same video before the wait
+      if (controller.value.isRecordingVideo && path == videoPath) {
+        uploadMessage = "Video Time Limit Reached (2 minutes)";
+        // Stop the recording
+        onStopButtonPressed();
+      }
     });
   }
 
@@ -801,7 +819,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
         barrierDismissible: false,
         context: context, builder: (BuildContext context) {
           return CupertinoAlertDialog(
-            title: Text("Upload"),
+            title: Text(uploadMessage),
             content: Text("Do you want to upload this file to AWS?"),
             actions: [
               // No button
