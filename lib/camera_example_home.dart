@@ -655,6 +655,10 @@ class CameraExampleHomeState extends State<CameraExampleHome>
       return null;
     }
 
+    // Record location data
+    Location location = new Location();
+    LocationData myLocation = await location.getLocation();
+
     try {
       // Save the video to the camera roll
       await controller.stopVideoRecording();
@@ -672,7 +676,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
           final video = File(videoPath);
           // Upload function from storage repo
           final videoKey = await storageRepo.uploadFile(
-              username, video, '.mp4', userID);
+              username, video, '.mp4', userID, myLocation);
 
           // Change the state of the camera preview to show upload complete
           setState(() {
@@ -789,7 +793,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
           File image = File(filePath);
           // Upload function from storage repo
           final imageKey = await storageRepo.uploadFile(
-              username, image, '.jpg', userID);
+              username, image, '.jpg', userID, myLocation);
 
           // Change the state of the camera preview to show upload complete
           setState(() {

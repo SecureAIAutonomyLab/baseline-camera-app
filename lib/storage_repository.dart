@@ -7,13 +7,15 @@ import 'dart:io';
 
 import 'package:amplify_flutter/amplify.dart';
 import 'package:amplify_storage_s3/amplify_storage_s3.dart';
+import 'package:location/location.dart';
 
 
 class StorageRepository {
 
   /// Takes in a username, userId, File and extension and stores this information
   /// in the name of the file uploaded to AWS
-  Future<String> uploadFile(String username, File file, String extension, String userId) async {
+  Future<String> uploadFile(String username, File file, String extension,
+      String userId, LocationData loc) async {
     try {
       if (username == null) {
         username = "null";
@@ -31,7 +33,7 @@ class StorageRepository {
       }
 
       // Stores file metadata in the file upload options
-      final options = _fileMetadata(username, extension, userId);
+      final options = _fileMetadata(username, extension, userId, loc);
       // Amplify upload function
       final result = await Amplify.Storage.uploadFile(
         local: file,
@@ -45,12 +47,16 @@ class StorageRepository {
   }
 
   /// Returns metadata for the file to store on AWS
-  S3UploadFileOptions _fileMetadata(String username, String extension, String userId) {
+  S3UploadFileOptions _fileMetadata(String username, String extension,
+      String userId, LocationData loc) {
+
     Map<String, String> metadata = Map<String, String>();
     metadata["username"] = username;
     metadata["user_id"] = userId;
     metadata["date_created"] = DateTime.now().toIso8601String();
     metadata["type"] = extension;
+    metadata["latitude"] = loc.latitude.toString();
+    metadata["longitude"] = loc.longitude.toString();
     final options = S3UploadFileOptions(
       metadata: metadata,
       accessLevel: StorageAccessLevel.guest, // the access level of the data
