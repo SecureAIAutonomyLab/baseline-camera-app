@@ -75,6 +75,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
           userId: userId,
         ));
       } on AmplifyException catch (e) {
+        // Reset form status
+        yield state.copyWith(formStatus: InitialFormStatus());
         print(e.message);
       }
 

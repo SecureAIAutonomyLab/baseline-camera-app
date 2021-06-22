@@ -26,12 +26,14 @@ import 'package:flutter/cupertino.dart';
 
 /// A wrapper class that wraps the upload file boolean variables
 class BooleanWrap {
-  BooleanWrap(bool c, bool d) {
-    this.finished = c;
-    this.started = d;
+  BooleanWrap(bool a, bool b, bool c) {
+    this.finished = a;
+    this.started = b;
+    this.upload = c;
   }
   bool finished;
   bool started;
+  bool upload;
 }
 
 
@@ -79,7 +81,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
     // initialize storage repository
     storageRepo = StorageRepository();
     // initialize boolean wrap
-    isFileFinishedUploading = BooleanWrap(false, false);
+    isFileFinishedUploading = BooleanWrap(false, false, false);
     // set preferred orientations
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.landscapeRight,
@@ -631,9 +633,6 @@ class CameraExampleHomeState extends State<CameraExampleHome>
   /// Stop the recording and save the video. Once saving is finished,
   /// upload the video to AWS
   Future<void> stopVideoRecording() async {
-    // Change state of camera preview to show the upload process
-    isFileFinishedUploading.finished = false;
-    setState(() {isFileFinishedUploading.started = true;});
     if (!controller.value.isRecordingVideo) {
       return null;
     }
@@ -642,20 +641,33 @@ class CameraExampleHomeState extends State<CameraExampleHome>
       // Save the video to the camera roll
       await controller.stopVideoRecording();
       GallerySaver.saveVideo(videoPath);
-      // Upload video to AWS S3
-      try {
-        final video = File(videoPath);
-        // Upload function from storage repo
-        final videoKey = await storageRepo.uploadFile(username, video, '.mp4', userID);
 
-        // Change the state of the camera preview to show upload complete
-        setState(() {isFileFinishedUploading.finished = true;});
-        await _wait(2); // wait 2 seconds
-        // Change camera preview back to camera
-        setState(() {isFileFinishedUploading.started = false;});
+      // ask the user if they want to upload to AWS
+      await _showUploadDialogBox();
+      if (isFileFinishedUploading.upload) {
+        // Change state of camera preview to show the upload process
+        isFileFinishedUploading.finished = false;
+        setState(() {isFileFinishedUploading.started = true;});
 
-      } on StorageException catch (e) {
-        print(e.message);
+        // Upload video to AWS S3
+        try {
+          final video = File(videoPath);
+          // Upload function from storage repo
+          final videoKey = await storageRepo.uploadFile(
+              username, video, '.mp4', userID);
+
+          // Change the state of the camera preview to show upload complete
+          setState(() {
+            isFileFinishedUploading.finished = true;
+          });
+          await _wait(2); // wait 2 seconds
+          // Change camera preview back to camera
+          setState(() {
+            isFileFinishedUploading.started = false;
+          });
+        } on StorageException catch (e) {
+          print(e.message);
+        }
       }
     } on CameraException catch (e) {
       _showCameraException(e);
@@ -721,9 +733,6 @@ class CameraExampleHomeState extends State<CameraExampleHome>
   /// Save the image to the camera roll. Once saving is finished,
   /// upload the image to AWS
   Future<String> takePicture() async {
-    // change state of camera preview
-    isFileFinishedUploading.finished = false;
-    setState(() {isFileFinishedUploading.started = true;});
     if (!controller.value.isInitialized) {
       showInSnackBar('Error: select a camera first.');
       return null;
@@ -749,26 +758,72 @@ class CameraExampleHomeState extends State<CameraExampleHome>
       // Save the image to the camera roll
       await controller.takePicture(filePath);
       GallerySaver.saveImage(filePath);
-      // upload image to AWS S3
-      try {
-        File image = File(filePath);
-        // Upload function from storage repo
-        final imageKey = await storageRepo.uploadFile(username, image, '.jpg', userID);
 
-        // Change the state of the camera preview to show upload complete
-        setState(() {isFileFinishedUploading.finished = true;});
-        await _wait(2); // wait 2 seconds
-        // Change camera preview back to camera
-        setState(() {isFileFinishedUploading.started = false;});
+      // ask the user if they want to upload to AWS
+      await _showUploadDialogBox();
+      if (isFileFinishedUploading.upload) {
+        // change state of camera preview
+        isFileFinishedUploading.finished = false;
+        setState(() {isFileFinishedUploading.started = true;});
 
-      } on StorageException catch (e) {
-        print(e.message);
+        // upload image to AWS S3
+        try {
+          File image = File(filePath);
+          // Upload function from storage repo
+          final imageKey = await storageRepo.uploadFile(
+              username, image, '.jpg', userID);
+
+          // Change the state of the camera preview to show upload complete
+          setState(() {
+            isFileFinishedUploading.finished = true;
+          });
+          await _wait(2); // wait 2 seconds
+          // Change camera preview back to camera
+          setState(() {
+            isFileFinishedUploading.started = false;
+          });
+
+        } on StorageException catch (e) {
+          print(e.message);
+        }
       }
     } on CameraException catch (e) {
       _showCameraException(e);
       return null;
     }
     return filePath;
+  }
+
+  /// Displays a dialog box that prompts the user if they want to upload their file
+  Future<void> _showUploadDialogBox() {
+    return showCupertinoDialog<void>(
+        // User cannot dismiss the dialog
+        barrierDismissible: false,
+        context: context, builder: (BuildContext context) {
+          return CupertinoAlertDialog(
+            title: Text("Upload"),
+            content: Text("Do you want to upload this file to AWS?"),
+            actions: [
+              // No button
+              CupertinoDialogAction(
+                onPressed: () {
+                  isFileFinishedUploading.upload = false;
+                  Navigator.of(context).pop();
+                },
+                child: Text("No")
+              ),
+              // Yes button
+              CupertinoDialogAction(
+                onPressed: () {
+                  isFileFinishedUploading.upload = true;
+                  Navigator.of(context).pop();
+                },
+                child: Text("Yes")
+              )
+            ],
+          );
+        }
+    );
   }
 
   /// Print out the camera error message
