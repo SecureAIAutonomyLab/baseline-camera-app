@@ -1,9 +1,17 @@
+/*
+  Created By: Nathan Millwater
+  Description: Holds logic for manipulating the AWS Datastore repository.
+               Currently not used
+ */
+
 import 'package:amplify_flutter/amplify.dart';
 
 import 'models/User.dart';
 
 
 class DataRepository {
+
+  /// Returns a user from the repository queried by their id
   Future<User> getUserById(String userId) async {
     try {
       final users = await Amplify.DataStore.query(
@@ -16,6 +24,7 @@ class DataRepository {
     }
   }
 
+  /// Creates and returns a new user while saving to the datastore repository
   Future<User> createUser({
     String userId,
     String username,

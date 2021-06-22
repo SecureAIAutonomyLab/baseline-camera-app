@@ -1,16 +1,15 @@
+/*
+  Created By: Nathan Chan
+  Description: Holds the camera home widget tree. Once the user
+               has logged in, the session starts and this widget
+               tree is displayed.
+ */
 
-import 'package:amplify_flutter/amplify.dart';
 import 'package:amplify_storage_s3/amplify_storage_s3.dart';
-import 'package:camera_app/auth/auth_cubit.dart';
-import 'package:camera_app/auth/auth_navigator.dart';
-import 'package:camera_app/data_repository.dart';
-import 'package:camera_app/sesssion_cubit.dart';
+import 'package:camera_app/session_cubit.dart';
 import 'package:camera_app/storage_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'app_navigator.dart';
-import 'auth/auth_repository.dart';
-import 'auth/login/login_view.dart';
 import 'main.dart';
 import 'dart:async';
 import 'dart:io';
@@ -25,8 +24,7 @@ import 'package:gallery_saver/gallery_saver.dart';
 import 'package:location/location.dart';
 import 'package:flutter/cupertino.dart';
 
-import 'models/User.dart';
-
+/// A wrapper class that wraps the upload file boolean variables
 class BooleanWrap {
   BooleanWrap(bool c, bool d) {
     this.finished = c;
@@ -48,22 +46,24 @@ class CameraExampleHomeState extends State<CameraExampleHome>
   VoidCallback videoPlayerListener;
   bool enableAudio = true;
   String deviceId;
-  String latitudeAndLongitude;          //latittude-longitude
+  String latitudeAndLongitude; // latittude-longitude
   int cameraDescriptionIndex = 0;
   StorageRepository storageRepo;
   BooleanWrap isFileFinishedUploading;
   String username; //username from user
-  String userID;
+  String userID; // userId from user
 
 
   static final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
   Map<String, dynamic> _deviceData = <String, dynamic>{};
 
+  // Constructor
   CameraExampleHomeState(String username, String userID) {
     this.username = username;
     this.userID = userID;
   }
 
+  // Called upon initialization of the object
   @override
   void initState() {
     super.initState();
@@ -78,6 +78,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
     controller.initialize();
     // initialize storage repository
     storageRepo = StorageRepository();
+    // initialize boolean wrap
     isFileFinishedUploading = BooleanWrap(false, false);
     // set preferred orientations
     SystemChrome.setPreferredOrientations([
@@ -86,12 +87,14 @@ class CameraExampleHomeState extends State<CameraExampleHome>
     ]);
   }
 
+  // Called when widget is deleted
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
+  /// Requests location permission and saves device data
   Future<void> initPlatformState() async {
     Map<String, dynamic> deviceData;
 
@@ -115,8 +118,8 @@ class CameraExampleHomeState extends State<CameraExampleHome>
 
     bool _serviceEnabled;
     PermissionStatus _permissionGranted;
-    LocationData _locationData;
 
+    // checks if location service has been enabled
     _serviceEnabled = await location.serviceEnabled();
     if (!_serviceEnabled) {
       _serviceEnabled = await location.requestService();
@@ -125,6 +128,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
       }
     }
 
+    // Checks if location permission has been granted
     _permissionGranted = await location.hasPermission();
     if (_permissionGranted == PermissionStatus.denied) {
       _permissionGranted = await location.requestPermission();
@@ -133,13 +137,14 @@ class CameraExampleHomeState extends State<CameraExampleHome>
       }
     }
 
+    // saves device data
     if (!mounted) return;
     setState(() {
       _deviceData = deviceData;
     });
   }
 
-  // Maps the android information.
+  /// Maps the android information.
   Map<String, dynamic> _readAndroidBuildData(AndroidDeviceInfo build) {
     return <String, dynamic>{
       'version.securityPatch': build.version.securityPatch,
@@ -172,7 +177,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
     };
   }
 
-  // Maps ios information.
+  /// Maps ios information.
   Map<String, dynamic> _readIosDeviceInfo(IosDeviceInfo data) {
     return <String, dynamic>{
       'name': data.name,
@@ -190,16 +195,16 @@ class CameraExampleHomeState extends State<CameraExampleHome>
     };
   }
 
+  /// App state changed before we got the chance to initialize.
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    // App state changed before we got the chance to initialize.
     if (controller == null || !controller.value.isInitialized) {
       return;
     }
     if (state == AppLifecycleState.inactive) {
-      //controller?.dispose();
     } else if (state == AppLifecycleState.resumed) {
       if (controller != null) {
+        // Initialized a new camera
         onNewCameraSelected(controller.description);
       }
     }
@@ -208,19 +213,6 @@ class CameraExampleHomeState extends State<CameraExampleHome>
   /// Messages for the snack bar
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  /// Create bloc provider for navigator
-  Widget _setLoginNavigator() {
-    return RepositoryProvider(
-      create: (context) => AuthRepository(),
-      child: BlocProvider(
-        create: (context) => SessionCubit(
-          authRepo: context.read<AuthRepository>(),
-          dataRepo: context.read<DataRepository>(),
-        ),
-        child: AppNavigator(context),
-      ),
-    );
-  }
 
   /// Chooses the appbar based on platform
   Widget _chooseAppBar() {
@@ -230,10 +222,11 @@ class CameraExampleHomeState extends State<CameraExampleHome>
           child: Text("Sign Out", style: TextStyle(fontSize: 16),),
           onPressed: () => BlocProvider.of<SessionCubit>(context).signOut(),
         ),
-        middle: Text("Camera Example"),
+        middle: Text("Camera App"),
         trailing: IconButton(
           icon: Icon(Icons.flip_camera_ios),
           onPressed: () {
+            // Switch to a different camera
             _cameraToggleButtonPressed();
           },
         ),
@@ -247,6 +240,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
           IconButton(
             icon: Icon(Icons.flip_camera_android),
             onPressed: () {
+              // Switch to a different camera
               _cameraToggleButtonPressed();
             },
           )
@@ -283,7 +277,9 @@ class CameraExampleHomeState extends State<CameraExampleHome>
               ),
             ),
           ),
+          // Camera control buttons
           _captureControlRowWidget(),
+          // Capture audio or not
           _toggleAudioWidget(),
         ],
       ),
@@ -292,13 +288,16 @@ class CameraExampleHomeState extends State<CameraExampleHome>
 
   /// Display the preview from the camera (or a message if the preview is not available).
   Widget _cameraPreviewWidget() {
+    // Check if file has started uploading
     if (isFileFinishedUploading.started) {
+      // Check if file has finished uploading
       if (isFileFinishedUploading.finished) {
         return Text(
           "Upload Complete",
           style: TextStyle(color: Colors.white, fontSize: 30),
         );
       } else {
+        // Display uploading indicator
         return Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -312,8 +311,10 @@ class CameraExampleHomeState extends State<CameraExampleHome>
         );
       }
     }
+    // Display the camera preview
     if (controller == null || !controller.value.isInitialized) {
       if (cameras.isNotEmpty) {
+        // Camera disposed error occurs here
         onNewCameraSelected(cameras[cameraDescriptionIndex]);
         onNewCameraSelected(cameras[cameraDescriptionIndex]);
       }
@@ -328,6 +329,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
         );
       }
     } else {
+      // If user changes device orientation
       return RotatedBox(
         quarterTurns: MediaQuery.of(context).orientation == Orientation.landscape ? 3 : 0,
         child: AspectRatio(
@@ -339,7 +341,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
   }
 
 
-  /// Toggle recording audio
+  /// Returns a toggle recording audio widget
   Widget _toggleAudioWidget() {
     return Padding(
       padding: const EdgeInsets.only(left: 25, top: 10, bottom: 25),
@@ -350,15 +352,17 @@ class CameraExampleHomeState extends State<CameraExampleHome>
             style: TextStyle(fontSize: 15),
           ),
           SizedBox(width: 5,),
+          // Android switch or IOS switch
           _enableAudioSwitchType(),
         ],
       ),
     );
   }
 
-  /// Choose the type of switch depending on platform
+  /// Choose the type of enable audio switch depending on platform
   Widget _enableAudioSwitchType() {
     if (Theme.of(context).platform == TargetPlatform.iOS) {
+      // Use a cupertino switch if platform is IOS
       return CupertinoSwitch(
         value: enableAudio,
         onChanged: (bool value) {
@@ -370,6 +374,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
       );
     }
     else {
+      // Use a material switch if platform is Android
       return Switch(
         value: enableAudio,
         onChanged: (bool value) {
@@ -383,7 +388,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
   }
 
   /// Display the thumbnail of the captured image or video.
-  /// Might not be needed.
+  /// Is not currently being used
   Widget _thumbnailWidget() {
     return Expanded(
       child: Align(
@@ -426,6 +431,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
         IconButton(
           icon: const Icon(Icons.camera_alt),
           color: Colors.blue,
+          // If all boolean values are true, activate button otherwise do nothing
           onPressed: controller != null &&
               controller.value.isInitialized &&
               !controller.value.isRecordingVideo &&
@@ -436,6 +442,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
         IconButton(
           icon: const Icon(Icons.videocam),
           color: Colors.blue,
+          // If all boolean values are true, activate button otherwise do nothing
           onPressed: controller != null &&
               controller.value.isInitialized &&
               !controller.value.isRecordingVideo &&
@@ -448,6 +455,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
               ? Icon(Icons.play_arrow)
               : Icon(Icons.pause),
           color: Colors.blue,
+          // If all boolean values are true, activate button otherwise do nothing
           onPressed: controller != null &&
               controller.value.isInitialized &&
               controller.value.isRecordingVideo
@@ -459,6 +467,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
         IconButton(
           icon: const Icon(Icons.stop),
           color: Colors.red,
+          // If all boolean values are true, activate button otherwise do nothing
           onPressed: controller != null &&
               controller.value.isInitialized &&
               controller.value.isRecordingVideo
@@ -469,10 +478,11 @@ class CameraExampleHomeState extends State<CameraExampleHome>
     );
   }
 
-  /// Display a row of toggle to select the camera (or a message if no camera is available).
+  /// Display a camera toggle button to switch to a new camera when pressed
   void _cameraToggleButtonPressed() {
     print("Username: " + username);
     print("userId : " + userID);
+    // Do nothing if no cameras are detected
     if (cameras.isEmpty) {
       return;
     } else {
@@ -480,10 +490,12 @@ class CameraExampleHomeState extends State<CameraExampleHome>
         return;
       }
       else {
+        // Cycle through cameras
         cameraDescriptionIndex++;
         if (cameraDescriptionIndex == cameras.length) {
           cameraDescriptionIndex = 0;
         }
+        // Initialize new camera
         onNewCameraSelected(cameras[cameraDescriptionIndex]);
       }
     }
@@ -492,13 +504,13 @@ class CameraExampleHomeState extends State<CameraExampleHome>
   /// Timestamp when a picture or video is taken.
   String timestamp() => DateTime.now().millisecondsSinceEpoch.toString();
 
+  /// create the snack bar and display in Scaffold
   void showInSnackBar(String message) {
-    // create the snackbar and display in Scaffold
     SnackBar bar = SnackBar(content: Text(message));
     ScaffoldMessenger.of(context).showSnackBar(bar);
   }
 
-  // Dispose of CameraController and reinitialize new when a different camera is selected.
+  /// Dispose of CameraController and reinitialize new when a different camera is selected.
   void onNewCameraSelected(CameraDescription cameraDescription) async {
     if (controller != null) {
       await controller.dispose();
@@ -529,6 +541,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
     }
   }
 
+  /// Set variables accordingly for taking a picture, calls takePicture()
   void onTakePictureButtonPressed() {
     takePicture().then((String filePath) {
       if (mounted) {
@@ -544,6 +557,8 @@ class CameraExampleHomeState extends State<CameraExampleHome>
     });
   }
 
+  /// Starts video recording and displays a snack bar,
+  /// calls startVideoRecording()
   void onVideoRecordButtonPressed() {
     startVideoRecording().then((String filePath) {
       if (mounted) setState(() {});
@@ -551,6 +566,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
     });
   }
 
+  /// Stops video recording, calls stopVideoRecording()
   void onStopButtonPressed() {
     stopVideoRecording().then((_) {
       if (mounted) setState(() {});
@@ -558,6 +574,8 @@ class CameraExampleHomeState extends State<CameraExampleHome>
     });
   }
 
+  /// Pauses the video recording and displays a snack bar,
+  /// calls pauseVideoRecording()
   void onPauseButtonPressed() {
     pauseVideoRecording().then((_) {
       if (mounted) setState(() {});
@@ -565,6 +583,8 @@ class CameraExampleHomeState extends State<CameraExampleHome>
     });
   }
 
+  /// Resumes the video recording and displays a snack bar
+  /// , calls resumeVideoRecording()
   void onResumeButtonPressed() {
     resumeVideoRecording().then((_) {
       if (mounted) setState(() {});
@@ -576,14 +596,17 @@ class CameraExampleHomeState extends State<CameraExampleHome>
   /// Sets the path and starts the recording process.
   Future<String> startVideoRecording() async {
     if (!controller.value.isInitialized) {
+      // Controller is not initialized
       showInSnackBar('Error: select a camera first.');
       return null;
     }
 
+    // Record location data
     Location location = new Location();
     LocationData myLocation = await location.getLocation();
     String latitudeAndLongitude = myLocation.latitude.toString() + myLocation.longitude.toString();
 
+    // Creates the file path where the video is to be saved
     final Directory extDir = await getApplicationDocumentsDirectory();
     final String dirPath = '${extDir.path}/Movies/flutter_test';
     await Directory(dirPath).create(recursive: true);
@@ -594,6 +617,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
       return null;
     }
 
+    // Start recording video
     try {
       videoPath = filePath;
       await controller.startVideoRecording(filePath);
@@ -604,8 +628,10 @@ class CameraExampleHomeState extends State<CameraExampleHome>
     return filePath;
   }
 
+  /// Stop the recording and save the video. Once saving is finished,
+  /// upload the video to AWS
   Future<void> stopVideoRecording() async {
-    // change state of camera preview
+    // Change state of camera preview to show the upload process
     isFileFinishedUploading.finished = false;
     setState(() {isFileFinishedUploading.started = true;});
     if (!controller.value.isRecordingVideo) {
@@ -613,17 +639,21 @@ class CameraExampleHomeState extends State<CameraExampleHome>
     }
 
     try {
+      // Save the video to the camera roll
       await controller.stopVideoRecording();
       GallerySaver.saveVideo(videoPath);
-      // Upload video to Amazon S3
+      // Upload video to AWS S3
       try {
         final video = File(videoPath);
+        // Upload function from storage repo
         final videoKey = await storageRepo.uploadFile(username, video, '.mp4', userID);
 
+        // Change the state of the camera preview to show upload complete
         setState(() {isFileFinishedUploading.finished = true;});
-        await _wait(2);
+        await _wait(2); // wait 2 seconds
+        // Change camera preview back to camera
         setState(() {isFileFinishedUploading.started = false;});
-        //showInSnackBar('Video Successfully Uploaded and Saved');
+
       } on StorageException catch (e) {
         print(e.message);
       }
@@ -632,7 +662,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
       return null;
     }
 
-    // for video playback
+    // for video playback, not used
     //await _startVideoPlayer();
   }
 
@@ -662,6 +692,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
     }
   }
 
+  /// Start playing the video that was just saved, not used
   Future<void> _startVideoPlayer() async {
     final VideoPlayerController vcontroller =
     VideoPlayerController.file(File(videoPath));
@@ -687,6 +718,8 @@ class CameraExampleHomeState extends State<CameraExampleHome>
     await oldController?.dispose();
   }
 
+  /// Save the image to the camera roll. Once saving is finished,
+  /// upload the image to AWS
   Future<String> takePicture() async {
     // change state of camera preview
     isFileFinishedUploading.finished = false;
@@ -695,11 +728,13 @@ class CameraExampleHomeState extends State<CameraExampleHome>
       showInSnackBar('Error: select a camera first.');
       return null;
     }
-    print("camera example home username: " + username);
+
+    // Get the location data for the image
     Location location = new Location();
     LocationData myLocation = await location.getLocation();
     String latitudeAndLongitude = myLocation.latitude.toString() + myLocation.longitude.toString();
 
+    // Get and save the filepath of the image
     final Directory extDir = await getApplicationDocumentsDirectory();
     final String dirPath = '${extDir.path}/Pictures/flutter_test';
     await Directory(dirPath).create(recursive: true);
@@ -711,17 +746,21 @@ class CameraExampleHomeState extends State<CameraExampleHome>
     }
 
     try {
+      // Save the image to the camera roll
       await controller.takePicture(filePath);
       GallerySaver.saveImage(filePath);
-      // upload image to Amazon S3
+      // upload image to AWS S3
       try {
         File image = File(filePath);
+        // Upload function from storage repo
         final imageKey = await storageRepo.uploadFile(username, image, '.jpg', userID);
 
+        // Change the state of the camera preview to show upload complete
         setState(() {isFileFinishedUploading.finished = true;});
-        await _wait(2);
+        await _wait(2); // wait 2 seconds
+        // Change camera preview back to camera
         setState(() {isFileFinishedUploading.started = false;});
-        //showInSnackBar("Image Successfully Uploaded and Saved");
+
       } on StorageException catch (e) {
         print(e.message);
       }
@@ -732,11 +771,14 @@ class CameraExampleHomeState extends State<CameraExampleHome>
     return filePath;
   }
 
+  /// Print out the camera error message
   void _showCameraException(CameraException e) {
     logError(e.code, e.description);
     showInSnackBar('Error: ${e.code}\n${e.description}');
   }
 
+  /// Simple wait function that delays by a certain amount of seconds
+  /// Must be used with "await" keyword
   Future<void> _wait(int seconds) {
     return Future.delayed(Duration(seconds: seconds));
   }

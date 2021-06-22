@@ -1,24 +1,26 @@
+/*
+  Created By: Nathan Millwater
+  Description: Holds the logic for app navigation between the auth and
+               the camera app homepage
+ */
 
 import 'package:camera_app/auth/auth_cubit.dart';
 import 'package:camera_app/auth/auth_navigator.dart';
 import 'package:camera_app/loading_view.dart';
 import 'package:camera_app/main.dart';
 import 'package:camera_app/session_state.dart';
-import 'package:camera_app/sesssion_cubit.dart';
+import 'package:camera_app/session_cubit.dart';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 
 class AppNavigator extends StatelessWidget {
-  BuildContext homeContext;
-
-  AppNavigator(BuildContext c) {
-    this.homeContext = c;
-  }
 
   @override
   Widget build(BuildContext context) {
+    // provide access to session cubit and state with blocbuilder
     return BlocBuilder<SessionCubit, SessionState>(builder: (context, state) {
       return Navigator(
         pages: [
@@ -39,11 +41,13 @@ class AppNavigator extends StatelessWidget {
           if (state is Authenticated)
             MaterialPage(
                 child: CameraExampleHome(
+                  // provide username and userID to camera home
                   username: state.user.username,
                   userID: state.user.id,
                 )
             ),
         ],
+        // remove the page from the route
         onPopPage: (route, result) => route.didPop(result),
       );
     });

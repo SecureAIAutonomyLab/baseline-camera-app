@@ -1,4 +1,7 @@
-// classes for holding the status of form submissions
+/*
+  Created By: Nathan Millwater
+  Description: Classes for holding the status of form submissions
+ */
 
 abstract class FormSubmissionStatus {
   const FormSubmissionStatus();

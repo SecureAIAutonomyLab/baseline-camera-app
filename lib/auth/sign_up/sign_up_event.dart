@@ -1,3 +1,9 @@
+/*
+  Created By: Nathan Millwater
+  Description: Holds the possible events that may occur in
+               the sign up view
+ */
+
 abstract class SignUpEvent {}
 
 class SignUpUsernameChanged extends SignUpEvent {

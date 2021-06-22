@@ -1,3 +1,8 @@
+/*
+  Created By: Nathan Millwater
+  Description: Holds the logic for handling sign up events
+ */
+
 import 'package:camera_app/auth/sign_up/sign_up_event.dart';
 import 'package:camera_app/auth/sign_up/sign_up_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,8 +15,11 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
   final AuthRepository authRepo;
   final AuthCubit authCubit;
 
+  // constructor
   SignUpBloc({this.authRepo, this.authCubit}) : super(SignUpState());
 
+  /// This function maps a SignUpEvent to a SignUpState and
+  /// returns an updated SignUpState
   @override
   Stream<SignUpState> mapEventToState(SignUpEvent event) async* {
     // Username updated
@@ -36,8 +44,10 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
           email: state.email,
           password: state.password,
         );
+        // copy over new form status if signup succeeds
         yield state.copyWith(formStatus: SubmissionSuccess());
 
+        // show the confirmation view with the user's credentials
         authCubit.showConfirmSignUp(
           username: state.username,
           email: state.email,

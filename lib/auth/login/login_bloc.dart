@@ -1,3 +1,8 @@
+/*
+  Created By: Nathan Millwater
+  Description: Holds the logic for handling login events
+ */
+
 import 'package:amplify_flutter/amplify.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../auth_credentials.dart';
@@ -13,8 +18,11 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   final AuthRepository authRepo;
   final AuthCubit authCubit;
 
+  // constructor
   LoginBloc({this.authRepo, this.authCubit}) : super(LoginState());
 
+  /// This function maps a LoginEvent to a LoginState and
+  /// returns an updated LoginState
   @override
   Stream<LoginState> mapEventToState(LoginEvent event) async* {
     // Username updated
@@ -34,8 +42,10 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
           username: state.username,
           password: state.password,
         );
+        // copy over new form status if login succeeds
         yield state.copyWith(formStatus: SubmissionSuccess());
 
+        // start the camera home view with the user's credentials
         authCubit.launchSession(AuthCredentials(
           username: state.username,
           userId: userId,
@@ -44,18 +54,22 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         yield state.copyWith(formStatus: SubmissionFailed(e));
       }
 
+      // Facebook login event
     } else if (event is LoginFacebook) {
-      // facebook login
       print("facebook event");
       yield state.copyWith(formStatus: FormSubmitting());
 
       try {
-        var res = await Amplify.Auth.signInWithWebUI(provider: AuthProvider.facebook);
+        // Use AWS social media signin options
+        await Amplify.Auth.signInWithWebUI(provider: AuthProvider.facebook);
 
+        // copy over new form status if login succeeds
         yield state.copyWith(formStatus: SubmissionSuccess());
 
+        // retrieve user's username and id
         String username = await _getUsername();
         String userId = await _getUserIdFromAttributes();
+        // start the camera home view with the user's credentials
         authCubit.launchSession(AuthCredentials(
           username: username,
           userId: userId,
@@ -64,38 +78,24 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         print(e.message);
       }
 
+      // not currrently used
     } else if (event is LoginGoogle) {
       // google login
       print("google event");
-      // yield state.copyWith(formStatus: FormSubmitting());
-      //
-      // try {
-      //   var res = await Amplify.Auth.signInWithWebUI(provider: AuthProvider.google);
-      //
-      //   yield state.copyWith(formStatus: SubmissionSuccess());
-      //
-      //   String username = await _getUsername();
-      //   String userId = await _getUserIdFromAttributes();
-      //   authCubit.launchSession(AuthCredentials(
-      //     username: username,
-      //     userId: userId,
-      //   ));
-      // } on AmplifyException catch (e) {
-      //   print(e.message);
-      // }
     }
   }
 
+  /// Return the user's username from AWS Auth
   Future<String> _getUsername() async {
     try {
       final attributes = await Amplify.Auth.getCurrentUser();
-      print(attributes.username);
       return attributes.username;
     } catch (e) {
       throw e;
     }
   }
 
+  /// Return the user's ID from AWS Auth
   Future<String> _getUserIdFromAttributes() async {
     try {
       final attributes = await Amplify.Auth.fetchUserAttributes();

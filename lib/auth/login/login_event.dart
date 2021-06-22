@@ -1,3 +1,9 @@
+/*
+  Created By: Nathan Millwater
+  Description: Holds the possible events that may occur in
+               the login view
+ */
+
 abstract class LoginEvent {}
 
 class LoginUsernameChanged extends LoginEvent {

@@ -1,20 +1,23 @@
-import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
-import 'package:amplify_flutter/amplify.dart';
+/*
+  Created By: Nathan Millwater
+  Description: Holds the logic for changing session states. Emits
+               states to change layout of widgets
+ */
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:path_provider/path_provider.dart';
 
 import 'auth/auth_credentials.dart';
 import 'auth/auth_repository.dart';
 import 'data_repository.dart';
 import 'models/User.dart';
 import 'session_state.dart';
-import 'dart:io';
 
 class SessionCubit extends Cubit<SessionState> {
   final AuthRepository authRepo;
   final DataRepository dataRepo;
 
+  // Constructor
   SessionCubit({
     @required this.authRepo,
     @required this.dataRepo,
@@ -22,6 +25,7 @@ class SessionCubit extends Cubit<SessionState> {
     attemptAutoLogin();
   }
 
+  /// Try and fetch fetch the current session and login
   void attemptAutoLogin() async {
     try {
       final credentials = await authRepo.attemptAutoLogin();
@@ -29,23 +33,19 @@ class SessionCubit extends Cubit<SessionState> {
         throw Exception('User not logged in');
       }
 
-      // User user = await dataRepo.getUserById(userId);
-      // if (user == null) {
-      //   user = await dataRepo.createUser(
-      //     userId: userId,
-      //     username: 'User-${UUID()}',
-      //   );
-      // }
+      // Create user object to store credentials
       User user = User(id: credentials.userId, username: credentials.username);
-      print("Emmit authenticated");
       emit(Authenticated(user: user));
     } on Exception {
+      // Emit unauthenticated state if login failed
       emit(Unauthenticated());
     }
   }
 
+  /// Changes the navigator to show login screen
   void showAuth() => emit(Unauthenticated());
 
+  /// Uses credentials to show the camera home screen by emitting authenticated state
   void showSession(AuthCredentials credentials) async {
     try {
       User user = User(id: credentials.userId, username: credentials.username);
@@ -55,6 +55,8 @@ class SessionCubit extends Cubit<SessionState> {
     }
   }
 
+  /// Attempt to sign out of the current account. If sign out failed,
+  /// don't change states
   void signOut() async {
     bool result = await authRepo.signOut();
 

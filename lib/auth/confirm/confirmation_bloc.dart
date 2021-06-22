@@ -1,3 +1,8 @@
+/*
+  Created By: Nathan Millwater
+  Description: Holds the logic for handling confirmation events
+ */
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../auth_cubit.dart';
 import '../auth_repository.dart';
@@ -9,11 +14,14 @@ class ConfirmationBloc extends Bloc<ConfirmationEvent, ConfirmationState> {
   final AuthRepository authRepo;
   final AuthCubit authCubit;
 
+  // constructor
   ConfirmationBloc({
     this.authRepo,
     this.authCubit,
   }) : super(ConfirmationState());
 
+  /// This function maps a ConfirmationEvent to a ConfirmationState
+  /// and returns an updated ConfirmationState
   @override
   Stream<ConfirmationState> mapEventToState(ConfirmationEvent event) async* {
     // Confirmation code updated
@@ -30,9 +38,12 @@ class ConfirmationBloc extends Bloc<ConfirmationEvent, ConfirmationState> {
           confirmationCode: state.code,
         );
 
+        // copy over new form status if signup succeeds
         yield state.copyWith(formStatus: SubmissionSuccess());
 
+        // get credentials from the sign up view
         final credentials = authCubit.credentials;
+        // login with the credentials
         final userId = await authRepo.login(
           username: credentials.username,
           password: credentials.password,

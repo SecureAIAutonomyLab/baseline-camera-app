@@ -1,3 +1,8 @@
+/*
+  Created By: Nathan Millwater
+  Description: Holds all of the widgets that makeup the signup screen
+ */
+
 import 'package:camera_app/auth/sign_up/sign_up_bloc.dart';
 import 'package:camera_app/auth/sign_up/sign_up_event.dart';
 import 'package:camera_app/auth/sign_up/sign_up_state.dart';
@@ -12,6 +17,7 @@ import '../form_submission_status.dart';
 class SignUpView extends StatelessWidget {
   final _formKey = GlobalKey<FormState>();
 
+  /// Returns a widget that choose an appbar based on the platform
   Widget _chooseAppBar(String title, BuildContext context) {
     if (Theme.of(context).platform == TargetPlatform.iOS) {
       return CupertinoNavigationBar(
@@ -26,11 +32,14 @@ class SignUpView extends StatelessWidget {
     }
   }
 
+  /// Initial build method of the stateless widget
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // sign up view appbar
       appBar: _chooseAppBar("Sign Up", context),
       backgroundColor: Colors.cyan[200],
+      // bloc provider to provide access to auth cubit and repository
       body: BlocProvider(
         create: (context) => SignUpBloc(
           authRepo: context.read<AuthRepository>(),
@@ -41,6 +50,7 @@ class SignUpView extends StatelessWidget {
           children: [
             _signUpForm(),
             _showLoginButton(context),
+            // display the open cloud image
             Padding(
               padding: const EdgeInsets.only(bottom: 100),
               child: SizedBox(
@@ -55,15 +65,19 @@ class SignUpView extends StatelessWidget {
     );
   }
 
+  /// Returns a widget that holds the text fields for signing up
   Widget _signUpForm() {
+    // A Listener to show error if one occurs
     return BlocListener<SignUpBloc, SignUpState>(
         listener: (context, state) {
           final formStatus = state.formStatus;
           if (formStatus is SubmissionFailed) {
             _showSnackBar(context, formStatus.exception.toString());
           }
+          // set back to initial state once error occurs
           state.formStatus = InitialFormStatus();
         },
+        // form widget holds all text fields
         child: Form(
           key: _formKey,
           child: Padding(
@@ -74,6 +88,7 @@ class SignUpView extends StatelessWidget {
                 _usernameField(),
                 _emailField(),
                 _passwordField(),
+                // spacing
                 SizedBox(height: 5,),
                 _signUpButton(),
               ],
@@ -82,15 +97,19 @@ class SignUpView extends StatelessWidget {
         ));
   }
 
+  /// Returns a text field widget that takes in a username
   Widget _usernameField() {
+    // provide access to signup bloc and signup state
     return BlocBuilder<SignUpBloc, SignUpState>(builder: (context, state) {
       return TextFormField(
         decoration: InputDecoration(
           icon: Icon(Icons.person),
           hintText: 'Username',
         ),
+        // validator boolean tells the form field if the text is valid
         validator: (value) =>
         state.isValidUsername ? null : 'Username is too short',
+        // Everytime user changes username, create an event
         onChanged: (value) => context.read<SignUpBloc>().add(
           SignUpUsernameChanged(username: value),
         ),
@@ -98,14 +117,18 @@ class SignUpView extends StatelessWidget {
     });
   }
 
+  /// Return the email field widget for the sign up form
   Widget _emailField() {
+    // Provide access to signup bloc and signup state
     return BlocBuilder<SignUpBloc, SignUpState>(builder: (context, state) {
       return TextFormField(
         decoration: InputDecoration(
           icon: Icon(Icons.person),
           hintText: 'Email',
         ),
+        // validator boolean tells the form field if the text is valid
         validator: (value) => state.isValidUsername ? null : 'Invalid email',
+        // Everytime user changes email, create an event
         onChanged: (value) => context.read<SignUpBloc>().add(
           SignUpEmailChanged(email: value),
         ),
@@ -114,6 +137,7 @@ class SignUpView extends StatelessWidget {
   }
 
   Widget _passwordField() {
+    // Provide access to signup bloc and signup state
     return BlocBuilder<SignUpBloc, SignUpState>(builder: (context, state) {
       return TextFormField(
         obscureText: true,
@@ -121,8 +145,10 @@ class SignUpView extends StatelessWidget {
           icon: Icon(Icons.security),
           hintText: 'Password',
         ),
+        // validator boolean tells the form field if the text is valid
         validator: (value) =>
         state.isValidPassword ? null : 'Password is too short',
+        // Everytime user changes password, create an event
         onChanged: (value) => context.read<SignUpBloc>().add(
           SignUpPasswordChanged(password: value),
         ),
@@ -130,13 +156,18 @@ class SignUpView extends StatelessWidget {
     });
   }
 
+  /// Returns the signup button widget that starts the signup process
   Widget _signUpButton() {
+    // Provide access to signup bloc and signup state
     return BlocBuilder<SignUpBloc, SignUpState>(builder: (context, state) {
+      // Show wait indicator if form is still submitting
       return state.formStatus is FormSubmitting
           ? CircularProgressIndicator()
           : ElevatedButton(
         onPressed: () {
+          // make sure username and password are valid before submitting
           if (_formKey.currentState.validate()) {
+            // Create the login submitted event
             context.read<SignUpBloc>().add(SignUpSubmitted());
           }
         },
@@ -148,15 +179,20 @@ class SignUpView extends StatelessWidget {
     });
   }
 
+  /// Return the login button widget that takes the user to
+  /// the login page
   Widget _showLoginButton(BuildContext context) {
     return SafeArea(
       child: TextButton(
         child: Text('Already have an account? Sign in.'),
+        // tell auth navigator to show login page
         onPressed: () => context.read<AuthCubit>().showLogin(),
       ),
     );
   }
 
+  /// Takes in a BuildContext and message and displays a snackbar
+  /// at the bottom of the screen
   void _showSnackBar(BuildContext context, String message) {
     final snackBar = SnackBar(content: Text(message));
     ScaffoldMessenger.of(context).showSnackBar(snackBar);

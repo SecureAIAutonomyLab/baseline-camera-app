@@ -1,7 +1,10 @@
+/*
+  Created By: Nathan Millwater
+  Description: Holds all of the widgets that makeup the login screen
+ */
+
 import 'dart:io';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
-import 'package:amplify_flutter/amplify.dart';
-import 'package:camera_app/models/User.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -17,6 +20,7 @@ import 'login_state.dart';
 
 class LoginView extends StatefulWidget {
 
+  // create the login view state
   @override
   _LoginViewState createState() => _LoginViewState();
 }
@@ -26,15 +30,18 @@ class _LoginViewState extends State<LoginView> {
   bool rememberSession = false;
   bool showIcon = true;
 
+  // called when state initializes
   @override
   void initState() {
     super.initState();
     _storeRememberSession();
+    // set preferred orientation
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
     ]);
   }
 
+  /// Returns a widget that choose an appbar based on the platform
   Widget _chooseAppBar(String title) {
     if (Theme.of(context).platform == TargetPlatform.iOS) {
       return CupertinoNavigationBar(
@@ -49,11 +56,14 @@ class _LoginViewState extends State<LoginView> {
     }
   }
 
+  /// Initial build method of the stateful widget
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // login view appbar
       appBar: _chooseAppBar("Login"),
       backgroundColor: Colors.cyan[200],
+      // bloc provider to provide access to auth cubit and repository
       body: BlocProvider(
         create: (context) => LoginBloc(
           authRepo: context.read<AuthRepository>(),
@@ -64,14 +74,16 @@ class _LoginViewState extends State<LoginView> {
           children: [
             _loginForm(),
             _showSignUpButton(context),
+            // display the open cloud image
             Padding(
               padding: const EdgeInsets.only(bottom: 100),
-              child: SizedBox(
+              child: showIcon ? SizedBox(
                   width: 100,
                   height: 100,
                   child: Image(image: AssetImage("assets/open_cloud.jpeg"))
-              ),
+              ) : null,
             ),
+            // display the camera icon
             Padding(
               padding: const EdgeInsets.only(bottom: 560),
               child: showIcon ? Icon(Icons.camera_alt, size: 200, color: Colors.grey[600],) : null,
@@ -82,7 +94,9 @@ class _LoginViewState extends State<LoginView> {
     );
   }
 
+  /// Returns a widget that holds the text fields for logging in
   Widget _loginForm() {
+    // A Listener to show error if one occurs
     return BlocListener<LoginBloc, LoginState>(
         listener: (context, state) {
           final formStatus = state.formStatus;
@@ -92,10 +106,11 @@ class _LoginViewState extends State<LoginView> {
             } else {
               _showSnackBar(context, formStatus.exception.toString());
             }
-            // set to initial state
+            // set back to initial state once error occurs
             state.formStatus = InitialFormStatus();
           }
         },
+        // form widget holds all text fields
         child: Form(
           key: _formKey,
           child: Padding(
@@ -103,10 +118,10 @@ class _LoginViewState extends State<LoginView> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                //_googleLogin(),
                 _facebookLogin(),
                 _usernameField(),
                 _passwordField(),
+                // spacing
                 SizedBox(height: 5,),
                 _loginButton(),
                 _checkBox(),
@@ -117,6 +132,8 @@ class _LoginViewState extends State<LoginView> {
         ));
   }
 
+  /// Returns a checkbox widget that stores the user's
+  /// decision to remember the session
   Widget _checkBox() {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 85),
@@ -125,6 +142,8 @@ class _LoginViewState extends State<LoginView> {
           controlAffinity: ListTileControlAffinity.leading,
           value: rememberSession,
           onChanged: (bool changed) {
+            // When box is tapped, change the state of the
+            // boolean value
             setState(() {
               rememberSession = changed;
             });
@@ -136,14 +155,17 @@ class _LoginViewState extends State<LoginView> {
   }
 
   /// Store the value from the remember session checkbox
+  /// in the device's files
   Future<void> _storeRememberSession() async {
+    // get the app's storage directory
     final directory = await getApplicationDocumentsDirectory();
     final path = directory.path;
+    // The file name specified in the AuthRepository class
     File file = File('$path/rememberSession.txt');
     file.writeAsString(rememberSession.toString());
-    // print(await file.readAsString());
   }
 
+  /// Returns a google login button, not currently being used
   Widget _googleLogin() {
     return BlocBuilder<LoginBloc, LoginState>(builder: (context, state) {
       return TextButton(
@@ -181,9 +203,12 @@ class _LoginViewState extends State<LoginView> {
     });
   }
 
+  /// Returns a button widget that logs the user into the app with Facebook
   Widget _facebookLogin() {
+    // provide access to login bloc and login state
     return BlocBuilder<LoginBloc, LoginState>(builder: (context, state) {
       return TextButton(
+        // When tapped, activate the LoginFacebook event
         onPressed: () => context.read<LoginBloc>().add(LoginFacebook()),
         child: DecoratedBox(
           decoration: BoxDecoration(
@@ -195,6 +220,7 @@ class _LoginViewState extends State<LoginView> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                // Facebook image
                 SizedBox(
                   width: 35,
                   height: 35,
@@ -218,19 +244,25 @@ class _LoginViewState extends State<LoginView> {
     });
   }
 
+  /// Returns a text field widget that takes in a username
   Widget _usernameField() {
+    // provide access to login bloc and login state
     return BlocBuilder<LoginBloc, LoginState>(builder: (context, state) {
       return TextFormField(
         decoration: InputDecoration(
           icon: Icon(Icons.person),
           hintText: 'Username',
         ),
+        // validator boolean tells the form field if the text is valid
         validator: (value) =>
         state.isValidUsername ? null : 'Username is too short',
+        // Everytime user changes username, create an event
         onChanged: (value) => context.read<LoginBloc>().add(
           LoginUsernameChanged(username: value),
         ),
+        // If text field is tapped, remove camera icon
         onTap: () {setState(() {showIcon = false;});},
+        // Show icon again once editing is complete
         onEditingComplete: () {
           FocusScope.of(context).unfocus();
           setState(() {showIcon = true;});
@@ -239,7 +271,9 @@ class _LoginViewState extends State<LoginView> {
     });
   }
 
+  /// Return the password field widget for the login form
   Widget _passwordField() {
+    // provide access to login bloc and login state
     return BlocBuilder<LoginBloc, LoginState>(builder: (context, state) {
       return TextFormField(
         obscureText: true,
@@ -247,12 +281,16 @@ class _LoginViewState extends State<LoginView> {
           icon: Icon(Icons.security),
           hintText: 'Password',
         ),
+        // validator boolean tells the form field if the text is valid
         validator: (value) =>
         state.isValidPassword ? null : 'Password is too short',
+        // Everytime user changes password, create an event
         onChanged: (value) => context.read<LoginBloc>().add(
           LoginPasswordChanged(password: value),
         ),
+        // If text field is tapped, remove camera icon
         onTap: () {setState(() {showIcon = false;});},
+        // Show icon again once editing is complete
         onEditingComplete: () {
           FocusScope.of(context).unfocus();
           setState(() {showIcon = true;});
@@ -261,13 +299,18 @@ class _LoginViewState extends State<LoginView> {
     });
   }
 
+  /// Returns the login button widget that starts the login process
   Widget _loginButton() {
+    // provide access to login bloc and login state
     return BlocBuilder<LoginBloc, LoginState>(builder: (context, state) {
+      // Show wait indicator if form is still submitting
       return state.formStatus is FormSubmitting
           ? CircularProgressIndicator()
           : ElevatedButton(
         onPressed: () {
+          // make sure username and password are valid before submitting
           if (_formKey.currentState.validate()) {
+            // Create the login submitted event
             context.read<LoginBloc>().add(LoginSubmitted());
           }
         },
@@ -280,15 +323,20 @@ class _LoginViewState extends State<LoginView> {
     });
   }
 
+  /// Return the sign up button widget that takes the user to
+  /// the sign up page
   Widget _showSignUpButton(BuildContext context) {
     return SafeArea(
       child: TextButton(
         child: Text('Don\'t have an account? Sign up.'),
+        // tell auth navigator to show signup page
         onPressed: () => context.read<AuthCubit>().showSignUp(),
       ),
     );
   }
 
+  /// Takes in a BuildContext and message and displays a snackbar
+  /// at the bottom of the screen
   void _showSnackBar(BuildContext context, String message) {
     final snackBar = SnackBar(content: Text(message));
     ScaffoldMessenger.of(context).showSnackBar(snackBar);

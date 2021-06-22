@@ -1,20 +1,28 @@
+/*
+  Created By: Nathan Millwater
+  Description: Holds the logic for changing auth states. Emits
+               states to show different pages
+ */
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../sesssion_cubit.dart';
+import '../session_cubit.dart';
 import 'auth_credentials.dart';
 
-
+// Simple enumeration to show different auth states
 enum AuthState { login, signUp, confirmSignUp }
 
 class AuthCubit extends Cubit<AuthState> {
+
   final SessionCubit sessionCubit;
-
   AuthCubit({this.sessionCubit}) : super(AuthState.login);
-
   AuthCredentials credentials;
 
+  // emits login and signup to change to those pages
   void showLogin() => emit(AuthState.login);
   void showSignUp() => emit(AuthState.signUp);
+
+  /// Stores credentials and emits the state once confirmation is complete
   void showConfirmSignUp({
     String username,
     String email,
@@ -28,6 +36,8 @@ class AuthCubit extends Cubit<AuthState> {
     emit(AuthState.confirmSignUp);
   }
 
+  /// Launch the session by calling the showSession method
+  /// on the session cubit
   void launchSession(AuthCredentials credentials) =>
       sessionCubit.showSession(credentials);
 }

@@ -1,3 +1,9 @@
+/*
+  Created By: Nathan Millwater
+  Description: Holds the logic for app navigation between the different
+               pages: login, signup, and confirm
+ */
+
 import 'package:camera_app/auth/sign_up/sign_up_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -6,9 +12,13 @@ import 'auth_cubit.dart';
 import 'confirm/confirmation_view.dart';
 import 'login/login_view.dart';
 
+
 class AuthNavigator extends StatelessWidget {
+
+  // Initial build method of navigator widget
   @override
   Widget build(BuildContext context) {
+    // Provide access to authcubit and authstate with blocbuilder
     return BlocBuilder<AuthCubit, AuthState>(builder: (context, state) {
       return Navigator(
         pages: [
