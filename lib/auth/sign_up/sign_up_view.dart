@@ -14,8 +14,16 @@ import '../auth_cubit.dart';
 import '../auth_repository.dart';
 import '../form_submission_status.dart';
 
-class SignUpView extends StatelessWidget {
+class SignUpView extends StatefulWidget {
+
+  @override
+  _SignUpViewState createState() => _SignUpViewState();
+}
+
+
+class _SignUpViewState extends State<SignUpView> {
   final _formKey = GlobalKey<FormState>();
+  bool showImage = true;
 
   /// Returns a widget that choose an appbar based on the platform
   Widget _chooseAppBar(String title, BuildContext context) {
@@ -53,11 +61,11 @@ class SignUpView extends StatelessWidget {
             // display the open cloud image
             Padding(
               padding: const EdgeInsets.only(bottom: 100),
-              child: SizedBox(
+              child: showImage ? SizedBox(
                   width: 100,
                   height: 100,
                   child: Image(image: AssetImage("assets/open_cloud.jpeg"))
-              ),
+              ) : null,
             ),
           ],
         ),
@@ -113,6 +121,13 @@ class SignUpView extends StatelessWidget {
         onChanged: (value) => context.read<SignUpBloc>().add(
           SignUpUsernameChanged(username: value),
         ),
+        // If text field is tapped, remove open cloud image
+        onTap: () {setState(() {showImage = false;});},
+        // Show image again once editing is complete
+        onEditingComplete: () {
+          FocusScope.of(context).unfocus();
+          setState(() {showImage = true;});
+        },
       );
     });
   }
@@ -132,6 +147,13 @@ class SignUpView extends StatelessWidget {
         onChanged: (value) => context.read<SignUpBloc>().add(
           SignUpEmailChanged(email: value),
         ),
+        // If text field is tapped, remove open cloud image
+        onTap: () {setState(() {showImage = false;});},
+        // Show image again once editing is complete
+        onEditingComplete: () {
+          FocusScope.of(context).unfocus();
+          setState(() {showImage = true;});
+        },
       );
     });
   }
@@ -152,6 +174,13 @@ class SignUpView extends StatelessWidget {
         onChanged: (value) => context.read<SignUpBloc>().add(
           SignUpPasswordChanged(password: value),
         ),
+        // If text field is tapped, remove open cloud image
+        onTap: () {setState(() {showImage = false;});},
+        // Show image again once editing is complete
+        onEditingComplete: () {
+          FocusScope.of(context).unfocus();
+          setState(() {showImage = true;});
+        },
       );
     });
   }
