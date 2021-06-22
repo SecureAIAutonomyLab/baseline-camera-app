@@ -101,7 +101,8 @@ class _LoginViewState extends State<LoginView> {
         listener: (context, state) {
           final formStatus = state.formStatus;
           if (formStatus is SubmissionFailed) {
-            if (formStatus.exception is UserNotFoundException) {
+            if (formStatus.exception is UserNotFoundException
+                || formStatus.exception is NotAuthorizedException) {
               _showSnackBar(context, "Invalid Username or Password");
             } else {
               _showSnackBar(context, formStatus.exception.toString());
