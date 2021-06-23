@@ -17,11 +17,11 @@ import '../form_submission_status.dart';
 class SignUpView extends StatefulWidget {
 
   @override
-  _SignUpViewState createState() => _SignUpViewState();
+  SignUpViewState createState() => SignUpViewState();
 }
 
 
-class _SignUpViewState extends State<SignUpView> {
+class SignUpViewState extends State<SignUpView> {
   final _formKey = GlobalKey<FormState>();
   bool showImage = true;
 

@@ -221,7 +221,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
 
 
   /// Chooses the appbar based on platform
-  Widget _chooseAppBar() {
+  Widget chooseAppBar() {
     if (Theme.of(context).platform == TargetPlatform.iOS) {
       return CupertinoNavigationBar(
         leading: TextButton(
@@ -260,7 +260,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      appBar: _chooseAppBar(),
+      appBar: chooseAppBar(),
       body: Column(
         children: <Widget>[
           Expanded(
@@ -269,7 +269,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
                 // box around camera preview
                 padding: const EdgeInsets.all(1.0),
                 child: Center(
-                  child: _cameraPreviewWidget(),
+                  child: cameraPreviewWidget(),
                 ),
               ),
               decoration: BoxDecoration(
@@ -284,16 +284,16 @@ class CameraExampleHomeState extends State<CameraExampleHome>
             ),
           ),
           // Camera control buttons
-          _captureControlRowWidget(),
+          captureControlRowWidget(),
           // Capture audio or not
-          _toggleAudioWidget(),
+          toggleAudioWidget(),
         ],
       ),
     );
   }
 
   /// Display the preview from the camera (or a message if the preview is not available).
-  Widget _cameraPreviewWidget() {
+  Widget cameraPreviewWidget() {
     // Check if file has started uploading
     if (isFileFinishedUploading.started) {
       // Check if file has finished uploading
@@ -348,7 +348,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
 
 
   /// Returns a toggle recording audio widget
-  Widget _toggleAudioWidget() {
+  Widget toggleAudioWidget() {
     return Padding(
       padding: const EdgeInsets.only(left: 25, top: 10, bottom: 25),
       child: Row(
@@ -359,14 +359,14 @@ class CameraExampleHomeState extends State<CameraExampleHome>
           ),
           SizedBox(width: 5,),
           // Android switch or IOS switch
-          _enableAudioSwitchType(),
+          enableAudioSwitchType(),
         ],
       ),
     );
   }
 
   /// Choose the type of enable audio switch depending on platform
-  Widget _enableAudioSwitchType() {
+  Widget enableAudioSwitchType() {
     if (Theme.of(context).platform == TargetPlatform.iOS) {
       // Use a cupertino switch if platform is IOS
       return CupertinoSwitch(
@@ -429,7 +429,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
   }
 
   /// Display the control bar with buttons to take pictures and record videos.
-  Widget _captureControlRowWidget() {
+  Widget captureControlRowWidget() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       mainAxisSize: MainAxisSize.max,
@@ -575,7 +575,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
       // video time limit
       String path = videoPath;
       print("Started waiting");
-      await _wait(VIDEO_TIME_LIMIT);
+      await wait(VIDEO_TIME_LIMIT);
       print("Finished waiting");
       // If the controller is still recording the same video before the wait
       if (controller.value.isRecordingVideo && path == videoPath) {
@@ -665,7 +665,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
       GallerySaver.saveVideo(videoPath);
 
       // ask the user if they want to upload to AWS
-      await _showUploadDialogBox();
+      await showUploadDialogBox();
       if (isFileFinishedUploading.upload) {
         // Change state of camera preview to show the upload process
         isFileFinishedUploading.finished = false;
@@ -682,7 +682,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
           setState(() {
             isFileFinishedUploading.finished = true;
           });
-          await _wait(2); // wait 2 seconds
+          await wait(2); // wait 2 seconds
           // Change camera preview back to camera
           setState(() {
             isFileFinishedUploading.started = false;
@@ -782,7 +782,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
       GallerySaver.saveImage(filePath);
 
       // ask the user if they want to upload to AWS
-      await _showUploadDialogBox();
+      await showUploadDialogBox();
       if (isFileFinishedUploading.upload) {
         // change state of camera preview
         isFileFinishedUploading.finished = false;
@@ -799,7 +799,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
           setState(() {
             isFileFinishedUploading.finished = true;
           });
-          await _wait(2); // wait 2 seconds
+          await wait(2); // wait 2 seconds
           // Change camera preview back to camera
           setState(() {
             isFileFinishedUploading.started = false;
@@ -817,7 +817,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
   }
 
   /// Displays a dialog box that prompts the user if they want to upload their file
-  Future<void> _showUploadDialogBox() {
+  Future<void> showUploadDialogBox() {
     return showCupertinoDialog<void>(
         // User cannot dismiss the dialog
         barrierDismissible: false,
@@ -856,7 +856,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
 
   /// Simple wait function that delays by a certain amount of seconds
   /// Must be used with "await" keyword
-  Future<void> _wait(int seconds) {
+  Future<void> wait(int seconds) {
     return Future.delayed(Duration(seconds: seconds));
   }
 }

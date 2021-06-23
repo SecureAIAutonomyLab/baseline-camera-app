@@ -23,7 +23,6 @@ import 'app_navigator.dart';
 import 'auth/auth_repository.dart';
 import 'camera_example_home.dart';
 import 'data_repository.dart';
-import 'models/ModelProvider.dart';
 import 'package:amplify_storage_s3/amplify_storage_s3.dart';
 
 class CameraExampleHome extends StatefulWidget {
@@ -64,7 +63,7 @@ class _CameraAppState extends State<CameraApp> {
   @override
   void initState() {
     super.initState();
-    _configureAmplify();
+    configureAmplify();
   }
 
   /// The initial build method of the app. Builds the widget tree
@@ -72,13 +71,13 @@ class _CameraAppState extends State<CameraApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       // Make sure amplify is configured before showing the app
-      home: _isAmplifyConfigured ? _setupApp(context) : LoadingView(),
+      home: _isAmplifyConfigured ? setupApp(context) : LoadingView(),
     );
   }
 
   /// Setup providers and navigators for use later on in the widget tree.
   /// These are required to use any of the cubit or bloc logic in the widget tree
-  Widget _setupApp(BuildContext context) {
+  Widget setupApp(BuildContext context) {
     return MultiRepositoryProvider(
       providers: [
         RepositoryProvider(create: (context) => AuthRepository()),
@@ -96,11 +95,11 @@ class _CameraAppState extends State<CameraApp> {
 
   /// Adds the necessary plugins to configure amplify
   /// Amplify requires this function
-  Future<void> _configureAmplify() async {
+  Future<void> configureAmplify() async {
     try {
       await Amplify.addPlugins([
         AmplifyAuthCognito(), // For user authentication
-        AmplifyDataStore(modelProvider: ModelProvider.instance), // Not used
+        //AmplifyDataStore(modelProvider: ModelProvider.instance), // Not used
         AmplifyAPI(), // Amplify base API
         AmplifyStorageS3(), // For S3 storage
       ]);

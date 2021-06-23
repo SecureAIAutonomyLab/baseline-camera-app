@@ -22,10 +22,11 @@ class LoginView extends StatefulWidget {
 
   // create the login view state
   @override
-  _LoginViewState createState() => _LoginViewState();
+  LoginViewState createState() => LoginViewState();
 }
 
-class _LoginViewState extends State<LoginView> {
+/// The state class which holds the widget tree
+class LoginViewState extends State<LoginView> {
   final _formKey = GlobalKey<FormState>();
   bool rememberSession = false;
   bool showIcon = true;

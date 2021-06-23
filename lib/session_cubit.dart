@@ -4,13 +4,13 @@
                states to change layout of widgets
  */
 
+import 'package:camera_app/user.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'auth/auth_credentials.dart';
 import 'auth/auth_repository.dart';
 import 'data_repository.dart';
-import 'models/User.dart';
 import 'session_state.dart';
 
 class SessionCubit extends Cubit<SessionState> {

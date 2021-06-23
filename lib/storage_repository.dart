@@ -33,7 +33,7 @@ class StorageRepository {
       }
 
       // Stores file metadata in the file upload options
-      final options = _fileMetadata(username, extension, userId, loc);
+      final options = fileMetadata(username, extension, userId, loc);
       // Amplify upload function
       final result = await Amplify.Storage.uploadFile(
         local: file,
@@ -47,7 +47,7 @@ class StorageRepository {
   }
 
   /// Returns metadata for the file to store on AWS
-  S3UploadFileOptions _fileMetadata(String username, String extension,
+  S3UploadFileOptions fileMetadata(String username, String extension,
       String userId, LocationData loc) {
 
     Map<String, String> metadata = Map<String, String>();

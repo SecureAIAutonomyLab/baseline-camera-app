@@ -67,8 +67,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         yield state.copyWith(formStatus: SubmissionSuccess());
 
         // retrieve user's username and id
-        String username = await _getUsername();
-        String userId = await _getUserIdFromAttributes();
+        String username = await getUsername();
+        String userId = await getUserIdFromAttributes();
         // start the camera home view with the user's credentials
         authCubit.launchSession(AuthCredentials(
           username: username,
@@ -88,7 +88,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   }
 
   /// Return the user's username from AWS Auth
-  Future<String> _getUsername() async {
+  Future<String> getUsername() async {
     try {
       final attributes = await Amplify.Auth.getCurrentUser();
       return attributes.username;
@@ -98,7 +98,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   }
 
   /// Return the user's ID from AWS Auth
-  Future<String> _getUserIdFromAttributes() async {
+  Future<String> getUserIdFromAttributes() async {
     try {
       final attributes = await Amplify.Auth.fetchUserAttributes();
       final userId = attributes

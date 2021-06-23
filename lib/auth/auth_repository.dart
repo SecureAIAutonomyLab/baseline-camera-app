@@ -14,7 +14,7 @@ import 'dart:io';
 class AuthRepository {
 
   /// Returns the userID from AWS
-  Future<String> _getUserIdFromAttributes() async {
+  Future<String> getUserIdFromAttributes() async {
     try {
       final attributes = await Amplify.Auth.fetchUserAttributes();
       // The userID is found from searching the attributes with the "sub"
@@ -29,7 +29,7 @@ class AuthRepository {
   }
 
   /// Return the username of the current authenticated user
-  Future<String> _getUsername() async {
+  Future<String> getUsername() async {
     try {
       final user = await Amplify.Auth.getCurrentUser();
       //print(user.username);
@@ -41,7 +41,7 @@ class AuthRepository {
 
   /// Attempts to read the file which specifies if the user has asked
   /// to remember their session
-  Future<String> _readRememberSession() async {
+  Future<String> readRememberSession() async {
     try {
       // the directory of the app's files
       final directory = await getApplicationDocumentsDirectory();
@@ -61,12 +61,12 @@ class AuthRepository {
   /// Otherwise sign the user out
   Future<AuthCredentials> attemptAutoLogin() async {
     // If user asked to remember the session
-    if (await _readRememberSession() == "true") {
+    if (await readRememberSession() == "true") {
       try {
         // Get current user and ID
         final session = await Amplify.Auth.fetchAuthSession();
-        final username = await _getUsername();
-        final userId = await _getUserIdFromAttributes();
+        final username = await getUsername();
+        final userId = await getUserIdFromAttributes();
 
         return session.isSignedIn ? (AuthCredentials(
             username: username, userId: userId)) : null;
@@ -97,7 +97,7 @@ class AuthRepository {
         password: password.trim(),
       );
 
-      return result.isSignedIn ? (await _getUserIdFromAttributes()) : null;
+      return result.isSignedIn ? (await getUserIdFromAttributes()) : null;
     } catch (e) {
       throw (e);
     }

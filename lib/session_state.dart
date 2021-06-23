@@ -3,9 +3,9 @@
   Description: Classes to represent different states the session can have
  */
 
+import 'package:camera_app/user.dart';
 import 'package:flutter/material.dart';
 
-import 'models/User.dart';
 
 abstract class SessionState {}
 
