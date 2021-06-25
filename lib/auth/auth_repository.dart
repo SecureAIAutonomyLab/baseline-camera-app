@@ -13,7 +13,8 @@ import 'dart:io';
 
 class AuthRepository {
 
-  /// Returns the userID from AWS
+  /// Searches the user attributes for the user ID
+  /// Returns: the userID String from AWS Auth
   Future<String> getUserIdFromAttributes() async {
     try {
       final attributes = await Amplify.Auth.fetchUserAttributes();
@@ -28,7 +29,8 @@ class AuthRepository {
     }
   }
 
-  /// Return the username of the current authenticated user
+  /// Gets the current username
+  /// Returns: the username of the current authenticated user
   Future<String> getUsername() async {
     try {
       final user = await Amplify.Auth.getCurrentUser();
@@ -41,6 +43,7 @@ class AuthRepository {
 
   /// Attempts to read the file which specifies if the user has asked
   /// to remember their session
+  /// Returns: Future string of the remember session value the user chose
   Future<String> readRememberSession() async {
     try {
       // the directory of the app's files
@@ -57,8 +60,9 @@ class AuthRepository {
 
   }
 
-  /// Returns auth credentials if successfully auto logged in.
-  /// Otherwise sign the user out
+  /// Attempts to auto login the user
+  /// Returns: A future Auth credentials object if successfully
+  /// auto logged in. Otherwise sign the user out
   Future<AuthCredentials> attemptAutoLogin() async {
     // If user asked to remember the session
     if (await readRememberSession() == "true") {
@@ -85,7 +89,9 @@ class AuthRepository {
     }
   }
 
-  /// Returns the userId if successfully logged in
+  /// Sends an API request to login the user
+  /// Parameters: The user's username and password from form field
+  /// Returns: A future string userId if successfully logged in
   Future<String> login({
     @required String username,
     @required String password,
@@ -103,7 +109,9 @@ class AuthRepository {
     }
   }
 
-  /// Returns true if sign up is successful
+  /// Sends an API request to create a new user account
+  /// Parameters: The user's username, email, and password from form field
+  /// Returns: A future boolean true if sign up is successful
   Future<bool> signUp({
     @required String username,
     @required String email,
@@ -126,7 +134,8 @@ class AuthRepository {
 
   /// All users must confirm their signup by entering a confirmation code
   /// sent to their email unless they use social media login. This function
-  /// returns true if confirmation was successful
+  /// Parameters: The user's username, and confirmation code
+  /// Returns: A future boolean true if confirmation was successful
   Future<bool> confirmSignUp({
     @required String username,
     @required String confirmationCode,
@@ -142,8 +151,9 @@ class AuthRepository {
     }
   }
 
-  /// Returns true if the user sign out was successful. It can fail if
-  /// signing out with a social media account
+  /// Attempts to sign the user out of the current session
+  /// Returns: A future boolean true if the user sign out was
+  /// successful. It can fail if signing out with a social media account
   Future<bool> signOut() async {
     try {
       await Amplify.Auth.signOut();

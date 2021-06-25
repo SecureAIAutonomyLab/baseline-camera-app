@@ -13,7 +13,8 @@ import 'package:location/location.dart';
 class StorageRepository {
 
   /// Takes in a username, userId, File and extension and stores this information
-  /// in the name of the file uploaded to AWS
+  /// Parameters: The user's username, the File object being uploaded and the file extension
+  /// Returns: A future string with the upload file result
   Future<String> uploadFile(String username, File file, String extension,
       String userId, LocationData loc) async {
     try {
@@ -46,7 +47,9 @@ class StorageRepository {
     }
   }
 
-  /// Returns metadata for the file to store on AWS
+  /// Create the metadata map to upload with the file
+  /// Parameters: The user's username, userID, file extension, and location data
+  /// Returns: metadata for the file to store on AWS
   S3UploadFileOptions fileMetadata(String username, String extension,
       String userId, LocationData loc) {
 

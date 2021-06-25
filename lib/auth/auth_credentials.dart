@@ -6,6 +6,7 @@
 
 import 'package:flutter/cupertino.dart';
 
+/// Represents user credentials
 class AuthCredentials {
   final String username;
   final String email;

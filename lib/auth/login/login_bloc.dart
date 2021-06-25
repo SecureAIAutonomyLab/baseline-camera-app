@@ -14,6 +14,7 @@ import 'login_state.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:camera_app/auth/auth_credentials.dart';
 
+/// Holds the logic for handling the event and changing the state
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
   final AuthRepository authRepo;
   final AuthCubit authCubit;
@@ -21,8 +22,9 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   // constructor
   LoginBloc({this.authRepo, this.authCubit}) : super(LoginState());
 
-  /// This function maps a LoginEvent to a LoginState and
-  /// returns an updated LoginState
+  /// This function maps a LoginEvent to a LoginState
+  /// Parameters: A login event that needs to be handled
+  /// Returns: An updated LoginState according to the login event
   @override
   Stream<LoginState> mapEventToState(LoginEvent event) async* {
     // Username updated
@@ -87,7 +89,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     }
   }
 
-  /// Return the user's username from AWS Auth
+  /// Gets the current username
+  /// Returns: the username of the current authenticated user
   Future<String> getUsername() async {
     try {
       final attributes = await Amplify.Auth.getCurrentUser();
@@ -97,7 +100,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     }
   }
 
-  /// Return the user's ID from AWS Auth
+  /// Searches the user attributes for the user ID
+  /// Returns: the userID String from AWS Auth
   Future<String> getUserIdFromAttributes() async {
     try {
       final attributes = await Amplify.Auth.fetchUserAttributes();

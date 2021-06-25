@@ -1,4 +1,7 @@
-
+/*
+  Created By: Nathan Millwater
+  Description: Represents a user object
+ */
 
 
 /// Simple class representing a user object

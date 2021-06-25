@@ -55,7 +55,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
   String username; //username from user
   String userID; // userId from user
   String uploadMessage; // Message when uploading
-  static const VIDEO_TIME_LIMIT = 120;
+  static const VIDEO_TIME_LIMIT = 120; // in seconds
 
 
   static final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
@@ -101,16 +101,17 @@ class CameraExampleHomeState extends State<CameraExampleHome>
   }
 
   /// Requests location permission and saves device data
+  /// Returns: A future object that returns asynchronously
   Future<void> initPlatformState() async {
     Map<String, dynamic> deviceData;
 
     // Checks the device type. (Android or ios)
     try {
       if (Platform.isAndroid) {
-        deviceData = _readAndroidBuildData(await deviceInfoPlugin.androidInfo);
+        deviceData = readAndroidBuildData(await deviceInfoPlugin.androidInfo);
         deviceId = deviceData['id'];
       } else if (Platform.isIOS) {
-        deviceData = _readIosDeviceInfo(await deviceInfoPlugin.iosInfo);
+        deviceData = readIosDeviceInfo(await deviceInfoPlugin.iosInfo);
         deviceId = deviceData['identifierForVendor'];
       }
     } on PlatformException {
@@ -150,8 +151,10 @@ class CameraExampleHomeState extends State<CameraExampleHome>
     });
   }
 
-  /// Maps the android information.
-  Map<String, dynamic> _readAndroidBuildData(AndroidDeviceInfo build) {
+  /// Stores the android device information in a Map.
+  /// Parameters: device info object
+  /// Returns: Map of a string to a info object attribute
+  Map<String, dynamic> readAndroidBuildData(AndroidDeviceInfo build) {
     return <String, dynamic>{
       'version.securityPatch': build.version.securityPatch,
       'version.sdkInt': build.version.sdkInt,
@@ -183,8 +186,10 @@ class CameraExampleHomeState extends State<CameraExampleHome>
     };
   }
 
-  /// Maps ios information.
-  Map<String, dynamic> _readIosDeviceInfo(IosDeviceInfo data) {
+  /// Stores the ios device information in a Map.
+  /// Parameters: device info object
+  /// Returns: Map of a string to a info object attribute
+  Map<String, dynamic> readIosDeviceInfo(IosDeviceInfo data) {
     return <String, dynamic>{
       'name': data.name,
       'systemName': data.systemName,
@@ -220,7 +225,8 @@ class CameraExampleHomeState extends State<CameraExampleHome>
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
 
-  /// Chooses the appbar based on platform
+  /// Chooses the appbar based on the device platform
+  /// Returns: Appbar Widget
   Widget chooseAppBar() {
     if (Theme.of(context).platform == TargetPlatform.iOS) {
       return CupertinoNavigationBar(
@@ -233,7 +239,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
           icon: Icon(Icons.flip_camera_ios),
           onPressed: () {
             // Switch to a different camera
-            _cameraToggleButtonPressed();
+            cameraToggleButtonPressed();
           },
         ),
       );
@@ -247,7 +253,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
             icon: Icon(Icons.flip_camera_android),
             onPressed: () {
               // Switch to a different camera
-              _cameraToggleButtonPressed();
+              cameraToggleButtonPressed();
             },
           )
         ],
@@ -256,6 +262,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
   }
 
   /// Builds the application. Sets the layout and functionality of the application.
+  /// Is defined automatically by the stateless widget class
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -293,6 +300,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
   }
 
   /// Display the preview from the camera (or a message if the preview is not available).
+  /// Returns: the camera preview widget
   Widget cameraPreviewWidget() {
     // Check if file has started uploading
     if (isFileFinishedUploading.started) {
@@ -321,6 +329,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
     if (controller == null || !controller.value.isInitialized) {
       if (cameras.isNotEmpty) {
         // Camera disposed error occurs here
+        print("Null controller");
         onNewCameraSelected(cameras[cameraDescriptionIndex]);
         onNewCameraSelected(cameras[cameraDescriptionIndex]);
       }
@@ -347,7 +356,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
   }
 
 
-  /// Returns a toggle recording audio widget
+  /// Returns: toggle recording audio widget
   Widget toggleAudioWidget() {
     return Padding(
       padding: const EdgeInsets.only(left: 25, top: 10, bottom: 25),
@@ -365,7 +374,8 @@ class CameraExampleHomeState extends State<CameraExampleHome>
     );
   }
 
-  /// Choose the type of enable audio switch depending on platform
+  /// Choose the type of enable audio switch depending on the device platform
+  /// Returns: a switch widget
   Widget enableAudioSwitchType() {
     if (Theme.of(context).platform == TargetPlatform.iOS) {
       // Use a cupertino switch if platform is IOS
@@ -395,7 +405,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
 
   /// Display the thumbnail of the captured image or video.
   /// Is not currently being used
-  Widget _thumbnailWidget() {
+  Widget thumbnailWidget() {
     return Expanded(
       child: Align(
         alignment: Alignment.centerRight,
@@ -429,6 +439,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
   }
 
   /// Display the control bar with buttons to take pictures and record videos.
+  /// Returns: a Row widget with 4 buttons
   Widget captureControlRowWidget() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -484,8 +495,9 @@ class CameraExampleHomeState extends State<CameraExampleHome>
     );
   }
 
-  /// Display a camera toggle button to switch to a new camera when pressed
-  void _cameraToggleButtonPressed() {
+  /// Is called when the camera switch button is pressed. Initializes a new
+  /// camera
+  void cameraToggleButtonPressed() {
     print("Username: " + username);
     print("userId : " + userID);
     // Do nothing if no cameras are detected
@@ -508,15 +520,18 @@ class CameraExampleHomeState extends State<CameraExampleHome>
   }
 
   /// Timestamp when a picture or video is taken.
+  /// Returns: String containing current time
   String timestamp() => DateTime.now().millisecondsSinceEpoch.toString();
 
   /// create the snack bar and display in Scaffold
+  /// Parameters: Message to display in snackbar
   void showInSnackBar(String message) {
     SnackBar bar = SnackBar(content: Text(message));
     ScaffoldMessenger.of(context).showSnackBar(bar);
   }
 
   /// Dispose of CameraController and reinitialize new when a different camera is selected.
+  /// Parameters: Description of the new camera to be initialized
   void onNewCameraSelected(CameraDescription cameraDescription) async {
     if (controller != null) {
       await controller.dispose();
@@ -579,7 +594,8 @@ class CameraExampleHomeState extends State<CameraExampleHome>
       print("Finished waiting");
       // If the controller is still recording the same video before the wait
       if (controller.value.isRecordingVideo && path == videoPath) {
-        uploadMessage = "Video Time Limit Reached (2 minutes)";
+        //int min = (VIDEO_TIME_LIMIT/60) as int;
+        uploadMessage = "Video Time Limit Reached   (2 minutes)";
         // Stop the recording
         onStopButtonPressed();
       }
@@ -614,6 +630,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
 
 
   /// Sets the path and starts the recording process.
+  /// Returns: A future string object that returns the filepath of the video
   Future<String> startVideoRecording() async {
     if (!controller.value.isInitialized) {
       // Controller is not initialized
@@ -650,6 +667,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
 
   /// Stop the recording and save the video. Once saving is finished,
   /// upload the video to AWS
+  /// Returns: A future object, indicates function is not synchronous
   Future<void> stopVideoRecording() async {
     if (!controller.value.isRecordingVideo) {
       return null;
@@ -700,6 +718,8 @@ class CameraExampleHomeState extends State<CameraExampleHome>
     //await _startVideoPlayer();
   }
 
+  /// Pauses the recording using the camera controller
+  /// Returns: A future object, indicates function is not synchronous
   Future<void> pauseVideoRecording() async {
     if (!controller.value.isRecordingVideo) {
       return null;
@@ -713,6 +733,8 @@ class CameraExampleHomeState extends State<CameraExampleHome>
     }
   }
 
+  /// Resumes the recording using the camera controller
+  /// Returns: A future object, indicates function is not synchronous
   Future<void> resumeVideoRecording() async {
     if (!controller.value.isRecordingVideo) {
       return null;
@@ -754,6 +776,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
 
   /// Save the image to the camera roll. Once saving is finished,
   /// upload the image to AWS
+  /// Returns: A future string that is a filepath to the image
   Future<String> takePicture() async {
     if (!controller.value.isInitialized) {
       showInSnackBar('Error: select a camera first.');
@@ -817,6 +840,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
   }
 
   /// Displays a dialog box that prompts the user if they want to upload their file
+  /// Returns: A future object, indicates function is not synchronous
   Future<void> showUploadDialogBox() {
     return showCupertinoDialog<void>(
         // User cannot dismiss the dialog
@@ -849,6 +873,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
   }
 
   /// Print out the camera error message
+  /// Parameters: CameraException error
   void _showCameraException(CameraException e) {
     logError(e.code, e.description);
     showInSnackBar('Error: ${e.code}\n${e.description}');
@@ -856,7 +881,10 @@ class CameraExampleHomeState extends State<CameraExampleHome>
 
   /// Simple wait function that delays by a certain amount of seconds
   /// Must be used with "await" keyword
+  /// Parameters: Integer with amount of seconds to wait
+  /// Returns: A future object, indicates function is not synchronous
   Future<void> wait(int seconds) {
     return Future.delayed(Duration(seconds: seconds));
   }
+
 }

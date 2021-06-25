@@ -11,6 +11,7 @@ import '../auth_cubit.dart';
 import '../auth_repository.dart';
 import '../form_submission_status.dart';
 
+/// Holds the logic for handling the event and changing the state
 class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
   final AuthRepository authRepo;
   final AuthCubit authCubit;
@@ -18,8 +19,9 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
   // constructor
   SignUpBloc({this.authRepo, this.authCubit}) : super(SignUpState());
 
-  /// This function maps a SignUpEvent to a SignUpState and
-  /// returns an updated SignUpState
+  /// This function maps a SignUpEvent to a SignUpState
+  /// Parameters: A sign up event that needs to be handled
+  /// Returns: An updated SignUpState according to the sign up event
   @override
   Stream<SignUpState> mapEventToState(SignUpEvent event) async* {
     // Username updated

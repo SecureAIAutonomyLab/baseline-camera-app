@@ -8,6 +8,7 @@
 
 import '../form_submission_status.dart';
 
+/// Holds the current state of the login form
 class LoginState {
   final String username;
   // getter
@@ -27,6 +28,9 @@ class LoginState {
 
   /// Create a new LoginState object and copy over the
   /// old values and any new values that changed
+  /// Parameters: The username and password from login form field and
+  /// the current status of the form
+  /// Returns: A new login state with the updated information
   LoginState copyWith({
     String username,
     String password,

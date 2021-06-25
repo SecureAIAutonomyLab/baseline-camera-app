@@ -14,19 +14,22 @@ import '../auth_cubit.dart';
 import '../auth_repository.dart';
 import '../form_submission_status.dart';
 
+/// Holds the signup view widget tree
 class SignUpView extends StatefulWidget {
 
   @override
   SignUpViewState createState() => SignUpViewState();
 }
 
-
+/// The state class which holds the widget tree
 class SignUpViewState extends State<SignUpView> {
   final _formKey = GlobalKey<FormState>();
   bool showImage = true;
 
-  /// Returns a widget that choose an appbar based on the platform
-  Widget _chooseAppBar(String title, BuildContext context) {
+  /// Chooses an appbar based on the platform
+  /// Parameters: A title string for the text on the appbar
+  /// Returns: An appbar widget
+  Widget chooseAppBar(String title, BuildContext context) {
     if (Theme.of(context).platform == TargetPlatform.iOS) {
       return CupertinoNavigationBar(
         middle: Text(title),
@@ -45,7 +48,7 @@ class SignUpViewState extends State<SignUpView> {
   Widget build(BuildContext context) {
     return Scaffold(
       // sign up view appbar
-      appBar: _chooseAppBar("Sign Up", context),
+      appBar: chooseAppBar("Sign Up", context),
       backgroundColor: Colors.cyan[200],
       // bloc provider to provide access to auth cubit and repository
       body: BlocProvider(
@@ -56,8 +59,8 @@ class SignUpViewState extends State<SignUpView> {
         child: Stack(
           alignment: Alignment.bottomCenter,
           children: [
-            _signUpForm(),
-            _showLoginButton(context),
+            signUpForm(),
+            showLoginButton(context),
             // display the open cloud image
             Padding(
               padding: const EdgeInsets.only(bottom: 100),
@@ -73,14 +76,15 @@ class SignUpViewState extends State<SignUpView> {
     );
   }
 
-  /// Returns a widget that holds the text fields for signing up
-  Widget _signUpForm() {
+  /// Holds the widget tree for the different form fields
+  /// Returns: The form widget
+  Widget signUpForm() {
     // A Listener to show error if one occurs
     return BlocListener<SignUpBloc, SignUpState>(
         listener: (context, state) {
           final formStatus = state.formStatus;
           if (formStatus is SubmissionFailed) {
-            _showSnackBar(context, formStatus.exception.toString());
+            showSnackBar(context, formStatus.exception.toString());
           }
           // set back to initial state once error occurs
           state.formStatus = InitialFormStatus();
@@ -93,20 +97,21 @@ class SignUpViewState extends State<SignUpView> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                _usernameField(),
-                _emailField(),
-                _passwordField(),
+                usernameField(),
+                emailField(),
+                passwordField(),
                 // spacing
                 SizedBox(height: 5,),
-                _signUpButton(),
+                signUpButton(),
               ],
             ),
           ),
         ));
   }
 
-  /// Returns a text field widget that takes in a username
-  Widget _usernameField() {
+  /// Holds widget tree for the username field
+  /// Returns: A text field widget
+  Widget usernameField() {
     // provide access to signup bloc and signup state
     return BlocBuilder<SignUpBloc, SignUpState>(builder: (context, state) {
       return TextFormField(
@@ -132,8 +137,9 @@ class SignUpViewState extends State<SignUpView> {
     });
   }
 
-  /// Return the email field widget for the sign up form
-  Widget _emailField() {
+  /// Holds the widget tree for the email field
+  /// Returns: the email field widget
+  Widget emailField() {
     // Provide access to signup bloc and signup state
     return BlocBuilder<SignUpBloc, SignUpState>(builder: (context, state) {
       return TextFormField(
@@ -158,7 +164,9 @@ class SignUpViewState extends State<SignUpView> {
     });
   }
 
-  Widget _passwordField() {
+  /// Holds the widget tree for the password field
+  /// Returns: the password field widget
+  Widget passwordField() {
     // Provide access to signup bloc and signup state
     return BlocBuilder<SignUpBloc, SignUpState>(builder: (context, state) {
       return TextFormField(
@@ -185,8 +193,9 @@ class SignUpViewState extends State<SignUpView> {
     });
   }
 
-  /// Returns the signup button widget that starts the signup process
-  Widget _signUpButton() {
+  /// Holds the widget tree for the signup button and bloc
+  /// Returns: The signup button widget
+  Widget signUpButton() {
     // Provide access to signup bloc and signup state
     return BlocBuilder<SignUpBloc, SignUpState>(builder: (context, state) {
       // Show wait indicator if form is still submitting
@@ -208,9 +217,9 @@ class SignUpViewState extends State<SignUpView> {
     });
   }
 
-  /// Return the login button widget that takes the user to
-  /// the login page
-  Widget _showLoginButton(BuildContext context) {
+  /// Holds the sign up button widget that switches to the login page
+  /// Returns: The login button widget
+  Widget showLoginButton(BuildContext context) {
     return SafeArea(
       child: TextButton(
         child: Text('Already have an account? Sign in.'),
@@ -222,7 +231,9 @@ class SignUpViewState extends State<SignUpView> {
 
   /// Takes in a BuildContext and message and displays a snackbar
   /// at the bottom of the screen
-  void _showSnackBar(BuildContext context, String message) {
+  /// Parameters: the context of the current build and a String
+  /// message to display in the snackbar
+  void showSnackBar(BuildContext context, String message) {
     final snackBar = SnackBar(content: Text(message));
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }

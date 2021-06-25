@@ -6,6 +6,8 @@
 
 import '../form_submission_status.dart';
 
+
+/// Holds the current state of the confirmation form
 class ConfirmationState {
   final String code;
   // getter
@@ -20,6 +22,9 @@ class ConfirmationState {
 
   /// Create a new ConfirmationState object and copy over the
   /// old values and any new values that changed
+  /// Parameters: The confirmation code from the form field and
+  /// the current status of the form
+  /// Returns: A new confirmation state with the updated information
   ConfirmationState copyWith({
     String code,
     FormSubmissionStatus formStatus,

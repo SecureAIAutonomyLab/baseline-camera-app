@@ -18,6 +18,7 @@ import 'login_bloc.dart';
 import 'login_event.dart';
 import 'login_state.dart';
 
+/// Holds the login view widget tree
 class LoginView extends StatefulWidget {
 
   // create the login view state
@@ -35,15 +36,17 @@ class LoginViewState extends State<LoginView> {
   @override
   void initState() {
     super.initState();
-    _storeRememberSession();
+    storeRememberSession();
     // set preferred orientation
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
     ]);
   }
 
-  /// Returns a widget that choose an appbar based on the platform
-  Widget _chooseAppBar(String title) {
+  /// Chooses an appbar based on the platform
+  /// Parameters: A title string for the text on the appbar
+  /// Returns: An appbar widget
+  Widget chooseAppBar(String title) {
     if (Theme.of(context).platform == TargetPlatform.iOS) {
       return CupertinoNavigationBar(
         middle: Text(title),
@@ -62,7 +65,7 @@ class LoginViewState extends State<LoginView> {
   Widget build(BuildContext context) {
     return Scaffold(
       // login view appbar
-      appBar: _chooseAppBar("Login"),
+      appBar: chooseAppBar("Login"),
       backgroundColor: Colors.cyan[200],
       // bloc provider to provide access to auth cubit and repository
       body: BlocProvider(
@@ -73,8 +76,8 @@ class LoginViewState extends State<LoginView> {
         child: Stack(
           alignment: Alignment.bottomCenter,
           children: [
-            _loginForm(),
-            _showSignUpButton(context),
+            loginForm(),
+            showSignUpButton(context),
             // display the open cloud image
             Padding(
               padding: const EdgeInsets.only(bottom: 100),
@@ -95,8 +98,9 @@ class LoginViewState extends State<LoginView> {
     );
   }
 
-  /// Returns a widget that holds the text fields for logging in
-  Widget _loginForm() {
+  /// Holds the widget tree for the different form fields
+  /// Returns: The form widget
+  Widget loginForm() {
     // A Listener to show error if one occurs
     return BlocListener<LoginBloc, LoginState>(
         listener: (context, state) {
@@ -104,9 +108,9 @@ class LoginViewState extends State<LoginView> {
           if (formStatus is SubmissionFailed) {
             if (formStatus.exception is UserNotFoundException
                 || formStatus.exception is NotAuthorizedException) {
-              _showSnackBar(context, "Invalid Username or Password");
+              showSnackBar(context, "Invalid Username or Password");
             } else {
-              _showSnackBar(context, formStatus.exception.toString());
+              showSnackBar(context, formStatus.exception.toString());
             }
             // set back to initial state once error occurs
             state.formStatus = InitialFormStatus();
@@ -120,13 +124,13 @@ class LoginViewState extends State<LoginView> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                _facebookLogin(),
-                _usernameField(),
-                _passwordField(),
+                facebookLogin(),
+                usernameField(),
+                passwordField(),
                 // spacing
                 SizedBox(height: 5,),
-                _loginButton(),
-                _checkBox(),
+                loginButton(),
+                checkBox(),
 
               ],
             ),
@@ -134,9 +138,10 @@ class LoginViewState extends State<LoginView> {
         ));
   }
 
-  /// Returns a checkbox widget that stores the user's
-  /// decision to remember the session
-  Widget _checkBox() {
+
+  /// Stores the user's decision to remember the session
+  /// Returns: A checkbox widget
+  Widget checkBox() {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 85),
       child: CheckboxListTile(
@@ -150,7 +155,7 @@ class LoginViewState extends State<LoginView> {
               rememberSession = changed;
             });
             // save info on device
-            _storeRememberSession();
+            storeRememberSession();
           }
       ),
     );
@@ -158,7 +163,8 @@ class LoginViewState extends State<LoginView> {
 
   /// Store the value from the remember session checkbox
   /// in the device's files
-  Future<void> _storeRememberSession() async {
+  /// Returns: A future object that indicates an asynchronous function
+  Future<void> storeRememberSession() async {
     // get the app's storage directory
     final directory = await getApplicationDocumentsDirectory();
     final path = directory.path;
@@ -205,8 +211,9 @@ class LoginViewState extends State<LoginView> {
     });
   }
 
-  /// Returns a button widget that logs the user into the app with Facebook
-  Widget _facebookLogin() {
+  /// Holds the widget tree for the button that activates the login to Facebook
+  /// Returns: A button widget
+  Widget facebookLogin() {
     // provide access to login bloc and login state
     return BlocBuilder<LoginBloc, LoginState>(builder: (context, state) {
       return TextButton(
@@ -246,8 +253,9 @@ class LoginViewState extends State<LoginView> {
     });
   }
 
-  /// Returns a text field widget that takes in a username
-  Widget _usernameField() {
+  /// Holds widget tree for the username field
+  /// Returns: A text field widget
+  Widget usernameField() {
     // provide access to login bloc and login state
     return BlocBuilder<LoginBloc, LoginState>(builder: (context, state) {
       return TextFormField(
@@ -273,8 +281,9 @@ class LoginViewState extends State<LoginView> {
     });
   }
 
-  /// Return the password field widget for the login form
-  Widget _passwordField() {
+  /// Holds the widget tree for the password field
+  /// Returns: the password field widget
+  Widget passwordField() {
     // provide access to login bloc and login state
     return BlocBuilder<LoginBloc, LoginState>(builder: (context, state) {
       return TextFormField(
@@ -301,8 +310,9 @@ class LoginViewState extends State<LoginView> {
     });
   }
 
-  /// Returns the login button widget that starts the login process
-  Widget _loginButton() {
+  /// Holds the widget tree for the login button and bloc
+  /// Returns: The login button widget
+  Widget loginButton() {
     // provide access to login bloc and login state
     return BlocBuilder<LoginBloc, LoginState>(builder: (context, state) {
       // Show wait indicator if form is still submitting
@@ -325,9 +335,9 @@ class LoginViewState extends State<LoginView> {
     });
   }
 
-  /// Return the sign up button widget that takes the user to
-  /// the sign up page
-  Widget _showSignUpButton(BuildContext context) {
+  /// Holds the sign up button widget that switches to the sign up page
+  /// Returns: The sign up button widget
+  Widget showSignUpButton(BuildContext context) {
     return SafeArea(
       child: TextButton(
         child: Text('Don\'t have an account? Sign up.'),
@@ -339,7 +349,9 @@ class LoginViewState extends State<LoginView> {
 
   /// Takes in a BuildContext and message and displays a snackbar
   /// at the bottom of the screen
-  void _showSnackBar(BuildContext context, String message) {
+  /// Parameters: the context of the current build and a String
+  /// message to display in the snackbar
+  void showSnackBar(BuildContext context, String message) {
     final snackBar = SnackBar(content: Text(message));
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }

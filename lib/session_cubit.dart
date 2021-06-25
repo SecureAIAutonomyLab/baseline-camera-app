@@ -13,6 +13,7 @@ import 'auth/auth_repository.dart';
 import 'data_repository.dart';
 import 'session_state.dart';
 
+/// Holds the logic for handling and changing session states
 class SessionCubit extends Cubit<SessionState> {
   final AuthRepository authRepo;
   final DataRepository dataRepo;
@@ -46,6 +47,7 @@ class SessionCubit extends Cubit<SessionState> {
   void showAuth() => emit(Unauthenticated());
 
   /// Uses credentials to show the camera home screen by emitting authenticated state
+  /// Parameters: credentials object that hold the user's information
   void showSession(AuthCredentials credentials) async {
     try {
       User user = User(id: credentials.userId, username: credentials.username);

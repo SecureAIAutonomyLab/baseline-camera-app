@@ -13,11 +13,14 @@ import 'confirmation_bloc.dart';
 import 'confirmation_event.dart';
 import 'confirmation_state.dart';
 
+/// Holds the confirmation view widget tree
 class ConfirmationView extends StatelessWidget {
   final _formKey = GlobalKey<FormState>();
 
-  /// Returns a widget that choose an appbar based on the platform
-  Widget _chooseAppBar(String title, BuildContext context) {
+  /// Chooses an appbar based on the platform
+  /// Parameters: A title string for the text on the appbar
+  /// Returns: An appbar widget
+  Widget chooseAppBar(String title, BuildContext context) {
     if (Theme.of(context).platform == TargetPlatform.iOS) {
       return CupertinoNavigationBar(
         middle: Text(title),
@@ -36,7 +39,7 @@ class ConfirmationView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       // confirmation view appbar
-      appBar: _chooseAppBar("Confirm Signup", context),
+      appBar: chooseAppBar("Confirm Signup", context),
       backgroundColor: Colors.cyan[200],
       // bloc provider to provide access to auth cubit and repository
       body: BlocProvider(
@@ -44,19 +47,20 @@ class ConfirmationView extends StatelessWidget {
           authRepo: context.read<AuthRepository>(),
           authCubit: context.read<AuthCubit>(),
         ),
-        child: _confirmationForm(),
+        child: confirmationForm(),
       ),
     );
   }
 
-  /// Returns a widget that holds the text fields for confirming
-  Widget _confirmationForm() {
+  /// Holds the widget tree for the different form fields
+  /// Returns: The form widget
+  Widget confirmationForm() {
     // A Listener to show error if one occurs
     return BlocListener<ConfirmationBloc, ConfirmationState>(
         listener: (context, state) {
           final formStatus = state.formStatus;
           if (formStatus is SubmissionFailed) {
-            _showSnackBar(context, formStatus.exception.toString());
+            showSnackBar(context, formStatus.exception.toString());
           }
           // set back to initial state once error occurs
           state.formStatus = InitialFormStatus();
@@ -69,10 +73,10 @@ class ConfirmationView extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                _codeField(),
+                codeField(),
                 // spacing
                 SizedBox(height: 5,),
-                _confirmButton(),
+                confirmButton(),
                 Text("Note: You must confirm your email address for "
                     "your account to be activated", textAlign: TextAlign.center,),
               ],
@@ -81,8 +85,9 @@ class ConfirmationView extends StatelessWidget {
         ));
   }
 
-  /// Returns a text field widget that takes in the confirmation code
-  Widget _codeField() {
+  /// Holds widget tree for the confirmation code field
+  /// Returns: A text field widget
+  Widget codeField() {
     // provide access to confirmation bloc and confirmation state
     return BlocBuilder<ConfirmationBloc, ConfirmationState>(
         builder: (context, state) {
@@ -102,8 +107,9 @@ class ConfirmationView extends StatelessWidget {
     });
   }
 
-  /// Returns the confirm button widget that starts the confirmation logic
-  Widget _confirmButton() {
+  /// Holds the widget tree for the confirm button and bloc
+  /// Returns: The confirm button widget
+  Widget confirmButton() {
     // provide access to confirmation bloc and confirmation state
     return BlocBuilder<ConfirmationBloc, ConfirmationState>(builder: (context, state) {
           // Show wait indicator if form is still submitting
@@ -128,7 +134,9 @@ class ConfirmationView extends StatelessWidget {
 
   /// Takes in a BuildContext and message and displays a snackbar
   /// at the bottom of the screen
-  void _showSnackBar(BuildContext context, String message) {
+  /// Parameters: the context of the current build and a String
+  /// message to display in the snackbar
+  void showSnackBar(BuildContext context, String message) {
     final snackBar = SnackBar(content: Text(message));
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }

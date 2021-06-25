@@ -9,9 +9,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../session_cubit.dart';
 import 'auth_credentials.dart';
 
-// Simple enumeration to show different auth states
+/// Simple enumeration to show different auth states
 enum AuthState { login, signUp, confirmSignUp }
 
+/// Holds the logic for changing and handling auth states
 class AuthCubit extends Cubit<AuthState> {
 
   final SessionCubit sessionCubit;
@@ -23,6 +24,7 @@ class AuthCubit extends Cubit<AuthState> {
   void showSignUp() => emit(AuthState.signUp);
 
   /// Stores credentials and emits the state once confirmation is complete
+  /// Parameters: The user's username, email, and password
   void showConfirmSignUp({
     String username,
     String email,
@@ -38,6 +40,7 @@ class AuthCubit extends Cubit<AuthState> {
 
   /// Launch the session by calling the showSession method
   /// on the session cubit
+  /// Parameters: A credentials object that holds user information
   void launchSession(AuthCredentials credentials) =>
       sessionCubit.showSession(credentials);
 }

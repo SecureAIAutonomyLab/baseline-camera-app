@@ -10,6 +10,8 @@ import '../form_submission_status.dart';
 import 'confirmation_event.dart';
 import 'confirmation_state.dart';
 
+
+/// Holds the logic for handling the event and changing the state
 class ConfirmationBloc extends Bloc<ConfirmationEvent, ConfirmationState> {
   final AuthRepository authRepo;
   final AuthCubit authCubit;
@@ -21,7 +23,8 @@ class ConfirmationBloc extends Bloc<ConfirmationEvent, ConfirmationState> {
   }) : super(ConfirmationState());
 
   /// This function maps a ConfirmationEvent to a ConfirmationState
-  /// and returns an updated ConfirmationState
+  /// Parameters: A confirmation event that needs to be handled
+  /// Returns: An updated ConfirmationState according to the confirmation event
   @override
   Stream<ConfirmationState> mapEventToState(ConfirmationEvent event) async* {
     // Confirmation code updated

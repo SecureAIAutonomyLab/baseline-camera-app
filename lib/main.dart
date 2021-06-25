@@ -39,24 +39,14 @@ class CameraExampleHome extends StatefulWidget {
   }
 }
 
-/// Returns a suitable camera icon for [direction].
-IconData getCameraLensIcon(CameraLensDirection direction) {
-  switch (direction) {
-    case CameraLensDirection.back:
-      return Icons.camera_rear;
-    case CameraLensDirection.front:
-      return Icons.camera_front;
-    case CameraLensDirection.external:
-      return Icons.camera;
-  }
-  throw ArgumentError('Unknown lens direction');
-}
 
+/// Parameters: Error code and a message with the error
 /// Print an error to the console
 void logError(String code, String message) =>
     print('Error: $code\nError Message: $message');
 
-class _CameraAppState extends State<CameraApp> {
+/// Holds the state of the camera app
+class CameraAppState extends State<CameraApp> {
   bool _isAmplifyConfigured = false;
 
   /// Called upon initialization of the CameraState object
@@ -77,6 +67,8 @@ class _CameraAppState extends State<CameraApp> {
 
   /// Setup providers and navigators for use later on in the widget tree.
   /// These are required to use any of the cubit or bloc logic in the widget tree
+  /// Parameters: the build context, need to apply repositories to widget tree
+  /// Returns: A repository provider widget, gives access to repository objects
   Widget setupApp(BuildContext context) {
     return MultiRepositoryProvider(
       providers: [
@@ -95,6 +87,7 @@ class _CameraAppState extends State<CameraApp> {
 
   /// Adds the necessary plugins to configure amplify
   /// Amplify requires this function
+  /// Returns: A future object, indicates function is not synchronous
   Future<void> configureAmplify() async {
     try {
       await Amplify.addPlugins([
@@ -117,6 +110,7 @@ class _CameraAppState extends State<CameraApp> {
   }
 }
 
+/// The widget class that creates the camera app state
 class CameraApp extends StatefulWidget {
   // set orientation
   CameraApp() {
@@ -127,13 +121,14 @@ class CameraApp extends StatefulWidget {
   }
   
   @override 
-  State<StatefulWidget> createState() => _CameraAppState();
+  State<StatefulWidget> createState() => CameraAppState();
 }
 
 // List of available cameras to user
 List<CameraDescription> cameras = [];
 
 /// The start of the run configuration
+/// Returns: A future object, indicates function is not synchronous
 Future<void> main() async {
   // Fetch the available cameras before initializing the app.
   try {

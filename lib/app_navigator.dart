@@ -16,8 +16,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 
+/// App Navigator widget that handles navigation between login screens
+/// and camera home screen
 class AppNavigator extends StatelessWidget {
 
+  /// standard build method that creates the widget
   @override
   Widget build(BuildContext context) {
     // provide access to session cubit and state with blocbuilder

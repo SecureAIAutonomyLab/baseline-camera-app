@@ -7,6 +7,7 @@
 
 import '../form_submission_status.dart';
 
+/// Holds the current state of the sign up form
 class SignUpState {
   final String username;
   // getter
@@ -31,6 +32,9 @@ class SignUpState {
 
   /// Create a new SignUpState object and copy over the
   /// old values and any new values that changed
+  /// Parameters: The username, email and password from
+  /// sign up form field and the current status of the form
+  /// Returns: A new sign up state with the updated information
   SignUpState copyWith({
     String username,
     String email,

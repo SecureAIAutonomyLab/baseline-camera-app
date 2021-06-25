@@ -13,6 +13,8 @@ import 'confirm/confirmation_view.dart';
 import 'login/login_view.dart';
 
 
+/// Navigation class that is responsible for switching between different
+/// authentication screens
 class AuthNavigator extends StatelessWidget {
 
   // Initial build method of navigator widget
