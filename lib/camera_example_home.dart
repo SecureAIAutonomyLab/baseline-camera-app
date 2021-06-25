@@ -55,6 +55,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
   String username; //username from user
   String userID; // userId from user
   String uploadMessage; // Message when uploading
+  bool controllerInitialized = false; // is controller initialized
   static const VIDEO_TIME_LIMIT = 120; // in seconds
 
 
@@ -91,6 +92,8 @@ class CameraExampleHomeState extends State<CameraExampleHome>
       DeviceOrientation.landscapeRight,
       DeviceOrientation.portraitUp,
     ]);
+    // wait for camera controller to initialize
+    waitForCamera();
   }
 
   // Called when widget is deleted
@@ -326,14 +329,8 @@ class CameraExampleHomeState extends State<CameraExampleHome>
       }
     }
     // Display the camera preview
-    if (controller == null || !controller.value.isInitialized) {
-      if (cameras.isNotEmpty) {
-        // Camera disposed error occurs here
-        print("Null controller");
-        onNewCameraSelected(cameras[cameraDescriptionIndex]);
-        onNewCameraSelected(cameras[cameraDescriptionIndex]);
-      }
-      else {
+    if (!controllerInitialized) {
+      if (cameras.isEmpty) {
         return const Text(
           'No cameras detected',
           style: TextStyle(
@@ -885,6 +882,16 @@ class CameraExampleHomeState extends State<CameraExampleHome>
   /// Returns: A future object, indicates function is not synchronous
   Future<void> wait(int seconds) {
     return Future.delayed(Duration(seconds: seconds));
+  }
+
+  /// Provide a delay before showing camera preview to give the
+  /// controller time to initialize
+  /// Returns: A future object indicating an asynchronous function
+  Future<void> waitForCamera() async {
+    await Future.delayed(Duration(milliseconds: 500));
+    setState(() {
+      controllerInitialized = true;
+    });
   }
 
 }
