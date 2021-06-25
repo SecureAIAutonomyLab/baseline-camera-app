@@ -82,10 +82,33 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         print(e.message);
       }
 
-      // not currrently used
+      // not currently used
     } else if (event is LoginGoogle) {
       // google login
       print("google event");
+
+      yield state.copyWith(formStatus: FormSubmitting());
+
+      try {
+        // Use AWS social media signin options
+        await Amplify.Auth.signInWithWebUI(provider: AuthProvider.google);
+
+        // copy over new form status if login succeeds
+        yield state.copyWith(formStatus: SubmissionSuccess());
+
+        // retrieve user's username and id
+        String username = await getUsername();
+        String userId = await getUserIdFromAttributes();
+        // start the camera home view with the user's credentials
+        authCubit.launchSession(AuthCredentials(
+          username: username,
+          userId: userId,
+        ));
+      } on AmplifyException catch (e) {
+        // Reset form status
+        yield state.copyWith(formStatus: InitialFormStatus());
+        print(e.message);
+      }
     }
   }
 

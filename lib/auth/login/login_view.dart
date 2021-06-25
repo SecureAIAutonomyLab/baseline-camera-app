@@ -124,6 +124,7 @@ class LoginViewState extends State<LoginView> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                _googleLogin(),
                 facebookLogin(),
                 usernameField(),
                 passwordField(),
@@ -173,7 +174,8 @@ class LoginViewState extends State<LoginView> {
     file.writeAsString(rememberSession.toString());
   }
 
-  /// Returns a google login button, not currently being used
+  /// Holds the widget tree for the google login button
+  /// Returns: A google login button widget
   Widget _googleLogin() {
     return BlocBuilder<LoginBloc, LoginState>(builder: (context, state) {
       return TextButton(
