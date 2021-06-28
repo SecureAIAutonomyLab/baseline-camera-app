@@ -10,7 +10,6 @@ import '../auth_cubit.dart';
 import '../auth_repository.dart';
 import '../form_submission_status.dart';
 import 'confirmation_bloc.dart';
-import 'confirmation_event.dart';
 import 'confirmation_state.dart';
 
 /// Holds the confirmation view widget tree

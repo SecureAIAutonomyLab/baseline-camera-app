@@ -9,7 +9,6 @@ import '../auth_credentials.dart';
 import '../auth_cubit.dart';
 import '../auth_repository.dart';
 import '../form_submission_status.dart';
-import 'login_event.dart';
 import 'login_state.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:camera_app/auth/auth_credentials.dart';

@@ -3,7 +3,7 @@
   Description: Holds the logic for handling sign up events
  */
 
-import 'package:camera_app/auth/sign_up/sign_up_event.dart';
+
 import 'package:camera_app/auth/sign_up/sign_up_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

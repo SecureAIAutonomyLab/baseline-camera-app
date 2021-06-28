@@ -4,7 +4,6 @@
  */
 
 import 'package:camera_app/auth/sign_up/sign_up_bloc.dart';
-import 'package:camera_app/auth/sign_up/sign_up_event.dart';
 import 'package:camera_app/auth/sign_up/sign_up_state.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

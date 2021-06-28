@@ -7,6 +7,19 @@
 import '../form_submission_status.dart';
 
 
+abstract class ConfirmationEvent {}
+
+/// Event when user changes the text in the confirmation code field
+class ConfirmationCodeChanged extends ConfirmationEvent {
+  final String code;
+
+  ConfirmationCodeChanged({this.code});
+}
+
+/// Event when confirm button is pressed
+class ConfirmationSubmitted extends ConfirmationEvent {}
+
+
 /// Holds the current state of the confirmation form
 class ConfirmationState {
   final String code;
