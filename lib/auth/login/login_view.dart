@@ -108,6 +108,9 @@ class LoginViewState extends State<LoginView> {
             if (formStatus.exception is UserNotFoundException
                 || formStatus.exception is NotAuthorizedException) {
               showSnackBar(context, "Invalid Username or Password");
+            } else if (formStatus.exception is UnknownException) {
+              showSnackBar(context, "Something went wrong, ensure you are connected"
+                  " to the internet");
             } else {
               showSnackBar(context, formStatus.exception.toString());
             }

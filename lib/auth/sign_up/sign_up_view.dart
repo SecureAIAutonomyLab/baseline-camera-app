@@ -3,6 +3,7 @@
   Description: Holds all of the widgets that makeup the signup screen
  */
 
+import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:camera_app/auth/sign_up/sign_up_bloc.dart';
 import 'package:camera_app/auth/sign_up/sign_up_state.dart';
 import 'package:flutter/cupertino.dart';
@@ -83,7 +84,12 @@ class SignUpViewState extends State<SignUpView> {
         listener: (context, state) {
           final formStatus = state.formStatus;
           if (formStatus is SubmissionFailed) {
-            showSnackBar(context, formStatus.exception.toString());
+            if (formStatus.exception is UnknownException) {
+              showSnackBar(context, "Something went wrong, ensure you are connected"
+                  " to the internet");
+            } else {
+              showSnackBar(context, formStatus.exception.toString());
+            }
           }
           // set back to initial state once error occurs
           state.formStatus = InitialFormStatus();

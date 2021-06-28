@@ -5,6 +5,8 @@
                tree is displayed.
  */
 
+import 'dart:io';
+
 import 'package:camera/camera.dart';
 import 'package:camera_app/camera_example_home.dart';
 import 'package:camera_app/session_cubit.dart';
@@ -277,9 +279,14 @@ class CameraViewBuild {
           ),
           // Yes button
           CupertinoDialogAction(
-              onPressed: () {
-                isFileFinishedUploading.upload = true;
+              onPressed: () async {
+                final connected = await isInternetConnected();
                 Navigator.of(context).pop();
+                if (connected) {
+                  isFileFinishedUploading.upload = true;
+                } else {
+                  state.showInSnackBar("You are not connected to the internet");
+                }
               },
               child: Text("Yes")
           )
@@ -287,6 +294,19 @@ class CameraViewBuild {
       );
     }
     );
+  }
+
+  Future<bool> isInternetConnected () async {
+    try {
+      final result = await InternetAddress.lookup('example.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        print('connected');
+        return true;
+      }
+    } on SocketException catch (_) {
+      print('not connected');
+      return false;
+    }
   }
 
   // /// Display the thumbnail of the captured image or video.

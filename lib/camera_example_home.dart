@@ -335,9 +335,9 @@ class CameraExampleHomeState extends State<CameraExampleHome>
 
       // video time limit
       String path = videoPath;
-      print("Started waiting");
+      //print("Started waiting");
       await wait(VIDEO_TIME_LIMIT);
-      print("Finished waiting");
+      //print("Finished waiting");
       // If the controller is still recording the same video before the wait
       if (controller.value.isRecordingVideo && path == videoPath) {
         //int min = (VIDEO_TIME_LIMIT/60) as int;
