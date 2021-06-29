@@ -61,15 +61,6 @@ class SignUpViewState extends State<SignUpView> {
           children: [
             signUpForm(),
             showLoginButton(context),
-            // display the open cloud image
-            Padding(
-              padding: const EdgeInsets.only(bottom: 100),
-              child: showImage ? SizedBox(
-                  width: 100,
-                  height: 100,
-                  child: Image(image: AssetImage("assets/open_cloud.jpeg"))
-              ) : null,
-            ),
           ],
         ),
       ),

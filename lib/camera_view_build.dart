@@ -178,23 +178,20 @@ class CameraViewBuild {
     if (Theme.of(context).platform == TargetPlatform.iOS) {
       // Use a cupertino switch if platform is IOS
       return CupertinoSwitch(
-        value: enableAudio,
+        value: state.enableAudio,
         onChanged: (bool value) {
-          enableAudio = value;
-          if (controller != null) {
-            state.onNewCameraSelected(controller.description);
-          }
+          state.enableAudioSwitchChanged(value);
         },
       );
     }
     else {
       // Use a material switch if platform is Android
       return Switch(
-        value: enableAudio,
+        value: state.enableAudio,
         onChanged: (bool value) {
           enableAudio = value;
-          if (controller != null) {
-            state.onNewCameraSelected(controller.description);
+          if (controller != null && state.audioSwitchState) {
+            state.enableAudioSwitchChanged(value);
           }
         },
       );

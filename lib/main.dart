@@ -112,13 +112,6 @@ class CameraAppState extends State<CameraApp> {
 
 /// The widget class that creates the camera app state
 class CameraApp extends StatefulWidget {
-  // set orientation
-  CameraApp() {
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.landscapeRight,
-      DeviceOrientation.portraitUp,
-    ]);
-  }
   
   @override 
   State<StatefulWidget> createState() => CameraAppState();
@@ -137,6 +130,10 @@ Future<void> main() async {
   } on CameraException catch (e) {
     logError(e.code, e.description);
   }
-  runApp(CameraApp());
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
+      .then((_) {
+    runApp(CameraApp());
+  });
+
 }
 

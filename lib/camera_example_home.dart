@@ -54,6 +54,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
   String userID; // userId from user
   String uploadMessage; // Message when uploading
   bool controllerInitialized = false; // is controller initialized
+  bool audioSwitchState = true;
   CameraViewBuild widgets;
   static const VIDEO_TIME_LIMIT = 120; // in seconds
 
@@ -88,7 +89,6 @@ class CameraExampleHomeState extends State<CameraExampleHome>
     uploadMessage = "Upload";
     // set preferred orientations
     SystemChrome.setPreferredOrientations([
-      DeviceOrientation.landscapeRight,
       DeviceOrientation.portraitUp,
     ]);
     // wait for camera controller to initialize
@@ -276,6 +276,16 @@ class CameraExampleHomeState extends State<CameraExampleHome>
     ScaffoldMessenger.of(context).showSnackBar(bar);
   }
 
+  void enableAudioSwitchChanged(bool value) async {
+    audioSwitchState = false;
+    enableAudio = value;
+    if (controller != null) {
+      onNewCameraSelected(controller.description);
+    }
+    await wait(1);
+    audioSwitchState = true;
+  }
+
   /// Dispose of CameraController and reinitialize new when a different camera is selected.
   /// Parameters: Description of the new camera to be initialized
   void onNewCameraSelected(CameraDescription cameraDescription) async {
@@ -426,7 +436,8 @@ class CameraExampleHomeState extends State<CameraExampleHome>
     try {
       // Save the video to the camera roll
       await controller.stopVideoRecording();
-      GallerySaver.saveVideo(videoPath);
+      // saving disabled for now
+      // GallerySaver.saveVideo(videoPath);
 
       // ask the user if they want to upload to AWS
       await widgets.showUploadDialogBox();
@@ -548,7 +559,8 @@ class CameraExampleHomeState extends State<CameraExampleHome>
     try {
       // Save the image to the camera roll
       await controller.takePicture(filePath);
-      GallerySaver.saveImage(filePath);
+      // saving disabled for now due to android bug
+      //GallerySaver.saveImage(filePath);
 
       // ask the user if they want to upload to AWS
       await widgets.showUploadDialogBox();

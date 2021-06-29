@@ -29,7 +29,7 @@ class LoginView extends StatefulWidget {
 class LoginViewState extends State<LoginView> {
   final _formKey = GlobalKey<FormState>();
   bool rememberSession = false;
-  bool showIcon = true;
+  bool showIcon = false;
 
   // called when state initializes
   @override
@@ -77,15 +77,6 @@ class LoginViewState extends State<LoginView> {
           children: [
             loginForm(),
             showSignUpButton(context),
-            // display the open cloud image
-            Padding(
-              padding: const EdgeInsets.only(bottom: 100),
-              child: showIcon ? SizedBox(
-                  width: 100,
-                  height: 100,
-                  child: Image(image: AssetImage("assets/open_cloud.jpeg"))
-              ) : null,
-            ),
             // display the camera icon
             Padding(
               padding: const EdgeInsets.only(bottom: 560),
@@ -279,7 +270,7 @@ class LoginViewState extends State<LoginView> {
         // Show icon again once editing is complete
         onEditingComplete: () {
           FocusScope.of(context).unfocus();
-          setState(() {showIcon = true;});
+          //setState(() {showIcon = true;});
         },
       );
     });
@@ -308,7 +299,7 @@ class LoginViewState extends State<LoginView> {
         // Show icon again once editing is complete
         onEditingComplete: () {
           FocusScope.of(context).unfocus();
-          setState(() {showIcon = true;});
+          //setState(() {showIcon = true;});
         },
       );
     });
