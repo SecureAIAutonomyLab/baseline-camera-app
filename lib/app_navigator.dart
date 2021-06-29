@@ -28,25 +28,25 @@ class AppNavigator extends StatelessWidget {
       return Navigator(
         pages: [
           // show loading screen
-          if (state is UnknownSessionState)
-            MaterialPage(child: LoadingView()),
-
-          // show the auth navigator
-          if (state is Unauthenticated)
-            MaterialPage(
-              child: BlocProvider(
-                create: (context) => AuthCubit(sessionCubit: context.read<SessionCubit>()),
-                child: AuthNavigator(),
-              ),
-            ),
+          // if (state is UnknownSessionState)
+          //   MaterialPage(child: LoadingView()),
+          //
+          // // show the auth navigator
+          // if (state is Unauthenticated)
+          //   MaterialPage(
+          //     child: BlocProvider(
+          //       create: (context) => AuthCubit(sessionCubit: context.read<SessionCubit>()),
+          //       child: AuthNavigator(),
+          //     ),
+          //   ),
 
           // show the session
-          if (state is Authenticated)
+          // if (state is Authenticated)
             MaterialPage(
                 child: CameraExampleHome(
                   // provide username and userID to camera home
-                  username: state.user.username,
-                  userID: state.user.id,
+                  username: "Do not use",
+                  //userID: state.user.id,
                 )
             ),
         ],

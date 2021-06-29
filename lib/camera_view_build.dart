@@ -73,10 +73,10 @@ class CameraViewBuild {
   Widget chooseAppBar() {
     if (Theme.of(context).platform == TargetPlatform.iOS) {
       return CupertinoNavigationBar(
-        leading: TextButton(
-          child: Text("Sign Out", style: TextStyle(fontSize: 16),),
-          onPressed: () => BlocProvider.of<SessionCubit>(context).signOut(),
-        ),
+        // leading: TextButton(
+        //   child: Text("Sign Out", style: TextStyle(fontSize: 16),),
+        //   onPressed: () => BlocProvider.of<SessionCubit>(context).signOut(),
+        // ),
         middle: Text("Camera App"),
         trailing: IconButton(
           icon: Icon(Icons.flip_camera_ios),
@@ -167,6 +167,17 @@ class CameraViewBuild {
           SizedBox(width: 5,),
           // Android switch or IOS switch
           enableAudioSwitchType(),
+          // Display device Id
+          TextButton(
+            onPressed: () {
+              state.displayId = state.displayId ? false : true;
+              state.updateUI();
+            },
+            child: state.displayId ? Text(
+                state.deviceId,
+              style: TextStyle(fontSize: 8, color: Colors.black),
+            ) : SizedBox(width: 150)
+          )
         ],
       ),
     );

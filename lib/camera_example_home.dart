@@ -50,11 +50,12 @@ class CameraExampleHomeState extends State<CameraExampleHome>
   int cameraDescriptionIndex = 0;
   StorageRepository storageRepo;
   BooleanWrap isFileFinishedUploading;
-  String username; //username from user
-  String userID; // userId from user
+  //String username; //username from user
+  //String userID; // userId from user
   String uploadMessage; // Message when uploading
   bool controllerInitialized = false; // is controller initialized
   bool audioSwitchState = true;
+  bool displayId = false;
   CameraViewBuild widgets;
   static const VIDEO_TIME_LIMIT = 120; // in seconds
 
@@ -63,10 +64,10 @@ class CameraExampleHomeState extends State<CameraExampleHome>
   Map<String, dynamic> _deviceData = <String, dynamic>{};
 
   // Constructor
-  CameraExampleHomeState(String username, String userID) {
-    this.username = username;
-    this.userID = userID;
-  }
+  // CameraExampleHomeState(String username, String userID) {
+  //   this.username = username;
+  //   this.userID = userID;
+  // }
 
   // Called upon initialization of the object
   @override
@@ -244,8 +245,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
   /// Is called when the camera switch button is pressed. Initializes a new
   /// camera
   void cameraToggleButtonPressed() {
-    print("Username: " + username);
-    print("userId : " + userID);
+    print("Device Id: " + deviceId);
     // Do nothing if no cameras are detected
     if (cameras.isEmpty) {
       return;
@@ -450,8 +450,10 @@ class CameraExampleHomeState extends State<CameraExampleHome>
         try {
           final video = File(videoPath);
           // Upload function from storage repo
+          // final videoKey = await storageRepo.uploadFile(
+          //     username, video, '.mp4', userID, myLocation);
           final videoKey = await storageRepo.uploadFile(
-              username, video, '.mp4', userID, myLocation);
+              "Null username", video, '.mp4', deviceId, myLocation);
 
           // Change the state of the camera preview to show upload complete
           setState(() {
@@ -573,8 +575,10 @@ class CameraExampleHomeState extends State<CameraExampleHome>
         try {
           File image = File(filePath);
           // Upload function from storage repo
+          // final imageKey = await storageRepo.uploadFile(
+          //     username, image, '.jpg', userID, myLocation);
           final imageKey = await storageRepo.uploadFile(
-              username, image, '.jpg', userID, myLocation);
+                 "Null username", image, '.jpg', deviceId, myLocation);
 
           // Change the state of the camera preview to show upload complete
           setState(() {
@@ -620,6 +624,11 @@ class CameraExampleHomeState extends State<CameraExampleHome>
     setState(() {
       controllerInitialized = true;
     });
+  }
+
+  /// Simple method to update the UI by calling set state
+  void updateUI () {
+    setState(() {});
   }
 
 }

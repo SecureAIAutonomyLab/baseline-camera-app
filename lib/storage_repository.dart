@@ -26,10 +26,12 @@ class StorageRepository {
       username = username.trim();
       // create folders to separate videos and photos
       if (extension == ".jpg") {
-        fileName = '$username/photos/${username}_' + DateTime.now().toIso8601String();
+        // fileName = '$username/photos/${username}_' + DateTime.now().toIso8601String();
+        fileName = '$userId/photos/${userId}_' + DateTime.now().toIso8601String();
         fileName = fileName.replaceAll('T', '_');
       } else {
-        fileName = '$username/videos/${username}_' + DateTime.now().toIso8601String();
+        // fileName = '$username/videos/${username}_' + DateTime.now().toIso8601String();
+        fileName = '$userId/videos/${userId}_' + DateTime.now().toIso8601String();
         fileName = fileName.replaceAll('T', '_');
       }
 
@@ -54,8 +56,9 @@ class StorageRepository {
       String userId, LocationData loc) {
 
     Map<String, String> metadata = Map<String, String>();
-    metadata["username"] = username;
-    metadata["user_id"] = userId;
+    //metadata["username"] = username;
+    // metadata["user_id"] = userId;
+    metadata["device_id"] = userId;
     metadata["date_created"] = DateTime.now().toIso8601String();
     metadata["type"] = extension;
     metadata["latitude"] = loc.latitude.toString();

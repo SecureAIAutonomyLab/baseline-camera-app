@@ -35,7 +35,8 @@ class CameraExampleHome extends StatefulWidget {
   // This is a stateful widget so it must create a state for itself
   @override
   CameraExampleHomeState createState() {
-    return CameraExampleHomeState(this.username, this.userID);
+    //return CameraExampleHomeState(this.username, this.userID);
+    return CameraExampleHomeState();
   }
 }
 
@@ -91,7 +92,7 @@ class CameraAppState extends State<CameraApp> {
   Future<void> configureAmplify() async {
     try {
       await Amplify.addPlugins([
-        AmplifyAuthCognito(), // For user authentication
+        // AmplifyAuthCognito(), // For user authentication
         //AmplifyDataStore(modelProvider: ModelProvider.instance), // Not used
         AmplifyAPI(), // Amplify base API
         AmplifyStorageS3(), // For S3 storage
