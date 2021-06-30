@@ -22,18 +22,6 @@ import 'package:gallery_saver/gallery_saver.dart';
 import 'package:location/location.dart';
 import 'package:flutter/cupertino.dart';
 
-/// A wrapper class that wraps the upload file boolean variables
-class BooleanWrap {
-  BooleanWrap(bool a, bool b, bool c) {
-    this.finished = a;
-    this.started = b;
-    this.upload = c;
-  }
-  bool finished;
-  bool started;
-  bool upload;
-}
-
 
 /// Home Screen of the application
 /// Displays the camera and a few buttons that performs the actions of the camera
@@ -54,10 +42,13 @@ class CameraExampleHomeState extends State<CameraExampleHome>
   //String userID; // userId from user
   String uploadMessage; // Message when uploading
   bool controllerInitialized = false; // is controller initialized
-  bool audioSwitchState = true;
-  bool displayId = false;
-  CameraViewBuild widgets;
-  static const VIDEO_TIME_LIMIT = 120; // in seconds
+  bool audioSwitchState = true; // holds state of audio switch
+  bool displayId = false; // display the device id or not
+  ChunkVideoData chunkData;
+  CameraViewBuild widgets; // the camera view widgets
+  static const VIDEO_CHUNK_RATE = 61; // in seconds
+  Timer chunkTimer; // timer for video chunking
+
 
 
   static final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
@@ -84,8 +75,10 @@ class CameraExampleHomeState extends State<CameraExampleHome>
     controller.initialize();
     // initialize storage repository
     storageRepo = StorageRepository();
-    // initialize boolean wrap
+    // initialize boolean wrap object
     isFileFinishedUploading = BooleanWrap(false, false, false);
+    // initialize chunk video object
+    chunkData = ChunkVideoData(chunkVideo: false, videoCount: 0);
     // set upload default message;
     uploadMessage = "Upload";
     // set preferred orientations
@@ -337,29 +330,70 @@ class CameraExampleHomeState extends State<CameraExampleHome>
 
   /// Starts video recording and displays a snack bar,
   /// calls startVideoRecording()
-  void onVideoRecordButtonPressed() {
+  Timer onVideoRecordButtonPressed() {
     uploadMessage = "Upload";
     startVideoRecording().then((String filePath) async {
       if (mounted) setState(() {});
       if (filePath != null) showInSnackBar('Video recording started.');
-
-      // video time limit
-      String path = videoPath;
-      //print("Started waiting");
-      await wait(VIDEO_TIME_LIMIT);
-      //print("Finished waiting");
-      // If the controller is still recording the same video before the wait
-      if (controller.value.isRecordingVideo && path == videoPath) {
-        //int min = (VIDEO_TIME_LIMIT/60) as int;
-        uploadMessage = "Video Time Limit Reached   (2 minutes)";
-        // Stop the recording
-        onStopButtonPressed();
+      // Run the timer to chunk the video at the specified time
+        final duration = Duration(seconds: VIDEO_CHUNK_RATE);
+        // save time so it can be canceled later
+        chunkTimer = Timer.periodic(duration, chunkVideo);
+        return chunkTimer;
       }
-    });
+    );
+    return null;
+  }
+
+  void chunkVideo(Timer t) async {
+    chunkData.videoCount++;
+    chunkData.chunkVideo = true;
+    showInSnackBar("Time limit reached, video will be chunked");
+    File video;
+
+    // Creates the file path where the video is to be saved
+    final Directory extDir = await getApplicationDocumentsDirectory();
+    final String dirPath = '${extDir.path}/Movies/flutter_test';
+    await Directory(dirPath).create(recursive: true);
+    final String filePath = '$dirPath/$deviceId${timestamp()}.mp4';
+
+    try {
+      // stop recording
+      video = File(videoPath);
+      videoPath = filePath;
+      await controller.stopVideoRecording();
+      await controller.prepareForVideoRecording();
+      // start recording again
+      await controller.startVideoRecording(filePath);
+    } on CameraException catch (e) {
+      _showCameraException(e);
+      return null;
+    }
+
+    // Upload video to AWS S3
+    try {
+      // Record location data
+      Location location = new Location();
+      LocationData myLocation = await location.getLocation();
+
+      // Upload function from storage repo
+      // final videoKey = await storageRepo.uploadFile(
+      //     username, video, '.mp4', userID, myLocation);
+      final videoKey = await storageRepo.uploadFile(
+          "Null username", video, '.mp4', deviceId, myLocation, chunkData);
+    } on StorageException catch (e) {
+      print(e.message);
+    }
   }
 
   /// Stops video recording, calls stopVideoRecording()
   void onStopButtonPressed() {
+    if (chunkData.videoCount != 0)
+      chunkData.videoCount++;
+    // Stop the video chunk timer
+    if (chunkTimer != null)
+      chunkTimer.cancel();
+    print(chunkTimer.toString());
     stopVideoRecording().then((_) {
       if (mounted) setState(() {});
       //showInSnackBar('Video recorded to gallery.');
@@ -369,6 +403,8 @@ class CameraExampleHomeState extends State<CameraExampleHome>
   /// Pauses the video recording and displays a snack bar,
   /// calls pauseVideoRecording()
   void onPauseButtonPressed() {
+    if (chunkTimer != null)
+      chunkTimer.cancel();
     pauseVideoRecording().then((_) {
       if (mounted) setState(() {});
       showInSnackBar('Video recording paused.');
@@ -377,11 +413,15 @@ class CameraExampleHomeState extends State<CameraExampleHome>
 
   /// Resumes the video recording and displays a snack bar
   /// , calls resumeVideoRecording()
-  void onResumeButtonPressed() {
+  Timer onResumeButtonPressed() {
+    final duration = Duration(seconds: VIDEO_CHUNK_RATE);
     resumeVideoRecording().then((_) {
       if (mounted) setState(() {});
       showInSnackBar('Video recording resumed.');
+      chunkTimer = Timer.periodic(duration, chunkVideo);
+      return chunkTimer;
     });
+
   }
 
 
@@ -394,16 +434,11 @@ class CameraExampleHomeState extends State<CameraExampleHome>
       return null;
     }
 
-    // Record location data
-    Location location = new Location();
-    LocationData myLocation = await location.getLocation();
-    String latitudeAndLongitude = myLocation.latitude.toString() + myLocation.longitude.toString();
-
     // Creates the file path where the video is to be saved
     final Directory extDir = await getApplicationDocumentsDirectory();
     final String dirPath = '${extDir.path}/Movies/flutter_test';
     await Directory(dirPath).create(recursive: true);
-    final String filePath = '$dirPath/$deviceId$latitudeAndLongitude${timestamp()}.mp4';
+    final String filePath = '$dirPath/$deviceId${timestamp()}.mp4';
 
     if (controller.value.isRecordingVideo) {
       // A recording is already started, do nothing.
@@ -413,6 +448,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
     // Start recording video
     try {
       videoPath = filePath;
+      await controller.prepareForVideoRecording();
       await controller.startVideoRecording(filePath);
     } on CameraException catch (e) {
       _showCameraException(e);
@@ -439,8 +475,13 @@ class CameraExampleHomeState extends State<CameraExampleHome>
       // saving disabled for now
       // GallerySaver.saveVideo(videoPath);
 
-      // ask the user if they want to upload to AWS
-      await widgets.showUploadDialogBox();
+      // ask the user if they want to upload to AWS if
+      // video has not been chunked
+      if (!chunkData.chunkVideo)
+        await widgets.showUploadDialogBox();
+      else
+        isFileFinishedUploading.upload = true;
+
       if (isFileFinishedUploading.upload) {
         // Change state of camera preview to show the upload process
         isFileFinishedUploading.finished = false;
@@ -453,7 +494,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
           // final videoKey = await storageRepo.uploadFile(
           //     username, video, '.mp4', userID, myLocation);
           final videoKey = await storageRepo.uploadFile(
-              "Null username", video, '.mp4', deviceId, myLocation);
+              "Null username", video, '.mp4', deviceId, myLocation, chunkData);
 
           // Change the state of the camera preview to show upload complete
           setState(() {
@@ -466,13 +507,16 @@ class CameraExampleHomeState extends State<CameraExampleHome>
           });
         } on StorageException catch (e) {
           print(e.message);
+          showInSnackBar(e.message);
         }
       }
     } on CameraException catch (e) {
       _showCameraException(e);
       return null;
     }
-
+    // change variable back to initial state
+    chunkData.chunkVideo = false;
+    chunkData.videoCount = 0;
     // for video playback, not used
     //await _startVideoPlayer();
   }
@@ -545,13 +589,12 @@ class CameraExampleHomeState extends State<CameraExampleHome>
     // Get the location data for the image
     Location location = new Location();
     LocationData myLocation = await location.getLocation();
-    String latitudeAndLongitude = myLocation.latitude.toString() + myLocation.longitude.toString();
 
     // Get and save the filepath of the image
     final Directory extDir = await getApplicationDocumentsDirectory();
     final String dirPath = '${extDir.path}/Pictures/flutter_test';
     await Directory(dirPath).create(recursive: true);
-    final String filePath = '$dirPath/$deviceId$latitudeAndLongitude${timestamp()}.jpg';
+    final String filePath = '$dirPath/$deviceId${timestamp()}.jpg';
 
     if (controller.value.isTakingPicture) {
       // A capture is already pending, do nothing.
@@ -578,7 +621,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
           // final imageKey = await storageRepo.uploadFile(
           //     username, image, '.jpg', userID, myLocation);
           final imageKey = await storageRepo.uploadFile(
-                 "Null username", image, '.jpg', deviceId, myLocation);
+              "Null username", image, '.jpg', deviceId, myLocation, chunkData);
 
           // Change the state of the camera preview to show upload complete
           setState(() {
@@ -592,6 +635,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
 
         } on StorageException catch (e) {
           print(e.message);
+          showInSnackBar(e.message);
         }
       }
     } on CameraException catch (e) {

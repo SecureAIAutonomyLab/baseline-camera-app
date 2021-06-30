@@ -16,6 +16,30 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'main.dart';
 
+
+/// A wrapper class that wraps the upload file boolean variables
+class BooleanWrap {
+  BooleanWrap(bool a, bool b, bool c) {
+    this.finished = a;
+    this.started = b;
+    this.upload = c;
+  }
+  bool finished;
+  bool started;
+  bool upload;
+}
+
+/// Wrapper class that stores the isVideoChunked boolean variable
+/// and the number of chunked videos created
+class ChunkVideoData {
+
+  bool chunkVideo;
+  int videoCount;
+
+  ChunkVideoData({this.chunkVideo, this.videoCount});
+}
+
+
 class CameraViewBuild {
 
   BuildContext context;
@@ -77,7 +101,7 @@ class CameraViewBuild {
         //   child: Text("Sign Out", style: TextStyle(fontSize: 16),),
         //   onPressed: () => BlocProvider.of<SessionCubit>(context).signOut(),
         // ),
-        middle: Text("Camera App"),
+        middle: Text("Camera Home"),
         trailing: IconButton(
           icon: Icon(Icons.flip_camera_ios),
           onPressed: () {
@@ -90,7 +114,7 @@ class CameraViewBuild {
     else {
       // android platform
       return AppBar(
-        title: Text("Camera Example"),
+        title: Text("Camera Home"),
         actions: [
           IconButton(
             icon: Icon(Icons.flip_camera_android),
@@ -220,23 +244,33 @@ class CameraViewBuild {
           icon: const Icon(Icons.camera_alt),
           color: Colors.blue,
           // If all boolean values are true, activate button otherwise do nothing
-          onPressed: controller != null &&
-              controller.value.isInitialized &&
-              !controller.value.isRecordingVideo &&
-              !isFileFinishedUploading.started // only if finished uploading
-              ? state.onTakePictureButtonPressed
-              : null,
+            onPressed: () async {
+              if (controller != null &&
+                  controller.value.isInitialized &&
+                  !controller.value.isRecordingVideo &&
+                  !isFileFinishedUploading.started // only if finished uploading
+              )
+                if (await isInternetConnected())
+                  state.onTakePictureButtonPressed();
+                else
+                  state.showInSnackBar("You are not connected to the internet");
+            }
         ),
         IconButton(
           icon: const Icon(Icons.videocam),
           color: Colors.blue,
           // If all boolean values are true, activate button otherwise do nothing
-          onPressed: controller != null &&
-              controller.value.isInitialized &&
-              !controller.value.isRecordingVideo &&
-              !isFileFinishedUploading.started // only if finished uploading
-              ? state.onVideoRecordButtonPressed
-              : null,
+          onPressed: () async {
+            if (controller != null &&
+                controller.value.isInitialized &&
+                !controller.value.isRecordingVideo &&
+                !isFileFinishedUploading.started // only if finished uploading
+            )
+            if (await isInternetConnected())
+              state.onVideoRecordButtonPressed();
+            else
+              state.showInSnackBar("You are not connected to the internet");
+          }
         ),
         IconButton(
           icon: controller != null && controller.value.isRecordingPaused
@@ -269,7 +303,14 @@ class CameraViewBuild {
   /// Displays a dialog box that prompts the user if they want to upload their file
   /// Returns: A future object, indicates function is not synchronous
   Future<void> showUploadDialogBox() {
-    return showCupertinoDialog<void>(
+    if (Theme.of(context).platform == TargetPlatform.android)
+      return materialDialog();
+    else
+      return cupertinoDialog();
+  }
+
+  Future<Widget> cupertinoDialog() {
+    return showCupertinoDialog<Widget>(
       // User cannot dismiss the dialog
         barrierDismissible: false,
         context: context, builder: (BuildContext context) {
@@ -304,7 +345,43 @@ class CameraViewBuild {
     );
   }
 
-  Future<bool> isInternetConnected () async {
+  Future<Widget> materialDialog() {
+    return showDialog<Widget>(
+      // User cannot dismiss the dialog
+        barrierDismissible: false,
+        context: context, builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text(uploadMessage),
+        content: Text("Do you want to upload this file to AWS?"),
+        actions: [
+          // No button
+          TextButton(
+              onPressed: () {
+                isFileFinishedUploading.upload = false;
+                Navigator.of(context).pop();
+              },
+              child: Text("No")
+          ),
+          // Yes button
+          TextButton(
+              onPressed: () async {
+                final connected = await isInternetConnected();
+                Navigator.of(context).pop();
+                if (connected) {
+                  isFileFinishedUploading.upload = true;
+                } else {
+                  state.showInSnackBar("You are not connected to the internet");
+                }
+              },
+              child: Text("Yes")
+          )
+        ],
+      );
+    }
+    );
+  }
+
+  Future<bool> isInternetConnected() async {
     try {
       final result = await InternetAddress.lookup('example.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
@@ -315,6 +392,7 @@ class CameraViewBuild {
       print('not connected');
       return false;
     }
+    return null;
   }
 
   // /// Display the thumbnail of the captured image or video.

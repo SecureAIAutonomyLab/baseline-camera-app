@@ -30,6 +30,10 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.2
   camera:
+    git:
+      url: https://github.com/DealerPeak/plugins.git
+      path: packages/camera
+      ref: camera-fix-android-audio
   path_provider:
   path:
   video_player:

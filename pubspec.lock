@@ -116,10 +116,12 @@ packages:
   camera:
     dependency: "direct main"
     description:
-      name: camera
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.5.7+4"
+      path: "packages/camera"
+      ref: camera-fix-android-audio
+      resolved-ref: c4e09bdf77d0da0b420a0418874e636848b2dcaa
+      url: "https://github.com/DealerPeak/plugins.git"
+    source: git
+    version: "0.5.8+8"
   characters:
     dependency: transitive
     description:
