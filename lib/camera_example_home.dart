@@ -33,6 +33,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
   VideoPlayerController videoController;
   VoidCallback videoPlayerListener;
   bool enableAudio = true;
+  ResolutionPreset resolution = ResolutionPreset.medium;
   String deviceId;
   String latitudeAndLongitude; // latittude-longitude
   int cameraDescriptionIndex = 0;
@@ -238,7 +239,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
   /// Is called when the camera switch button is pressed. Initializes a new
   /// camera
   void cameraToggleButtonPressed() {
-    print("Device Id: " + deviceId);
+    print(resolution.toString());
     // Do nothing if no cameras are detected
     if (cameras.isEmpty) {
       return;
@@ -288,7 +289,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
 
     controller = CameraController(
       cameraDescription,
-      ResolutionPreset.medium,
+      resolution,
       enableAudio: enableAudio,
     );
 
@@ -308,6 +309,22 @@ class CameraExampleHomeState extends State<CameraExampleHome>
 
     if (mounted) {
       setState(() {});
+    }
+  }
+
+  /// Change the resolution of the camera as specified by the user
+  /// Parameters: String option which holds the desired resolution
+  /// setting chosen by the user
+  void changeResolution(String option) {
+    if (option == "high")
+      resolution = ResolutionPreset.high;
+    else if (option == "medium")
+      resolution = ResolutionPreset.medium;
+    else if (option == "low")
+      resolution = ResolutionPreset.low;
+    // create a new camera with desired resolution
+    if (option != "cancel") {
+      onNewCameraSelected(cameras[cameraDescriptionIndex]);
     }
   }
 

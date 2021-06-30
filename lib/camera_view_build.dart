@@ -87,6 +87,7 @@ class CameraViewBuild {
           captureControlRowWidget(),
           // Capture audio or not
           toggleAudioWidget(),
+          cameraOptionsWidget(),
         ],
       ),
     );
@@ -181,7 +182,7 @@ class CameraViewBuild {
   /// Returns: toggle recording audio widget
   Widget toggleAudioWidget() {
     return Padding(
-      padding: const EdgeInsets.only(left: 25, top: 10, bottom: 25),
+      padding: const EdgeInsets.only(left: 25),
       child: Row(
         children: <Widget>[
           const Text(
@@ -231,6 +232,57 @@ class CameraViewBuild {
         },
       );
     }
+  }
+
+  /// Finish description
+  Widget cameraOptionsWidget() {
+    return cupertinoActionSheet();
+  }
+
+  Widget cupertinoActionSheet() {
+    return Padding(
+      padding: const EdgeInsets.only(left: 9, bottom: 15),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          CupertinoButton(
+            onPressed: () async {
+              final currentResolution = state.resolution.toString();
+              var returned = await showCupertinoModalPopup<String>(
+                context: context,
+                builder: (BuildContext context) => CupertinoActionSheet(
+                  title: Text('Choose a resolution', style: TextStyle(fontSize: 18)),
+                  message: Text("The resolution is currently set at " +
+                      currentResolution.substring(17)),
+                  actions: <CupertinoActionSheetAction>[
+                    CupertinoActionSheetAction(
+                        child: const Text('High'),
+                        onPressed: () {Navigator.of(context).pop("high");}
+                    ),
+                    CupertinoActionSheetAction(
+                        child: const Text('Medium'),
+                        onPressed: () {Navigator.of(context).pop("medium");}
+                    ),
+                    CupertinoActionSheetAction(
+                        child: const Text('Low'),
+                        onPressed: () {Navigator.of(context).pop("low");}
+                    )
+                  ],
+                  cancelButton: CupertinoActionSheetAction(
+                      child: const Text('Cancel'),
+                      onPressed: () {Navigator.of(context).pop("cancel");}
+                  ),
+                ),
+              );
+              // call for resolution change
+              state.changeResolution(returned);
+            },
+            child: const Text('Change Resolution'),
+          ),
+        ],
+      ),
+    );
   }
 
   /// Display the control bar with buttons to take pictures and record videos.

@@ -169,7 +169,7 @@ SPEC CHECKSUMS:
   AWSMobileClient: 6af7fff9e58f8d427acf3381cbbae2f0c34d52ab
   AWSPluginsCore: 744703798503e07230cc64b67b1f7ff0569e06e9
   AWSS3: 1782d0db43a1219a118ea6263d4ea01f76f8cdf4
-  camera: 38cc83ae9a5667bb5a71c7d9edaf60a91920fd4e
+  camera: a0ca5080336f7af47b88436e5e26da3dee5568f0
   device_info: cbf09d2ec12aa7110e0b09fabe54b5bd6c8efe74
   esys_flutter_share: 403498dab005b36ce1f8d7aff377e81f0621b0b4
   Flutter: 434fef37c0980e73bb6479ef766c45957d4b510c
