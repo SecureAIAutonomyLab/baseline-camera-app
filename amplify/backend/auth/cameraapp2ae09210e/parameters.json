@@ -1,8 +1,8 @@
 {
-    "identityPoolName": "cameraapp2db4e43f6_identitypool_db4e43f6",
-    "allowUnauthenticatedIdentities": false,
-    "resourceNameTruncated": "cameradb4e43f6",
-    "userPoolName": "cameraapp2db4e43f6_userpool_db4e43f6",
+    "identityPoolName": "cameraapp2ae09210e_identitypool_ae09210e",
+    "allowUnauthenticatedIdentities": true,
+    "resourceNameTruncated": "cameraae09210e",
+    "userPoolName": "cameraapp2ae09210e_userpool_ae09210e",
     "autoVerifiedAttributes": [
         "email"
     ],
@@ -28,10 +28,10 @@
     "userpoolClientReadAttributes": [
         "email"
     ],
-    "userpoolClientLambdaRole": "cameradb4e43f6_userpoolclient_lambda_role",
+    "userpoolClientLambdaRole": "cameraae09210e_userpoolclient_lambda_role",
     "userpoolClientSetAttributes": false,
-    "sharedId": "db4e43f6",
-    "resourceName": "cameraapp2db4e43f6",
+    "sharedId": "ae09210e",
+    "resourceName": "cameraapp2ae09210e",
     "authSelections": "identityPoolAndUserPool",
     "authRoleArn": {
         "Fn::GetAtt": [
@@ -45,18 +45,20 @@
             "Arn"
         ]
     },
-    "useDefault": "defaultSocial",
+    "useDefault": "manual",
     "userPoolGroupList": [],
     "serviceName": "Cognito",
     "usernameCaseSensitive": false,
     "dependsOn": [],
-    "hostedUI": true,
-    "hostedUIDomainName": "cameraapp2e0291d72-e0291d72",
-    "authProvidersUserPool": [
-        "Facebook",
-        "Google"
-    ],
-    "hostedUIProviderMeta": "[{\"ProviderName\":\"Facebook\",\"authorize_scopes\":\"email,public_profile\",\"AttributeMapping\":{\"email\":\"email\",\"username\":\"id\"}},{\"ProviderName\":\"Google\",\"authorize_scopes\":\"openid email profile\",\"AttributeMapping\":{\"email\":\"email\",\"username\":\"sub\"}}]",
-    "authProviders": [],
-    "oAuthMetadata": "{\"AllowedOAuthFlows\":[\"code\"],\"AllowedOAuthScopes\":[\"phone\",\"email\",\"openid\",\"profile\",\"aws.cognito.signin.user.admin\"],\"CallbackURLs\":[\"cameraapp://\"],\"LogoutURLs\":[\"cameraapp://\"]}"
+    "thirdPartyAuth": false,
+    "userPoolGroups": false,
+    "adminQueries": false,
+    "triggers": "{}",
+    "hostedUI": false,
+    "parentStack": {
+        "Ref": "AWS::StackId"
+    },
+    "breakCircularDependency": true,
+    "permissions": [],
+    "authProviders": []
 }

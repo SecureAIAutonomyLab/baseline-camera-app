@@ -92,7 +92,7 @@ class CameraAppState extends State<CameraApp> {
   Future<void> configureAmplify() async {
     try {
       await Amplify.addPlugins([
-        // AmplifyAuthCognito(), // For user authentication
+        AmplifyAuthCognito(), // For user authentication
         //AmplifyDataStore(modelProvider: ModelProvider.instance), // Not used
         AmplifyAPI(), // Amplify base API
         AmplifyStorageS3(), // For S3 storage
@@ -102,6 +102,7 @@ class CameraAppState extends State<CameraApp> {
       await Amplify.configure(amplifyconfig);
       // Set state method causes the widget to be rebuilt upon the change of
       // Certain variables
+      await Amplify.Auth.signOut();
       setState(() {
         _isAmplifyConfigured = true;
       });

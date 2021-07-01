@@ -26,7 +26,7 @@ import 'package:flutter/cupertino.dart';
 /// Home Screen of the application
 /// Displays the camera and a few buttons that performs the actions of the camera
 class CameraExampleHomeState extends State<CameraExampleHome>
-    with WidgetsBindingObserver {
+    with WidgetsBindingObserver, TickerProviderStateMixin {
   CameraController controller;
   String imagePath;
   String videoPath;
@@ -47,9 +47,10 @@ class CameraExampleHomeState extends State<CameraExampleHome>
   bool displayId = false; // display the device id or not
   ChunkVideoData chunkData;
   CameraViewBuild widgets; // the camera view widgets
-  static const VIDEO_CHUNK_RATE = 61; // in seconds
+  static const VIDEO_CHUNK_RATE = 10; // in seconds
   Timer chunkTimer; // timer for video chunking
-
+  AnimationController animationController;
+  Animation<double> rowAnimation;
 
 
   static final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
@@ -73,6 +74,15 @@ class CameraExampleHomeState extends State<CameraExampleHome>
       ResolutionPreset.medium,
       enableAudio: enableAudio,
     );
+    animationController = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+    rowAnimation = CurvedAnimation(
+      parent: animationController,
+      curve: Curves.easeInCubic,
+    );
+
     controller.initialize();
     // initialize storage repository
     storageRepo = StorageRepository();
@@ -94,6 +104,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    animationController.dispose();
     super.dispose();
   }
 
@@ -239,7 +250,6 @@ class CameraExampleHomeState extends State<CameraExampleHome>
   /// Is called when the camera switch button is pressed. Initializes a new
   /// camera
   void cameraToggleButtonPressed() {
-    print(resolution.toString());
     // Do nothing if no cameras are detected
     if (cameras.isEmpty) {
       return;
@@ -256,6 +266,14 @@ class CameraExampleHomeState extends State<CameraExampleHome>
         // Initialize new camera
         onNewCameraSelected(cameras[cameraDescriptionIndex]);
       }
+    }
+  }
+
+  void onCameraOptionsButtonPressed() {
+    if (animationController.value == 1) {
+      animationController.reverse();
+    } else {
+      animationController.forward();
     }
   }
 
@@ -323,7 +341,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
     else if (option == "low")
       resolution = ResolutionPreset.low;
     // create a new camera with desired resolution
-    if (option != "cancel") {
+    if (option != "cancel" && option != null) {
       onNewCameraSelected(cameras[cameraDescriptionIndex]);
     }
   }
@@ -378,8 +396,8 @@ class CameraExampleHomeState extends State<CameraExampleHome>
       // stop recording
       video = File(videoPath);
       videoPath = filePath;
-      await controller.stopVideoRecording();
-      await controller.prepareForVideoRecording();
+      controller.stopVideoRecording();
+      controller.prepareForVideoRecording();
       // start recording again
       await controller.startVideoRecording(filePath);
     } on CameraException catch (e) {

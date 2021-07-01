@@ -117,8 +117,8 @@ class LoginViewState extends State<LoginView> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                _googleLogin(),
-                facebookLogin(),
+                //_googleLogin(),
+                //facebookLogin(),
                 usernameField(),
                 passwordField(),
                 // spacing

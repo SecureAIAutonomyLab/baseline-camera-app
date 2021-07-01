@@ -85,8 +85,11 @@ class CameraViewBuild {
           ),
           // Camera control buttons
           captureControlRowWidget(),
-          // Capture audio or not
-          toggleAudioWidget(),
+          // Button to show camera options widget
+          TextButton(
+              onPressed: controller != null ? state.onCameraOptionsButtonPressed : null,
+              child: Text("Camera Options", style: TextStyle(fontSize: 15),)),
+          // Display the camera options
           cameraOptionsWidget(),
         ],
       ),
@@ -181,30 +184,17 @@ class CameraViewBuild {
 
   /// Returns: toggle recording audio widget
   Widget toggleAudioWidget() {
-    return Padding(
-      padding: const EdgeInsets.only(left: 25),
-      child: Row(
-        children: <Widget>[
-          const Text(
-            'Enable Audio:',
-            style: TextStyle(fontSize: 15),
-          ),
-          SizedBox(width: 5,),
-          // Android switch or IOS switch
-          enableAudioSwitchType(),
-          // Display device Id
-          TextButton(
-            onPressed: () {
-              state.displayId = state.displayId ? false : true;
-              state.updateUI();
-            },
-            child: state.displayId ? Text(
-                state.deviceId,
-              style: TextStyle(fontSize: 8, color: Colors.black),
-            ) : SizedBox(width: 150)
-          )
-        ],
-      ),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        const Text(
+          'Enable Audio:',
+          style: TextStyle(fontSize: 15),
+        ),
+        SizedBox(width: 5,),
+        // Android switch or IOS switch
+        enableAudioSwitchType(),
+      ],
     );
   }
 
@@ -234,54 +224,95 @@ class CameraViewBuild {
     }
   }
 
-  /// Finish description
+  /// Displays the animation for brining up the camera options
+  /// Returns: A dynamic sized widget according to the animation
+  /// controller
   Widget cameraOptionsWidget() {
-    return cupertinoActionSheet();
+    return SizeTransition(
+      sizeFactor: state.rowAnimation,
+      child: ClipRect(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            changeResolutionWidget(),
+            toggleAudioWidget(),
+            // Display device Id
+            TextButton(
+                onPressed: () {
+                  state.displayId = state.displayId ? false : true;
+                  state.updateUI();
+                },
+                child: state.displayId ? Text(
+                  state.deviceId,
+                  style: TextStyle(fontSize: 13, color: Colors.black),
+                ) : Text("Display Device ID",
+                  style: TextStyle(fontSize: 13, color: Colors.black),
+                )
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
+  /// Display the change resolution widget on the page
+  /// Returns: A row that holds the text and buttons for changing the
+  /// camera resolution
+  Widget changeResolutionWidget() {
+    String currentResolution = state.resolution.toString().substring(17);
+    currentResolution = currentResolution.substring(0,1).toUpperCase() +
+        currentResolution.substring(1);
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        Row(
+          children: [
+            Text("Resolution: ", style: TextStyle(fontSize: 20),),
+            SizedBox(width: 5,),
+            Text(currentResolution, style: TextStyle(fontSize: 15),),
+          ],
+        ),
+        cupertinoActionSheet(),
+      ],
+    );
+  }
+
+  /// Displays an action menu for the user to change the camera resolution
+  /// Returns: A button that brings up an action sheet of choices
   Widget cupertinoActionSheet() {
-    return Padding(
-      padding: const EdgeInsets.only(left: 9, bottom: 15),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        mainAxisSize: MainAxisSize.max,
-        children: [
-          CupertinoButton(
-            onPressed: () async {
-              final currentResolution = state.resolution.toString();
-              var returned = await showCupertinoModalPopup<String>(
-                context: context,
-                builder: (BuildContext context) => CupertinoActionSheet(
-                  title: Text('Choose a resolution', style: TextStyle(fontSize: 18)),
-                  message: Text("The resolution is currently set at " +
-                      currentResolution.substring(17)),
-                  actions: <CupertinoActionSheetAction>[
-                    CupertinoActionSheetAction(
-                        child: const Text('High'),
-                        onPressed: () {Navigator.of(context).pop("high");}
-                    ),
-                    CupertinoActionSheetAction(
-                        child: const Text('Medium'),
-                        onPressed: () {Navigator.of(context).pop("medium");}
-                    ),
-                    CupertinoActionSheetAction(
-                        child: const Text('Low'),
-                        onPressed: () {Navigator.of(context).pop("low");}
-                    )
-                  ],
-                  cancelButton: CupertinoActionSheetAction(
-                      child: const Text('Cancel'),
-                      onPressed: () {Navigator.of(context).pop("cancel");}
-                  ),
-                ),
-              );
-              // call for resolution change
-              state.changeResolution(returned);
-            },
-            child: const Text('Change Resolution'),
+    return CupertinoButton(
+      onPressed: () async {
+        final currentResolution = state.resolution.toString();
+        var returned = await showCupertinoModalPopup<String>(
+          context: context,
+          builder: (BuildContext context) => CupertinoActionSheet(
+            title: Text('Choose a resolution', style: TextStyle(fontSize: 18)),
+            message: Text("The resolution is currently set at " +
+                currentResolution.substring(17)),
+            actions: <CupertinoActionSheetAction>[
+              CupertinoActionSheetAction(
+                  child: const Text('High'),
+                  onPressed: () {Navigator.of(context).pop("high");}
+              ),
+              CupertinoActionSheetAction(
+                  child: const Text('Medium'),
+                  onPressed: () {Navigator.of(context).pop("medium");}
+              ),
+              CupertinoActionSheetAction(
+                  child: const Text('Low'),
+                  onPressed: () {Navigator.of(context).pop("low");}
+              )
+            ],
+            cancelButton: CupertinoActionSheetAction(
+                child: const Text('Cancel'),
+                onPressed: () {Navigator.of(context).pop("cancel");}
+            ),
           ),
-        ],
-      ),
+        );
+        // call for resolution change
+        state.changeResolution(returned);
+      },
+      child: const Text('Change Resolution'),
     );
   }
 

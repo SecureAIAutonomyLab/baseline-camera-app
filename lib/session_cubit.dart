@@ -23,7 +23,8 @@ class SessionCubit extends Cubit<SessionState> {
     @required this.authRepo,
     @required this.dataRepo,
   }) : super(UnknownSessionState()) {
-    attemptAutoLogin();
+    // TODO reenable for auth access
+    //attemptAutoLogin();
   }
 
   /// Try and fetch fetch the current session and login
