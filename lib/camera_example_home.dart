@@ -367,6 +367,8 @@ class CameraExampleHomeState extends State<CameraExampleHome>
   /// calls startVideoRecording()
   Timer onVideoRecordButtonPressed() {
     uploadMessage = "Upload";
+    // create the action file for video
+    storageRepo.createActionTextFile();
     startVideoRecording().then((String filePath) async {
       if (mounted) setState(() {});
       if (filePath != null) showInSnackBar('Video recording started.');

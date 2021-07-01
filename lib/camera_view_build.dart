@@ -85,6 +85,8 @@ class CameraViewBuild {
           ),
           // Camera control buttons
           captureControlRowWidget(),
+          Text("Action Buttons"),
+          captureActionRowWidget(),
           // Button to show camera options widget
           TextButton(
               onPressed: controller != null ? state.onCameraOptionsButtonPressed : null,
@@ -378,6 +380,47 @@ class CameraViewBuild {
               controller.value.isRecordingVideo
               ? state.onStopButtonPressed
               : null,
+        )
+      ],
+    );
+  }
+
+  Widget captureActionRowWidget() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      mainAxisSize: MainAxisSize.max,
+      children: <Widget>[
+        IconButton(
+            icon: const Icon(Icons.accessibility),
+            color: Colors.blue,
+            onPressed: controller != null &&
+                controller.value.isInitialized &&
+                controller.value.isRecordingVideo
+            ? () {} : null
+        ),
+        IconButton(
+            icon: const Icon(Icons.airline_seat_recline_extra),
+            color: Colors.blue,
+            onPressed: controller != null &&
+                controller.value.isInitialized &&
+                controller.value.isRecordingVideo
+                ? () {} : null
+        ),
+        IconButton(
+          icon: const Icon(Icons.airline_seat_flat),
+          color: Colors.blue,
+            onPressed: controller != null &&
+                controller.value.isInitialized &&
+                controller.value.isRecordingVideo
+                ? () {} : null
+        ),
+        IconButton(
+          icon: const Icon(Icons.accessible_sharp),
+          color: Colors.blue,
+            onPressed: controller != null &&
+                controller.value.isInitialized &&
+                controller.value.isRecordingVideo
+                ? () {} : null
         )
       ],
     );
