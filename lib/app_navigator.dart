@@ -6,8 +6,10 @@
 
 import 'package:camera_app/auth/auth_cubit.dart';
 import 'package:camera_app/auth/auth_navigator.dart';
+import 'package:camera_app/camera_cubit.dart';
 import 'package:camera_app/loading_view.dart';
 import 'package:camera_app/main.dart';
+import 'package:camera_app/camera_navigator.dart';
 import 'package:camera_app/session_state.dart';
 import 'package:camera_app/session_cubit.dart';
 
@@ -43,10 +45,9 @@ class AppNavigator extends StatelessWidget {
           // show the session
           // if (state is Authenticated)
             MaterialPage(
-                child: CameraExampleHome(
-                  // provide username and userID to camera home
-                  username: "Do not use",
-                  //userID: state.user.id,
+                child: BlocProvider(
+                  create: (context) => CameraCubit(),
+                    child: CameraNavigator()
                 )
             ),
         ],

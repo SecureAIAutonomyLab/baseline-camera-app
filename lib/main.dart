@@ -22,7 +22,6 @@ import 'amplifyconfiguration.dart';
 import 'app_navigator.dart';
 import 'auth/auth_repository.dart';
 import 'camera_example_home.dart';
-import 'data_repository.dart';
 import 'package:amplify_storage_s3/amplify_storage_s3.dart';
 
 class CameraExampleHome extends StatefulWidget {
@@ -74,12 +73,10 @@ class CameraAppState extends State<CameraApp> {
     return MultiRepositoryProvider(
       providers: [
         RepositoryProvider(create: (context) => AuthRepository()),
-        RepositoryProvider(create: (context) => DataRepository()),
       ],
       child: BlocProvider(
         create: (context) => SessionCubit(
             authRepo: context.read<AuthRepository>(),
-            dataRepo: context.read<DataRepository>(),
         ),
         child: AppNavigator(),
       ),

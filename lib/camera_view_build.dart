@@ -10,11 +10,13 @@ import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:camera_app/camera_example_home.dart';
 import 'package:camera_app/session_cubit.dart';
+import 'package:camera_app/camera_navigator.dart';
 import 'package:camera_app/storage_repository.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'camera_cubit.dart';
 import 'main.dart';
 
 
@@ -49,19 +51,16 @@ class CameraViewBuild {
   BooleanWrap isFileFinishedUploading;
   bool enableAudio;
   String uploadMessage;
-  Widget actionView;
-  Widget actionPicker;
 
   // named parameter constructor
   CameraViewBuild({this.context, this.state, this.controller, this.isFileFinishedUploading,
-                  this.enableAudio, this.uploadMessage}) {
-  }
+                  this.enableAudio, this.uploadMessage});
 
   /// Messages for the snack bar
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   /// This called by the main build function in the home class
-  Widget build () {
+  Widget build() {
     return Scaffold(
       key: _scaffoldKey,
       appBar: chooseAppBar(),
@@ -91,7 +90,6 @@ class CameraViewBuild {
           captureControlRowWidget(),
           Text("Action Buttons"),
           captureActionRowWidget(),
-          TextButton(onPressed: () {}, child: Text("Action Options")),
           // Button to show camera options widget
           TextButton(
               onPressed: controller != null ? state.onCameraOptionsButtonPressed : null,
@@ -100,7 +98,34 @@ class CameraViewBuild {
           cameraOptionsWidget(),
         ],
       ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: [
+          BottomNavigationBarItem(
+              icon: Icon(Icons.dashboard_customize),
+              label: "Action Catalog"
+          ),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.pending_actions),
+              label: "Current Actions"
+          ),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: "Home"
+          )
+        ],
+        currentIndex: 2,
+        onTap: (index) {
+          changePage(index, context);
+        },
+      ),
     );
+  }
+
+  void changePage(int index, BuildContext context) {
+    if (index == 0)
+      context.read<CameraCubit>().showActionCatalog();
+    else if (index == 1)
+      context.read<CameraCubit>().showActionList();
   }
 
   /// Chooses the appbar based on the device platform
@@ -178,13 +203,10 @@ class CameraViewBuild {
         );
       }
     } else {
-      // If user changes device orientation
-      return RotatedBox(
-        quarterTurns: MediaQuery.of(context).orientation == Orientation.landscape ? 3 : 0,
-        child: AspectRatio(
-          aspectRatio: controller.value.aspectRatio,
-          child: CameraPreview(controller),
-        ),
+      // Show camera preview
+      return AspectRatio(
+        aspectRatio: controller.value.aspectRatio,
+        child: CameraPreview(controller),
       );
     }
   }

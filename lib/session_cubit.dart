@@ -10,18 +10,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'auth/auth_credentials.dart';
 import 'auth/auth_repository.dart';
-import 'data_repository.dart';
 import 'session_state.dart';
 
 /// Holds the logic for handling and changing session states
 class SessionCubit extends Cubit<SessionState> {
   final AuthRepository authRepo;
-  final DataRepository dataRepo;
 
   // Constructor
   SessionCubit({
     @required this.authRepo,
-    @required this.dataRepo,
   }) : super(UnknownSessionState()) {
     // TODO reenable for auth access
     //attemptAutoLogin();
