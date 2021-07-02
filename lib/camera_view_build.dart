@@ -10,6 +10,7 @@ import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:camera_app/camera_example_home.dart';
 import 'package:camera_app/session_cubit.dart';
+import 'package:camera_app/storage_repository.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -48,10 +49,13 @@ class CameraViewBuild {
   BooleanWrap isFileFinishedUploading;
   bool enableAudio;
   String uploadMessage;
+  Widget actionView;
+  Widget actionPicker;
 
   // named parameter constructor
   CameraViewBuild({this.context, this.state, this.controller, this.isFileFinishedUploading,
-                  this.enableAudio, this.uploadMessage});
+                  this.enableAudio, this.uploadMessage}) {
+  }
 
   /// Messages for the snack bar
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -87,6 +91,7 @@ class CameraViewBuild {
           captureControlRowWidget(),
           Text("Action Buttons"),
           captureActionRowWidget(),
+          TextButton(onPressed: () {}, child: Text("Action Options")),
           // Button to show camera options widget
           TextButton(
               onPressed: controller != null ? state.onCameraOptionsButtonPressed : null,
@@ -207,9 +212,9 @@ class CameraViewBuild {
       // Use a cupertino switch if platform is IOS
       return CupertinoSwitch(
         value: state.enableAudio,
-        onChanged: (bool value) {
+        onChanged: !controller.value.isRecordingVideo ? (bool value) {
           state.enableAudioSwitchChanged(value);
-        },
+        } : null,
       );
     }
     else {
@@ -269,7 +274,7 @@ class CameraViewBuild {
       children: [
         Row(
           children: [
-            Text("Resolution: ", style: TextStyle(fontSize: 20),),
+            Text("Resolution: ", style: TextStyle(fontSize: 18),),
             SizedBox(width: 5,),
             Text(currentResolution, style: TextStyle(fontSize: 15),),
           ],
@@ -283,7 +288,7 @@ class CameraViewBuild {
   /// Returns: A button that brings up an action sheet of choices
   Widget cupertinoActionSheet() {
     return CupertinoButton(
-      onPressed: () async {
+      onPressed: !controller.value.isRecordingVideo ? () async {
         final currentResolution = state.resolution.toString();
         var returned = await showCupertinoModalPopup<String>(
           context: context,
@@ -313,7 +318,7 @@ class CameraViewBuild {
         );
         // call for resolution change
         state.changeResolution(returned);
-      },
+      } : null,
       child: const Text('Change Resolution'),
     );
   }
@@ -396,7 +401,7 @@ class CameraViewBuild {
             onPressed: controller != null &&
                 controller.value.isInitialized &&
                 controller.value.isRecordingVideo
-            ? () {} : null
+            ? () {state.onActionButtonPressed(ActionButton.tpose);} : null
         ),
         IconButton(
             icon: const Icon(Icons.airline_seat_recline_extra),
@@ -404,7 +409,7 @@ class CameraViewBuild {
             onPressed: controller != null &&
                 controller.value.isInitialized &&
                 controller.value.isRecordingVideo
-                ? () {} : null
+                ? () {state.onActionButtonPressed(ActionButton.sitting);} : null
         ),
         IconButton(
           icon: const Icon(Icons.airline_seat_flat),
@@ -412,7 +417,7 @@ class CameraViewBuild {
             onPressed: controller != null &&
                 controller.value.isInitialized &&
                 controller.value.isRecordingVideo
-                ? () {} : null
+                ? () {state.onActionButtonPressed(ActionButton.sleeping);} : null
         ),
         IconButton(
           icon: const Icon(Icons.accessible_sharp),
@@ -420,7 +425,7 @@ class CameraViewBuild {
             onPressed: controller != null &&
                 controller.value.isInitialized &&
                 controller.value.isRecordingVideo
-                ? () {} : null
+                ? () {state.onActionButtonPressed(ActionButton.wheelchair);} : null
         )
       ],
     );

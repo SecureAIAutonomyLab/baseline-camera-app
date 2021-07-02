@@ -4,7 +4,7 @@
                states to change layout of widgets
  */
 
-import 'package:camera_app/user.dart';
+import 'package:camera_app/models/user.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

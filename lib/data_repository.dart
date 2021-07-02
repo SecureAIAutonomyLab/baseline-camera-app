@@ -5,7 +5,7 @@
  */
 
 import 'package:amplify_flutter/amplify.dart';
-import 'package:camera_app/user.dart';
+import 'package:camera_app/models/user.dart';
 
 
 

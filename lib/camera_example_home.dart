@@ -47,7 +47,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
   bool displayId = false; // display the device id or not
   ChunkVideoData chunkData;
   CameraViewBuild widgets; // the camera view widgets
-  static const VIDEO_CHUNK_RATE = 10; // in seconds
+  static const VIDEO_CHUNK_RATE = 61; // in seconds
   Timer chunkTimer; // timer for video chunking
   AnimationController animationController;
   Animation<double> rowAnimation;
@@ -346,6 +346,13 @@ class CameraExampleHomeState extends State<CameraExampleHome>
     }
   }
 
+  /// handles the action button being pressed. Passes the action to the
+  /// storage repository to add to the text file
+  /// Parameters: ActionButton enumeration which indicates the action chosen
+  void onActionButtonPressed(ActionButton pressed) {
+    storageRepo.addAction(pressed);
+  }
+
   /// Set variables accordingly for taking a picture, calls takePicture()
   void onTakePictureButtonPressed() {
     uploadMessage = "Upload";
@@ -369,6 +376,8 @@ class CameraExampleHomeState extends State<CameraExampleHome>
     uploadMessage = "Upload";
     // create the action file for video
     storageRepo.createActionTextFile();
+    // start stopwatch
+    storageRepo.timeElapsed.start();
     startVideoRecording().then((String filePath) async {
       if (mounted) setState(() {});
       if (filePath != null) showInSnackBar('Video recording started.');
@@ -398,10 +407,13 @@ class CameraExampleHomeState extends State<CameraExampleHome>
       // stop recording
       video = File(videoPath);
       videoPath = filePath;
+      // stop stopwatch
+      storageRepo.timeElapsed.stop();
       controller.stopVideoRecording();
       controller.prepareForVideoRecording();
       // start recording again
       await controller.startVideoRecording(filePath);
+      storageRepo.timeElapsed.start();
     } on CameraException catch (e) {
       _showCameraException(e);
       return null;
@@ -417,7 +429,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
       // final videoKey = await storageRepo.uploadFile(
       //     username, video, '.mp4', userID, myLocation);
       final videoKey = await storageRepo.uploadFile(
-          "Null username", video, '.mp4', deviceId, myLocation, chunkData);
+          "Null username", video, '.mp4', deviceId, myLocation, chunkData, controller);
     } on StorageException catch (e) {
       print(e.message);
     }
@@ -428,9 +440,11 @@ class CameraExampleHomeState extends State<CameraExampleHome>
     if (chunkData.videoCount != 0)
       chunkData.videoCount++;
     // Stop the video chunk timer
-    if (chunkTimer != null)
-      chunkTimer.cancel();
+    chunkTimer.cancel();
     print(chunkTimer.toString());
+    // stop and reset the stopwatch
+    storageRepo.timeElapsed.stop();
+    storageRepo.timeElapsed.reset();
     stopVideoRecording().then((_) {
       if (mounted) setState(() {});
       //showInSnackBar('Video recorded to gallery.');
@@ -440,6 +454,8 @@ class CameraExampleHomeState extends State<CameraExampleHome>
   /// Pauses the video recording and displays a snack bar,
   /// calls pauseVideoRecording()
   void onPauseButtonPressed() {
+    // pause stopwatch
+    storageRepo.timeElapsed.stop();
     if (chunkTimer != null)
       chunkTimer.cancel();
     pauseVideoRecording().then((_) {
@@ -451,6 +467,8 @@ class CameraExampleHomeState extends State<CameraExampleHome>
   /// Resumes the video recording and displays a snack bar
   /// , calls resumeVideoRecording()
   Timer onResumeButtonPressed() {
+    // resume stopwatch
+    storageRepo.timeElapsed.start();
     final duration = Duration(seconds: VIDEO_CHUNK_RATE);
     resumeVideoRecording().then((_) {
       if (mounted) setState(() {});
@@ -531,7 +549,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
           // final videoKey = await storageRepo.uploadFile(
           //     username, video, '.mp4', userID, myLocation);
           final videoKey = await storageRepo.uploadFile(
-              "Null username", video, '.mp4', deviceId, myLocation, chunkData);
+              "Null username", video, '.mp4', deviceId, myLocation, chunkData, controller);
 
           // Change the state of the camera preview to show upload complete
           setState(() {
@@ -658,7 +676,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
           // final imageKey = await storageRepo.uploadFile(
           //     username, image, '.jpg', userID, myLocation);
           final imageKey = await storageRepo.uploadFile(
-              "Null username", image, '.jpg', deviceId, myLocation, chunkData);
+              "Null username", image, '.jpg', deviceId, myLocation, chunkData, controller);
 
           // Change the state of the camera preview to show upload complete
           setState(() {

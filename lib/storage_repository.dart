@@ -7,22 +7,57 @@ import 'dart:io';
 
 import 'package:amplify_flutter/amplify.dart';
 import 'package:amplify_storage_s3/amplify_storage_s3.dart';
+import 'package:camera/camera.dart';
 import 'package:camera_app/camera_view_build.dart';
 import 'package:flutter/material.dart';
 import 'package:location/location.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:sortedmap/sortedmap.dart';
 
+
+/// Enumeration for representing different action buttons
+enum ActionButton {
+  tpose,
+  sitting,
+  sleeping,
+  wheelchair
+}
+
+/// Extension to convert action button enum to string
+extension ParseToString on ActionButton {
+  String toShortString() {
+    return this.toString().split(".").last;
+  }
+}
+
+/// Holds values related to an action entry
+class ActionEntry {
+
+  ActionButton action;
+  LocationData location;
+  String time;
+
+  ActionEntry({this.action, this.location, this.time});
+}
 
 class StorageRepository {
 
   String storedDate;
   File actionFile;
+  SortedMap<Duration, ActionEntry> actionTable;
+  Stopwatch timeElapsed;
+
+  // initialize variables in the constructor
+  StorageRepository() {
+    timeElapsed = Stopwatch();
+    actionTable = SortedMap<Duration, ActionEntry>(Ordering.byKey());
+  }
 
   /// Takes in a username, userId, File and extension and stores this information
   /// Parameters: The user's username, the File object being uploaded and the file extension
   /// Returns: A future string with the upload file result
   Future<String> uploadFile(String username, File file, String extension,
-      String userId, LocationData loc, ChunkVideoData chunk) async {
+      String userId, LocationData loc, ChunkVideoData chunk, CameraController c) async {
     if (username == null) {
       username = "null";
     }
@@ -36,17 +71,23 @@ class StorageRepository {
     else
       type = "videos";
 
-    storedDate = DateTime.now().toIso8601String();
     if (chunk.videoCount == 1)
       storedDate = DateTime.now().toIso8601String();
-    if (chunk.videoCount == 0) {
-      // fileName = '$username/$type/${username}_' + DateTime.now().toIso8601String();
-      fileName = '$userId/$type/${userId}_' + DateTime.now().toIso8601String();
+    if (chunk.videoCount == 0 && actionTable.isEmpty) {
+      // single video no actions listed
+      fileName = '$userId/$type/${userId}_' + DateTime.now().toIso8601String().substring(0, 19);
       fileName = fileName.replaceAll('T', '_');
+    } else if (chunk.videoCount == 0 && actionTable.isNotEmpty) {
+      // single video with actions
+      fileName = '$userId/$type/' + DateTime.now().toIso8601String().substring(0, 19);
+      fileName += ("/${userId}_" + DateTime.now().toIso8601String().substring(0, 19));
+      fileName = fileName.replaceAll("T", "_");
+      storedDate = DateTime.now().toIso8601String();
     } else {
-      fileName = '$userId/$type/${userId}_' + storedDate;
+      // chunked video with actions
+      fileName = '$userId/$type/' + storedDate.substring(0, 19);
       // trim time off of fileName
-      fileName += ("/" + DateTime.now().toIso8601String() + "--"
+      fileName += ("/${userId}_" + DateTime.now().toIso8601String().substring(0, 19) + "--"
           + chunk.videoCount.toString());
       fileName = fileName.replaceAll('T', '_');
     }
@@ -61,7 +102,8 @@ class StorageRepository {
     );
     // upload the action file if a video was uploaded
     if (extension == ".mp4") {
-      await uploadActionFile(userId);
+      await writeActionFile(userId);
+      await uploadActionFile(userId, c);
     }
 
     return result.key;
@@ -71,12 +113,34 @@ class StorageRepository {
   /// to AWS
   /// Parameters: The devices Id string
   /// Returns: A future object indicating this function is asynchronous
-  Future<void> uploadActionFile(String userId) async {
-    print("Now uploading text file");  
-    String fileName = '$userId/videos/${userId}_' + storedDate;
-    fileName = fileName.replaceAll('T', '_');
+  Future<void> uploadActionFile(String userId, CameraController c) async {
+    if (actionTable.isEmpty || c.value.isRecordingVideo) {
+      print("No actions submitted");
+      return;
+    }
+    print("Now uploading text file");
+    String fileName = '$userId/videos/' + storedDate.substring(0, 19);
+    fileName += ("/${userId}_" + DateTime.now().toIso8601String().substring(0, 19));
+    fileName = fileName.replaceAll("T", "_");
     await Amplify.Storage.uploadFile(
-        local: actionFile, key: fileName);
+        local: actionFile, key: fileName + ".csv");
+  }
+
+  Future<void> writeActionFile(String id) async {
+    // save data to string buffer because strings are immutable
+    var buffer = new StringBuffer();
+    buffer.write("Recorded on device: " + id);
+    actionTable.forEach((key, value) {
+      String millisecond = (key.inMilliseconds % 1000).toString();
+      buffer.write("\ntime_elapsed:" + key.inSeconds.toString() + "." + millisecond);
+      buffer.write(",date:" + DateTime.now().toIso8601String().substring(0, 10));
+      buffer.write(",time:" + value.time);
+      buffer.write(",longitude:" + value.location.longitude.toString());
+      buffer.write(",latitude" + value.location.latitude.toString());
+      buffer.write(",action:" + value.action.toShortString());
+    });
+    // to save time open file only once and write everything
+    actionFile.writeAsString(buffer.toString());
   }
 
   /// Create the metadata map to upload with the file
@@ -101,6 +165,8 @@ class StorageRepository {
   }
 
   Future<File> createActionTextFile() async {
+    // reset the action table
+    actionTable = SortedMap<Duration, ActionEntry>(Ordering.byKey());
     // get the app's storage directory
     final Directory extDir = await getApplicationDocumentsDirectory();
     final String dirPath = '${extDir.path}/camera_app/text_action_files';
@@ -108,8 +174,24 @@ class StorageRepository {
     final String filePath = '$dirPath/' + DateTime.now().toString();
     // The file name
     File file = File(filePath);
-    file.writeAsString("Hello World");
+    file.writeAsString("Action File created by");
     actionFile = file;
     return file;
   }
+
+  void addAction(ActionButton action) async {
+    // save entry in a table
+    final time = DateTime.now().toIso8601String().substring(11, 19);
+    final duration = timeElapsed.elapsed;
+    actionTable[duration] =
+        ActionEntry(action: action, time: time);
+    print("Action Time Submitted");
+
+    // Record location data
+    Location location = new Location();
+    LocationData myLocation = await location.getLocation();
+    // set location after time because location is not synchronous
+    actionTable[duration].location = myLocation;
+  }
+
 }
