@@ -10,6 +10,7 @@ class MyCatalog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var catalog = context.watch<CatalogModel>();
     return Scaffold(
       body: CustomScrollView(
         slivers: [
@@ -17,7 +18,9 @@ class MyCatalog extends StatelessWidget {
           const SliverToBoxAdapter(child: SizedBox(height: 12)),
           SliverList(
             delegate: SliverChildBuilderDelegate(
-                    (context, index) => MyListItem(index)),
+                    (context, index) => MyListItem(index),
+              childCount: catalog.getLength()
+            ),
           ),
         ],
       ),

@@ -18,6 +18,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'camera_cubit.dart';
 import 'main.dart';
+import 'models/cart_model.dart';
+import 'models/catalog_model.dart';
 
 
 /// A wrapper class that wraps the upload file boolean variables
@@ -98,6 +100,7 @@ class CameraViewBuild {
           cameraOptionsWidget(),
         ],
       ),
+      // Navigation bar to switch pages
       bottomNavigationBar: BottomNavigationBar(
         items: [
           BottomNavigationBarItem(
@@ -114,9 +117,11 @@ class CameraViewBuild {
           )
         ],
         currentIndex: 2,
-        onTap: (index) {
-          changePage(index, context);
-        },
+        onTap: controller != null &&
+            controller.value.isInitialized &&
+            !controller.value.isRecordingVideo &&
+            !isFileFinishedUploading.started
+            ? (index) {changePage(index, context);} : null,
       ),
     );
   }
@@ -413,43 +418,37 @@ class CameraViewBuild {
   }
 
   Widget captureActionRowWidget() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      mainAxisSize: MainAxisSize.max,
-      children: <Widget>[
-        IconButton(
-            icon: const Icon(Icons.accessibility),
-            color: Colors.blue,
-            onPressed: controller != null &&
-                controller.value.isInitialized &&
-                controller.value.isRecordingVideo
-            ? () {state.onActionButtonPressed(ActionButton.tpose);} : null
-        ),
-        IconButton(
-            icon: const Icon(Icons.airline_seat_recline_extra),
-            color: Colors.blue,
-            onPressed: controller != null &&
-                controller.value.isInitialized &&
-                controller.value.isRecordingVideo
-                ? () {state.onActionButtonPressed(ActionButton.sitting);} : null
-        ),
-        IconButton(
-          icon: const Icon(Icons.airline_seat_flat),
-          color: Colors.blue,
-            onPressed: controller != null &&
-                controller.value.isInitialized &&
-                controller.value.isRecordingVideo
-                ? () {state.onActionButtonPressed(ActionButton.sleeping);} : null
-        ),
-        IconButton(
-          icon: const Icon(Icons.accessible_sharp),
-          color: Colors.blue,
-            onPressed: controller != null &&
-                controller.value.isInitialized &&
-                controller.value.isRecordingVideo
-                ? () {state.onActionButtonPressed(ActionButton.wheelchair);} : null
-        )
-      ],
+    // We must create a list of widgets to add
+    var cart = context.watch<CartModel>();
+    List<Widget> buttons = [];
+    // cycle through the items list and create a button widget
+    for (Item item in cart.items) {
+      Widget button = TextButton(
+          onPressed: controller != null &&
+              controller.value.isInitialized &&
+              controller.value.isRecordingVideo
+              ? () {state.onActionButtonPressed(item.name);}: null,
+          child: Column(
+            children: [
+              SizedBox(
+                  width: 30, height: 10,
+                  child: DecoratedBox(decoration: BoxDecoration(color: item.color))
+              ),
+              Text(item.name),
+            ],
+          )
+      );
+      buttons.add(button);
+    }
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 20),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        mainAxisSize: MainAxisSize.max,
+        children: buttons,
+
+      ),
     );
   }
 

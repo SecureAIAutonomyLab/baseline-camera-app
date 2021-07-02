@@ -349,8 +349,8 @@ class CameraExampleHomeState extends State<CameraExampleHome>
   /// handles the action button being pressed. Passes the action to the
   /// storage repository to add to the text file
   /// Parameters: ActionButton enumeration which indicates the action chosen
-  void onActionButtonPressed(ActionButton pressed) {
-    storageRepo.addAction(pressed);
+  void onActionButtonPressed(String name) {
+    storageRepo.addAction(name);
   }
 
   /// Set variables accordingly for taking a picture, calls takePicture()

@@ -15,25 +15,11 @@ import 'package:path_provider/path_provider.dart';
 import 'package:sortedmap/sortedmap.dart';
 
 
-/// Enumeration for representing different action buttons
-enum ActionButton {
-  tpose,
-  sitting,
-  sleeping,
-  wheelchair
-}
-
-/// Extension to convert action button enum to string
-extension ParseToString on ActionButton {
-  String toShortString() {
-    return this.toString().split(".").last;
-  }
-}
 
 /// Holds values related to an action entry
 class ActionEntry {
 
-  ActionButton action;
+  String action;
   LocationData location;
   String time;
 
@@ -136,8 +122,8 @@ class StorageRepository {
       buffer.write(",date:" + DateTime.now().toIso8601String().substring(0, 10));
       buffer.write(",time:" + value.time);
       buffer.write(",longitude:" + value.location.longitude.toString());
-      buffer.write(",latitude" + value.location.latitude.toString());
-      buffer.write(",action:" + value.action.toShortString());
+      buffer.write(",latitude:" + value.location.latitude.toString());
+      buffer.write(",action:" + value.action);
     });
     // to save time open file only once and write everything
     actionFile.writeAsString(buffer.toString());
@@ -179,7 +165,7 @@ class StorageRepository {
     return file;
   }
 
-  void addAction(ActionButton action) async {
+  void addAction(String action) async {
     // save entry in a table
     final time = DateTime.now().toIso8601String().substring(11, 19);
     final duration = timeElapsed.elapsed;
