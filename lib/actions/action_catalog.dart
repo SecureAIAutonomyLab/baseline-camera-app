@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:camera_app/camera_navigator.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
@@ -8,6 +7,7 @@ import 'package:provider/provider.dart';
 import '../camera_cubit.dart';
 import '../models/cart_model.dart';
 import '../models/catalog_model.dart';
+import 'edit_action.dart';
 
 class MyCatalog extends StatefulWidget {
 
@@ -56,16 +56,25 @@ class MyCatalogState extends State<MyCatalog> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          final item = Item(catalog.uniqueID(), "id: " + catalog.uniqueID().toString());
-          catalog.addToCatalog(item);
-          updateUI();
-          print(catalog.getLength());
-          ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text('Item Added')));
+          onAddActionButtonPressed(catalog);
         },
         child: Icon(Icons.add),
       ),
     );
+  }
+
+  Future<void> onAddActionButtonPressed(CatalogModel catalog) async {
+    Item item = await showDialog(context: context, builder: (BuildContext context) {
+      return EditAction();
+    });
+    // create the id for the item
+    if (item != null) {
+      item.id = catalog.uniqueID();
+      catalog.addToCatalog(item);
+      updateUI();
+      // ScaffoldMessenger.of(context)
+      //     .showSnackBar(SnackBar(content: Text('Item Added')));
+    }
   }
 
   void updateUI() {
@@ -186,29 +195,39 @@ class MyListItem extends StatelessWidget {
       },
       background: Container(color: Colors.red),
 
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        child: LimitedBox(
-          maxHeight: 48,
-          child: Row(
-            children: [
-              AspectRatio(
-                aspectRatio: 1,
-                child: Container(
-                  color: item.color,
+      child: TextButton(
+        onLongPress: () {editActionPressed(context, item);},
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          child: LimitedBox(
+            maxHeight: 48,
+            child: Row(
+              children: [
+                AspectRatio(
+                  aspectRatio: 1,
+                  child: Container(
+                    color: item.color,
+                  ),
                 ),
-              ),
-              const SizedBox(width: 24),
-              Expanded(
-                child: Text(item.name, style: textTheme),
-              ),
-              const SizedBox(width: 24),
-              AddButton(item: item),
-            ],
+                const SizedBox(width: 24),
+                Expanded(
+                  child: Text(item.name, style: textTheme),
+                ),
+                const SizedBox(width: 24),
+                AddButton(item: item),
+              ],
+            ),
           ),
         ),
       ),
     );
+  }
+
+  void editActionPressed(BuildContext context, Item item) async {
+    await showDialog(context: context, builder: (BuildContext context) {
+      return EditAction(action: item);
+    });
+    state.updateUI();
   }
 
   void showSnackbar(BuildContext context, String message) {

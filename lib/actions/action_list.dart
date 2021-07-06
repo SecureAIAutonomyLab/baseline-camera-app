@@ -82,6 +82,8 @@ class CartList extends StatelessWidget {
       itemCount: items,
       itemBuilder: (context, index) => ListTile(
         leading: const Icon(Icons.done),
+        subtitle: SizedBox(height: 10,
+            child: Container(color: cart.items[index].color)),
         trailing: IconButton(
           icon: const Icon(Icons.remove_circle_outline),
           onPressed: () {

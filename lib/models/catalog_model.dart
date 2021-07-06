@@ -53,7 +53,7 @@ class CatalogModel {
     catalog = [];
     for (int i = 0; i < itemNames.length; i++) {
       int temp = uniqueID();
-      final item = Item(temp, itemNames[i]);
+      final item = Item(id: temp, name: itemNames[i]);
       catalog.add(item);
     }
   }
@@ -82,14 +82,19 @@ class CatalogModel {
 }
 
 class Item {
-  final int id;
-  final String name;
-  final Color color;
+  int id;
+  String name;
+  Color color;
+  String description;
 
-  Item(this.id, this.name)
+  Item({this.id, this.name, this.color, this.description}) {
   // To make the sample app look nicer, each item is given one of the
   // Material Design primary colors.
-      : color = Colors.primaries[id % Colors.primaries.length];
+
+    if (id != null && color == null) {
+      color = Colors.primaries[id % Colors.primaries.length];
+    }
+  }
 
   @override
   int get hashCode => id;
