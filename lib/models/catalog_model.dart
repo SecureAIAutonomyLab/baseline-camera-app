@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 /// A proxy of the catalog of items the user can buy.
@@ -29,13 +31,29 @@ class CatalogModel {
     'Currying',
   ];
 
+  int uniqueID() {
+    final rng = Random();
+    bool equal; int id;
+    do {
+      id = rng.nextInt(10000);
+      equal = false;
+      for (Item item in catalog) {
+        if (item.id == id) {
+          equal = true; break;
+        }
+      }
+    } while (equal);
+    return id;
+  }
+
   List<Item> catalog;
 
   // initialize the model
   CatalogModel() {
     catalog = [];
     for (int i = 0; i < itemNames.length; i++) {
-      final item = Item(i, itemNames[i]);
+      int temp = uniqueID();
+      final item = Item(temp, itemNames[i]);
       catalog.add(item);
     }
   }

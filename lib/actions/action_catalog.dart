@@ -56,7 +56,7 @@ class MyCatalogState extends State<MyCatalog> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          final item = Item(catalog.getLength(), DateTime.now().second.toString());
+          final item = Item(catalog.uniqueID(), "id: " + catalog.uniqueID().toString());
           catalog.addToCatalog(item);
           updateUI();
           print(catalog.getLength());
@@ -173,13 +173,11 @@ class MyListItem extends StatelessWidget {
     // Users can remove items from the catalog
     return Dismissible(
       // unique key
-      key: Key(DateTime.now().millisecond.toString()),
+      key: UniqueKey(),
       onDismissed: (direction) {
-        if (cart.isInCart(item)) {
-          print("Item is in cart, removing");
+        // remove item if it is in the cart
+        if (cart.items.contains(item))
           cart.remove(item);
-        }
-        //cart.remove(item);
         print("Item index: " + index.toString());
         catalog.removeFromCatalog(item);
         state.updateUI();
@@ -211,5 +209,10 @@ class MyListItem extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void showSnackbar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
   }
 }
