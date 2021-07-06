@@ -123,7 +123,7 @@ class StorageRepository {
       buffer.write(",time:" + value.time);
       buffer.write(",longitude:" + value.location.longitude.toString());
       buffer.write(",latitude:" + value.location.latitude.toString());
-      buffer.write(",action:" + value.action);
+      buffer.write(",name:" + value.action);
     });
     // to save time open file only once and write everything
     actionFile.writeAsString(buffer.toString());

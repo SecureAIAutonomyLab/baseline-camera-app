@@ -1,16 +1,26 @@
+import 'dart:io';
+
 import 'package:camera_app/camera_navigator.dart';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 
 import '../camera_cubit.dart';
 import '../models/cart_model.dart';
 import '../models/catalog_model.dart';
 
-class MyCatalog extends StatelessWidget {
+class MyCatalog extends StatefulWidget {
+
+  @override
+  MyCatalogState createState() => MyCatalogState();
+}
+
+class MyCatalogState extends State<MyCatalog> {
 
   @override
   Widget build(BuildContext context) {
     var catalog = context.watch<CatalogModel>();
+    readCatalogFromDevice(catalog);
     return Scaffold(
       body: CustomScrollView(
         slivers: [
@@ -18,7 +28,7 @@ class MyCatalog extends StatelessWidget {
           const SliverToBoxAdapter(child: SizedBox(height: 12)),
           SliverList(
             delegate: SliverChildBuilderDelegate(
-                    (context, index) => MyListItem(index),
+                    (context, index) => MyListItem(index, this),
               childCount: catalog.getLength()
             ),
           ),
@@ -46,12 +56,20 @@ class MyCatalog extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          SnackBar bar = SnackBar(content: Text("Implement"));
-          ScaffoldMessenger.of(context).showSnackBar(bar);
+          final item = Item(catalog.getLength(), DateTime.now().second.toString());
+          catalog.addToCatalog(item);
+          updateUI();
+          print(catalog.getLength());
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text('Item Added')));
         },
         child: Icon(Icons.add),
       ),
     );
+  }
+
+  void updateUI() {
+    setState(() {});
   }
 
   void changePage(int index, BuildContext context) {
@@ -62,7 +80,16 @@ class MyCatalog extends StatelessWidget {
   }
 }
 
-
+void readCatalogFromDevice(CatalogModel catalog) async {
+  try {
+    // the directory of the app's files
+    final directory = await getApplicationDocumentsDirectory();
+    final path = directory.path;
+    File file = File('$path/sdfsdf');
+  } catch (e) {
+    // prepopulate the catalog
+  }
+}
 
 class AddButton extends StatelessWidget {
   final Item item;
@@ -128,8 +155,9 @@ class MyAppBar extends StatelessWidget {
 
 class MyListItem extends StatelessWidget {
   final int index;
+  final MyCatalogState state;
 
-  const MyListItem(this.index);
+  const MyListItem(this.index, this.state);
 
   @override
   Widget build(BuildContext context) {
@@ -139,26 +167,47 @@ class MyListItem extends StatelessWidget {
           (catalog) => catalog.getByPosition(index),
     );
     var textTheme = Theme.of(context).textTheme.headline6;
+    var catalog = context.watch<CatalogModel>();
+    var cart = context.watch<CartModel>();
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: LimitedBox(
-        maxHeight: 48,
-        child: Row(
-          children: [
-            AspectRatio(
-              aspectRatio: 1,
-              child: Container(
-                color: item.color,
+    // Users can remove items from the catalog
+    return Dismissible(
+      // unique key
+      key: Key(DateTime.now().millisecond.toString()),
+      onDismissed: (direction) {
+        if (cart.isInCart(item)) {
+          print("Item is in cart, removing");
+          cart.remove(item);
+        }
+        //cart.remove(item);
+        print("Item index: " + index.toString());
+        catalog.removeFromCatalog(item);
+        state.updateUI();
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('${item.name} Removed')));
+      },
+      background: Container(color: Colors.red),
+
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        child: LimitedBox(
+          maxHeight: 48,
+          child: Row(
+            children: [
+              AspectRatio(
+                aspectRatio: 1,
+                child: Container(
+                  color: item.color,
+                ),
               ),
-            ),
-            const SizedBox(width: 24),
-            Expanded(
-              child: Text(item.name, style: textTheme),
-            ),
-            const SizedBox(width: 24),
-            AddButton(item: item),
-          ],
+              const SizedBox(width: 24),
+              Expanded(
+                child: Text(item.name, style: textTheme),
+              ),
+              const SizedBox(width: 24),
+              AddButton(item: item),
+            ],
+          ),
         ),
       ),
     );

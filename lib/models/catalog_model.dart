@@ -29,10 +29,31 @@ class CatalogModel {
     'Currying',
   ];
 
-  /// Get item by [id].
-  Item getById(int id) => Item(id, itemNames[id % itemNames.length]);
+  List<Item> catalog;
 
-  int getLength() => itemNames.length;
+  // initialize the model
+  CatalogModel() {
+    catalog = [];
+    for (int i = 0; i < itemNames.length; i++) {
+      final item = Item(i, itemNames[i]);
+      catalog.add(item);
+    }
+  }
+
+  List<Item> getCatalog() => catalog;
+
+  void addToCatalog(Item item) {
+    this.catalog.add(item);
+  }
+
+  void removeFromCatalog(Item item) {
+    this.catalog.remove(item);
+  }
+
+  /// Get item by [id].
+  Item getById(int id) => catalog[id];
+
+  int getLength() => catalog.length;
 
   /// Get item by its position in the catalog.
   Item getByPosition(int position) {
@@ -46,7 +67,6 @@ class Item {
   final int id;
   final String name;
   final Color color;
-  final int price = 42;
 
   Item(this.id, this.name)
   // To make the sample app look nicer, each item is given one of the

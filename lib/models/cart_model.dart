@@ -24,6 +24,14 @@ class CartModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  bool isInCart(Item item) {
+    for (Item i in items) {
+      if (i == item)
+        return true;
+    }
+    return false;
+  }
+
   /// List of items in the cart.
   List<Item> get items => _itemIds.map((id) => _catalog.getById(id)).toList();
 
