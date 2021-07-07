@@ -8,6 +8,7 @@ import '../camera_cubit.dart';
 import '../models/cart_model.dart';
 import '../models/catalog_model.dart';
 import 'edit_action.dart';
+import 'package:json_store/json_store.dart';
 
 class MyCatalog extends StatefulWidget {
 
@@ -17,10 +18,11 @@ class MyCatalog extends StatefulWidget {
 
 class MyCatalogState extends State<MyCatalog> {
 
+  final jsonStore = JsonStore();
+
   @override
   Widget build(BuildContext context) {
     var catalog = context.watch<CatalogModel>();
-    readCatalogFromDevice(catalog);
     return Scaffold(
       body: CustomScrollView(
         slivers: [
@@ -32,6 +34,7 @@ class MyCatalogState extends State<MyCatalog> {
               childCount: catalog.getLength()
             ),
           ),
+          const SliverToBoxAdapter(child: SizedBox(height: 70))
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -72,8 +75,8 @@ class MyCatalogState extends State<MyCatalog> {
       item.id = catalog.uniqueID();
       catalog.addToCatalog(item);
       updateUI();
-      // ScaffoldMessenger.of(context)
-      //     .showSnackBar(SnackBar(content: Text('Item Added')));
+      // save to device storage
+      catalog.saveCatalogModel();
     }
   }
 
@@ -86,17 +89,6 @@ class MyCatalogState extends State<MyCatalog> {
       context.read<CameraCubit>().showActionList();
     else if (index == 2)
       context.read<CameraCubit>().showHome();
-  }
-}
-
-void readCatalogFromDevice(CatalogModel catalog) async {
-  try {
-    // the directory of the app's files
-    final directory = await getApplicationDocumentsDirectory();
-    final path = directory.path;
-    File file = File('$path/sdfsdf');
-  } catch (e) {
-    // prepopulate the catalog
   }
 }
 
@@ -187,16 +179,17 @@ class MyListItem extends StatelessWidget {
         // remove item if it is in the cart
         if (cart.items.contains(item))
           cart.remove(item);
-        print("Item index: " + index.toString());
         catalog.removeFromCatalog(item);
         state.updateUI();
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text('${item.name} Removed')));
+        // save the model to device storage
+        catalog.saveCatalogModel();
       },
       background: Container(color: Colors.red),
 
       child: TextButton(
-        onLongPress: () {editActionPressed(context, item);},
+        onLongPress: () {editActionPressed(context, item, catalog);},
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10),
           child: LimitedBox(
@@ -223,11 +216,12 @@ class MyListItem extends StatelessWidget {
     );
   }
 
-  void editActionPressed(BuildContext context, Item item) async {
+  void editActionPressed(BuildContext context, Item item, CatalogModel model) async {
     await showDialog(context: context, builder: (BuildContext context) {
       return EditAction(action: item);
     });
     state.updateUI();
+    model.saveCatalogModel();
   }
 
   void showSnackbar(BuildContext context, String message) {

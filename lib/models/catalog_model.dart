@@ -5,6 +5,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:json_store/json_store.dart';
 
 /// A proxy of the catalog of items the user can buy.
 ///
@@ -14,6 +15,9 @@ import 'package:flutter/material.dart';
 /// For simplicity, the catalog is expected to be immutable (no products are
 /// expected to be added, removed or changed during the execution of the app).
 class CatalogModel {
+
+  CatalogModel();
+
   static List<String> itemNames = [
     'Control Flow',
     'Interpreter',
@@ -33,13 +37,15 @@ class CatalogModel {
 
   int uniqueID() {
     final rng = Random();
-    bool equal; int id;
+    bool equal;
+    int id;
     do {
       id = rng.nextInt(10000);
       equal = false;
       for (Item item in catalog) {
         if (item.id == id) {
-          equal = true; break;
+          equal = true;
+          break;
         }
       }
     } while (equal);
@@ -48,8 +54,8 @@ class CatalogModel {
 
   List<Item> catalog;
 
-  // initialize the model
-  CatalogModel() {
+  // initialize the default model
+  initializeDefaultModel() {
     catalog = [];
     for (int i = 0; i < itemNames.length; i++) {
       int temp = uniqueID();
@@ -79,6 +85,24 @@ class CatalogModel {
     // is also its id.
     return getById(position);
   }
+
+  final jsonStore = JsonStore();
+
+  Future<void> saveCatalogModel() async {
+    // clear the database first
+    await jsonStore.clearDataBase();
+    // start the batch to store the items in device storage
+    final batch = await jsonStore.startBatch();
+    await Future.forEach(catalog, (item) async {
+      await jsonStore.setItem(
+        'deviceID-${item.id}',
+        item.toJson(),
+        batch: batch,
+      );
+    });
+    jsonStore.commitBatch(batch);
+  }
+
 }
 
 class Item {
@@ -88,12 +112,29 @@ class Item {
   String description;
 
   Item({this.id, this.name, this.color, this.description}) {
-  // To make the sample app look nicer, each item is given one of the
-  // Material Design primary colors.
+    // To make the sample app look nicer, each item is given one of the
+    // Material Design primary colors.
 
     if (id != null && color == null) {
       color = Colors.primaries[id % Colors.primaries.length];
     }
+  }
+
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> json = {
+      'id' : id,
+      'name' : name,
+      'color' : color.value,
+      'description' : description,
+    };
+    return json;
+  }
+
+  Item.fromJson(Map<String, dynamic> json) {
+    this.id = json['id'];
+    this.name = json['name'];
+    this.color = Color(json['color']);
+    this.description = json['description'];
   }
 
   @override
