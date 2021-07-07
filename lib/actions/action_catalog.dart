@@ -92,7 +92,7 @@ class MyCatalogState extends State<MyCatalog> {
 
 class AddButton extends StatelessWidget {
   final Item item;
-  static const NUMBER_OF_ACTION_BUTTONS = 4;
+  static const NUMBER_OF_ACTION_BUTTONS = 6;
 
   const AddButton({@required this.item});
 

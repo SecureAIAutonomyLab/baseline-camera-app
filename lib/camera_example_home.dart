@@ -49,8 +49,10 @@ class CameraExampleHomeState extends State<CameraExampleHome>
   CameraViewBuild widgets; // the camera view widgets
   static const VIDEO_CHUNK_RATE = 61; // in seconds
   Timer chunkTimer; // timer for video chunking
-  AnimationController animationController;
-  Animation<double> rowAnimation;
+  AnimationController optionsAnimationController;
+  Animation<double> optionsRowAnimation;
+  AnimationController actionsAnimationController;
+  Animation<double> actionsRowAnimation;
 
 
   static final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
@@ -74,14 +76,24 @@ class CameraExampleHomeState extends State<CameraExampleHome>
       ResolutionPreset.medium,
       enableAudio: enableAudio,
     );
-    animationController = AnimationController(
+    optionsAnimationController = AnimationController(
       duration: const Duration(milliseconds: 300),
       vsync: this,
     );
-    rowAnimation = CurvedAnimation(
-      parent: animationController,
+    optionsRowAnimation = CurvedAnimation(
+      parent: optionsAnimationController,
       curve: Curves.easeInCubic,
     );
+    actionsAnimationController = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+    actionsRowAnimation = CurvedAnimation(
+      parent: actionsAnimationController,
+      curve: Curves.easeInCubic,
+    );
+    // start by showing button
+    actionsAnimationController.value = 1;
 
     controller.initialize();
     // initialize storage repository
@@ -104,7 +116,8 @@ class CameraExampleHomeState extends State<CameraExampleHome>
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    animationController.dispose();
+    optionsAnimationController.dispose();
+    actionsAnimationController.dispose();
     super.dispose();
   }
 
@@ -270,10 +283,18 @@ class CameraExampleHomeState extends State<CameraExampleHome>
   }
 
   void onCameraOptionsButtonPressed() {
-    if (animationController.value == 1) {
-      animationController.reverse();
+    if (optionsAnimationController.value == 1) {
+      optionsAnimationController.reverse();
     } else {
-      animationController.forward();
+      optionsAnimationController.forward();
+    }
+  }
+
+  void hideCameraOptionsButton() {
+    if (actionsAnimationController.value == 1) {
+      actionsAnimationController.reverse();
+    } else {
+      actionsAnimationController.forward();
     }
   }
 
@@ -373,6 +394,8 @@ class CameraExampleHomeState extends State<CameraExampleHome>
   /// Starts video recording and displays a snack bar,
   /// calls startVideoRecording()
   Timer onVideoRecordButtonPressed() {
+    // hide the camera options button
+    hideCameraOptionsButton();
     uploadMessage = "Upload";
     // create the action file for video
     storageRepo.createActionTextFile();
@@ -380,7 +403,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
     storageRepo.timeElapsed.start();
     startVideoRecording().then((String filePath) async {
       if (mounted) setState(() {});
-      if (filePath != null) showInSnackBar('Video recording started.');
+      //if (filePath != null) showInSnackBar('Video recording started.');
       // Run the timer to chunk the video at the specified time
         final duration = Duration(seconds: VIDEO_CHUNK_RATE);
         // save time so it can be canceled later
@@ -460,7 +483,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
       chunkTimer.cancel();
     pauseVideoRecording().then((_) {
       if (mounted) setState(() {});
-      showInSnackBar('Video recording paused.');
+      //showInSnackBar('Video recording paused.');
     });
   }
 
@@ -472,7 +495,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
     final duration = Duration(seconds: VIDEO_CHUNK_RATE);
     resumeVideoRecording().then((_) {
       if (mounted) setState(() {});
-      showInSnackBar('Video recording resumed.');
+      //showInSnackBar('Video recording resumed.');
       chunkTimer = Timer.periodic(duration, chunkVideo);
       return chunkTimer;
     });
@@ -572,6 +595,9 @@ class CameraExampleHomeState extends State<CameraExampleHome>
     // change variable back to initial state
     chunkData.chunkVideo = false;
     chunkData.videoCount = 0;
+    // display camera options button again
+    hideCameraOptionsButton();
+
     // for video playback, not used
     //await _startVideoPlayer();
   }

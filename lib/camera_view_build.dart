@@ -8,6 +8,7 @@
 import 'dart:io';
 
 import 'package:camera/camera.dart';
+import 'package:camera_app/actions/action_catalog.dart';
 import 'package:camera_app/camera_example_home.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -91,16 +92,9 @@ class CameraViewBuild {
           Text("Action Buttons"),
           captureActionRowWidget(),
           // Button to show camera options widget
-          TextButton(
-              onPressed: controller != null
-                  ? state.onCameraOptionsButtonPressed
-                  : null,
-              child: Text(
-                "Camera Options",
-                style: TextStyle(fontSize: 15),
-              )),
+          cameraOptionsButton(),
           // Display the camera options
-          cameraOptionsWidget(),
+          cameraOptionsRow(),
         ],
       ),
       // Navigation bar to switch pages
@@ -121,6 +115,23 @@ class CameraViewBuild {
                 changePage(index, context);
               }
             : null,
+      ),
+    );
+  }
+
+  Widget cameraOptionsButton() {
+    return SizeTransition(
+      sizeFactor: state.actionsRowAnimation,
+      child: ClipRect(
+        child: Center(
+          child: TextButton(
+              onPressed:
+                  controller != null ? state.onCameraOptionsButtonPressed : null,
+              child: Text(
+                "Camera Options",
+                style: TextStyle(fontSize: 15),
+              )),
+        ),
       ),
     );
   }
@@ -266,9 +277,9 @@ class CameraViewBuild {
   /// Displays the animation for brining up the camera options
   /// Returns: A dynamic sized widget according to the animation
   /// controller
-  Widget cameraOptionsWidget() {
+  Widget cameraOptionsRow() {
     return SizeTransition(
-      sizeFactor: state.rowAnimation,
+      sizeFactor: state.optionsRowAnimation,
       child: ClipRect(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -453,23 +464,36 @@ class CameraViewBuild {
               : null,
           child: Column(
             children: [
+              Text(item.name, style: TextStyle(fontSize: 18),),
               SizedBox(
-                  width: 30,
-                  height: 10,
+                  width: 100,
+                  height: 30,
                   child: DecoratedBox(
-                      decoration: BoxDecoration(color: item.color))),
-              Text(item.name),
+                      decoration: BoxDecoration(
+                          color: item.color,
+                        borderRadius: BorderRadius.all(Radius.circular(4))
+                      ))),
             ],
           ));
       buttons.add(button);
     }
 
+    double height;
+    if (buttons.length > AddButton.NUMBER_OF_ACTION_BUTTONS/2)
+      height = 130;
+    else
+      height = 65;
     return Padding(
-      padding: const EdgeInsets.only(top: 20),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        mainAxisSize: MainAxisSize.max,
-        children: buttons,
+      padding: EdgeInsets.only(
+        bottom: controller.value.isRecordingVideo ? 20 : 0,
+      ),
+      child: SizedBox(
+        height: height,
+        child: GridView.count(
+          childAspectRatio: 2,
+          crossAxisCount: AddButton.NUMBER_OF_ACTION_BUTTONS~/2,
+          children: buttons,
+        ),
       ),
     );
   }
