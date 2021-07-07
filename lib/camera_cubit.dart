@@ -1,6 +1,6 @@
 /*
   Created By: Nathan Millwater
-  Description: Holds the logic for changing auth states. Emits
+  Description: Holds the logic for changing navigation pages. Emits
                states to show different pages
  */
 

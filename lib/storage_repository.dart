@@ -26,6 +26,8 @@ class ActionEntry {
   ActionEntry({this.action, this.location, this.time});
 }
 
+/// This class handles interacting with the storage repository.
+/// The storage repository in this project is AWS
 class StorageRepository {
 
   String storedDate;
@@ -40,6 +42,8 @@ class StorageRepository {
   }
 
   /// Takes in a username, userId, File and extension and stores this information
+  /// in AWS. It also stores the csv file containing any actions that were marked
+  /// in the video recording
   /// Parameters: The user's username, the File object being uploaded and the file extension
   /// Returns: A future string with the upload file result
   Future<String> uploadFile(String username, File file, String extension,
@@ -57,6 +61,7 @@ class StorageRepository {
     else
       type = "videos";
 
+    // If this is the first video chunk, store the date
     if (chunk.videoCount == 1)
       storedDate = DateTime.now().toIso8601String();
     if (chunk.videoCount == 0 && actionTable.isEmpty) {
@@ -96,28 +101,36 @@ class StorageRepository {
   }
 
   /// Upload the action file with actions and the time they occurred
-  /// to AWS
+  /// to AWS. Include the location with the upload
   /// Parameters: The devices Id string
   /// Returns: A future object indicating this function is asynchronous
   Future<void> uploadActionFile(String userId, CameraController c) async {
+    // make sure we have actions to upload and we are not recording
     if (actionTable.isEmpty || c.value.isRecordingVideo) {
       print("No actions submitted");
       return;
     }
     print("Now uploading text file");
+    // store the csv file in the same directory as the video file(s)
     String fileName = '$userId/videos/' + storedDate.substring(0, 19);
     fileName += ("/${userId}_" + DateTime.now().toIso8601String().substring(0, 19));
     fileName = fileName.replaceAll("T", "_");
+    // Amplify upload function
     await Amplify.Storage.uploadFile(
         local: actionFile, key: fileName + ".csv");
   }
 
+  /// Write the data stored in the actionTable to a buffer so
+  /// we can save it to a file ona the device
+  /// Parameters: The device ID for the header
+  /// Returns: A future void object which is not synchronous
   Future<void> writeActionFile(String id) async {
     // save data to string buffer because strings are immutable
     var buffer = new StringBuffer();
     buffer.write("Recorded on device: " + id);
     // header for csv file
     buffer.write("\ntime_elapsed,datetime,longitude,latitude,name");
+    // loop through the action table and write the action to the buffer
     actionTable.forEach((key, value) {
       String millisecond = (key.inMilliseconds % 1000).toString();
       buffer.write("\n" + key.inSeconds.toString() + "." + millisecond);
@@ -152,21 +165,27 @@ class StorageRepository {
     return options;
   }
 
+  /// Create the csv file used to store the action data. This
+  /// function does not write to the file, only creates it
+  /// Returns: A file that is created asynchronously
   Future<File> createActionTextFile() async {
     // reset the action table
     actionTable = SortedMap<Duration, ActionEntry>(Ordering.byKey());
     // get the app's storage directory
     final Directory extDir = await getApplicationDocumentsDirectory();
+    // path in local files
     final String dirPath = '${extDir.path}/camera_app/text_action_files';
     await Directory(dirPath).create(recursive: true);
     final String filePath = '$dirPath/' + DateTime.now().toString();
     // The file name
     File file = File(filePath);
-    file.writeAsString("Action File created by");
     actionFile = file;
     return file;
   }
 
+  /// Adds an action to the action table data structure by storing
+  /// all necessary data.
+  /// Parameters: A string representing the name of the action
   void addAction(String action) async {
     // save entry in a table
     final time = DateTime.now().toIso8601String().substring(11, 19);

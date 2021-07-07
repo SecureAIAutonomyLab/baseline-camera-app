@@ -1,6 +1,8 @@
-// Copyright 2019 The Flutter team. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
+/*
+  Created By: Nathan Millwater
+  Description: Represents a the action catalog. Holds information related
+               to the model
+ */
 
 import 'dart:io';
 import 'dart:math';
@@ -10,20 +12,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:json_store/json_store.dart';
 
-/// A proxy of the catalog of items the user can buy.
-///
-/// In a real app, this might be backed by a backend and cached on device.
-/// In this sample app, the catalog is procedurally generated and infinite.
-///
-/// For simplicity, the catalog is expected to be immutable (no products are
-/// expected to be added, removed or changed during the execution of the app).
+/// A class representing a model of the action catalog. Holds the list
+/// of items that the user can select from
 class CatalogModel {
 
+  // constructor
   CatalogModel();
+  // the catalog data structure
   List<Item> catalog;
   static var deviceID;
   final jsonStore = JsonStore();
 
+  // a list of strings which are the default action names
   static List<String> itemNames = [
     'Control Flow',
     'Interpreter',
@@ -41,6 +41,8 @@ class CatalogModel {
     'Currying',
   ];
 
+  /// Generates a unique ID integer between 0 and 10000
+  /// Returns: The generated id
   int uniqueID() {
     final rng = Random();
     bool equal;
@@ -58,7 +60,7 @@ class CatalogModel {
     return id;
   }
 
-  // initialize the default model
+  /// initialize the default model with default names
   initializeDefaultModel() {
     catalog = [];
     for (int i = 0; i < itemNames.length; i++) {
@@ -68,8 +70,10 @@ class CatalogModel {
     }
   }
 
+  /// returns the catalog object
   List<Item> getCatalog() => catalog;
 
+  //
   void addToCatalog(Item item) {
     this.catalog.add(item);
   }
@@ -81,6 +85,7 @@ class CatalogModel {
   /// Get item by [id].
   Item getById(int id) => catalog[id];
 
+  /// returns the length of the catalog
   int getLength() => catalog.length;
 
   /// Get item by its position in the catalog.
@@ -90,6 +95,9 @@ class CatalogModel {
     return getById(position);
   }
 
+  /// Stores the device id in a static variable
+  /// It is called in the camera_navigator file
+  /// Returns: A future object indicating an asynchronous function
   static Future<void> getDeviceID() async {
     try {
       if (Platform.isAndroid) {
@@ -104,6 +112,9 @@ class CatalogModel {
     }
   }
 
+  /// Saves the current state of the catalog in device storage
+  /// in a json format.
+  /// Returns: A future object indicating an asynchronous function
   Future<void> saveCatalogModel() async {
     // clear the database first
     await jsonStore.clearDataBase();
@@ -116,11 +127,13 @@ class CatalogModel {
         batch: batch,
       );
     });
+    // finally store the batch in a json object
     jsonStore.commitBatch(batch);
   }
 
 }
 
+/// A class to represent an item in the action catalog
 class Item {
   int id;
   String name;
@@ -128,7 +141,7 @@ class Item {
   String description;
 
   Item({this.id, this.name, this.color, this.description}) {
-    // To make the sample app look nicer, each item is given one of the
+    // To make the items look nicer, each item is given one of the
     // Material Design primary colors.
 
     if (id != null && color == null) {
@@ -136,6 +149,10 @@ class Item {
     }
   }
 
+  /// Parse the object to a json format which is a map
+  /// of string to a dynamic type. The dynamic type must
+  /// be a primative data type
+  /// Returns: the parsed json data structure
   Map<String, dynamic> toJson() {
     Map<String, dynamic> json = {
       'id' : id,
@@ -146,6 +163,9 @@ class Item {
     return json;
   }
 
+  /// Initializes this object from a json file
+  /// Parameters: the json data structure which holds the
+  /// item information
   Item.fromJson(Map<String, dynamic> json) {
     this.id = json['id'];
     this.name = json['name'];
@@ -156,6 +176,7 @@ class Item {
   @override
   int get hashCode => id;
 
+  /// operator overloading for checking if two objects are equal
   @override
   bool operator ==(Object other) => other is Item && other.id == id;
 }

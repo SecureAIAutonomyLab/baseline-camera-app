@@ -49,6 +49,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
   CameraViewBuild widgets; // the camera view widgets
   static const VIDEO_CHUNK_RATE = 61; // in seconds
   Timer chunkTimer; // timer for video chunking
+  // animation objects that control simple animations
   AnimationController optionsAnimationController;
   Animation<double> optionsRowAnimation;
   AnimationController actionsAnimationController;
@@ -76,6 +77,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
       ResolutionPreset.medium,
       enableAudio: enableAudio,
     );
+    // initialize the following animation control objects
     optionsAnimationController = AnimationController(
       duration: const Duration(milliseconds: 300),
       vsync: this,
@@ -92,7 +94,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
       parent: actionsAnimationController,
       curve: Curves.easeInCubic,
     );
-    // start by showing button
+    // start by showing the camera options button
     actionsAnimationController.value = 1;
 
     controller.initialize();
@@ -282,6 +284,8 @@ class CameraExampleHomeState extends State<CameraExampleHome>
     }
   }
 
+  /// Changes the animation of the camera options widget.
+  /// Displays the options when collapsed and vise versa
   void onCameraOptionsButtonPressed() {
     if (optionsAnimationController.value == 1) {
       optionsAnimationController.reverse();
@@ -290,6 +294,9 @@ class CameraExampleHomeState extends State<CameraExampleHome>
     }
   }
 
+  /// Changes the animation of the camera options button
+  /// Displays the button when not recording and hides the
+  /// button when recording starts
   void hideCameraOptionsButton() {
     if (actionsAnimationController.value == 1) {
       actionsAnimationController.reverse();
@@ -309,6 +316,10 @@ class CameraExampleHomeState extends State<CameraExampleHome>
     ScaffoldMessenger.of(context).showSnackBar(bar);
   }
 
+  /// Give the camera time to initilize before the user
+  /// tries changing the switch state again. Without the 1
+  /// second delay, errors would be thrown
+  /// Parameters: The current state of the audio switch
   void enableAudioSwitchChanged(bool value) async {
     audioSwitchState = false;
     enableAudio = value;
@@ -367,7 +378,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
     }
   }
 
-  /// handles the action button being pressed. Passes the action to the
+  /// Handles the action button being pressed. Passes the action to the
   /// storage repository to add to the text file
   /// Parameters: ActionButton enumeration which indicates the action chosen
   void onActionButtonPressed(String name) {
@@ -414,7 +425,13 @@ class CameraExampleHomeState extends State<CameraExampleHome>
     return null;
   }
 
+  /// This function is called when the video chunk timer is activated
+  /// It stops the recording and starts a new recording. The finished
+  /// recording is uploaded to AWS. This function is continuous called
+  /// until the timer is canceled.
+  /// Parameters: the timer that calls this function every cycle
   void chunkVideo(Timer t) async {
+    // mark the video for chunking and increase the count
     chunkData.videoCount++;
     chunkData.chunkVideo = true;
     showInSnackBar("Time limit reached, video will be chunked");

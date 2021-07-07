@@ -1,6 +1,7 @@
 /*
   Created By: Nathan Millwater
-  Description: Holds the logic for
+  Description: Holds the logic for navigating between different screens
+               within the camera session
  */
 
 
@@ -20,28 +21,36 @@ import 'models/catalog_model.dart';
 
 
 
-/// App Navigator widget that handles navigation between login screens
-/// and camera home screen
+/// Camera Navigator widget that handles navigation between the camera home
+/// screen, selected actions, and action catalog
 class CameraNavigator extends StatelessWidget {
 
+  // This is the location of the home screen and catalog model objects
   final home = CameraExampleHome(username: "do not use");
   final catalogModel = CatalogModel();
+  // get access to the json storage object
   final jsonStore = JsonStore();
 
-  // constructor, setup model
+  // constructor, setup model by loading the catalog
   CameraNavigator() {
-    catalogModel.initializeDefaultModel();
     loadCatalogFromStorage();
   }
 
+  /// Attempts to load the action catalog saved on the device
+  /// If this fails, initialize a new catalog model with default
+  /// action names and colors
   void loadCatalogFromStorage() async {
     // jsonStore.clearDataBase();
+    // Get the device ID
     await CatalogModel.getDeviceID();
     final deviceID = CatalogModel.deviceID;
+    // load the json file
     List<Map<String, dynamic>> json = await jsonStore.getListLike('$deviceID%');
+    // if null or empty, load the default values
     if (json == null || json.isEmpty) {
       print('default model');
       catalogModel.initializeDefaultModel();
+    // read from the json file
     } else {
       print('read from storage');
       final items = json.map((item) => Item.fromJson(item)).toList();
@@ -52,11 +61,11 @@ class CameraNavigator extends StatelessWidget {
   /// standard build method that creates the widget tree
   @override
   Widget build(BuildContext context) {
-
+    // use a bloc provider to provide access to the camera cubit and state object
     return BlocBuilder<CameraCubit, CameraState> (builder: (context, state) {
       return MultiProvider(
           providers: [
-            // In this sample app, CatalogModel never changes, so a simple Provider
+            // In this app, CatalogModel never changes, so a simple Provider
             // is sufficient.
             Provider(create: (context) => catalogModel),
             // CartModel is implemented as a ChangeNotifier, which calls for the use
@@ -71,6 +80,7 @@ class CameraNavigator extends StatelessWidget {
               },
             ),
           ],
+          // list the pages to navigate between
           child: Navigator(
             pages: [
               if (state == CameraState.actionList)

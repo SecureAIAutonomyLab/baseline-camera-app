@@ -90,6 +90,7 @@ class CameraViewBuild {
           // Camera control buttons
           captureControlRowWidget(),
           Text("Action Buttons"),
+          // The action buttons
           captureActionRowWidget(),
           // Button to show camera options widget
           cameraOptionsButton(),
@@ -119,8 +120,13 @@ class CameraViewBuild {
     );
   }
 
+  /// The button widget that brings up the camera options
+  /// to the user
+  /// Returns: A size changeable widget that depends on the animation
+  /// controller
   Widget cameraOptionsButton() {
     return SizeTransition(
+      // link to the animation
       sizeFactor: state.actionsRowAnimation,
       child: ClipRect(
         child: Center(
@@ -136,6 +142,9 @@ class CameraViewBuild {
     );
   }
 
+  /// Changes to the corresponding page on the bottom navigation bar
+  /// Parameters: The index of the selected page, and the build context
+  /// to read from
   void changePage(int index, BuildContext context) {
     if (index == 0)
       context.read<CameraCubit>().showActionCatalog();
@@ -145,24 +154,6 @@ class CameraViewBuild {
   /// Chooses the appbar based on the device platform
   /// Returns: Appbar Widget
   Widget chooseAppBar() {
-    // if (Theme.of(context).platform == TargetPlatform.iOS) {
-    //   return CupertinoNavigationBar(
-    //     // leading: TextButton(
-    //     //   child: Text("Sign Out", style: TextStyle(fontSize: 16),),
-    //     //   onPressed: () => BlocProvider.of<SessionCubit>(context).signOut(),
-    //     // ),
-    //     middle: Text("Camera Home"),
-    //     trailing: IconButton(
-    //       icon: Icon(Icons.flip_camera_ios),
-    //       onPressed: () {
-    //         // Switch to a different camera
-    //         state.cameraToggleButtonPressed();
-    //       },
-    //     ),
-    //   );
-    // }
-    // else {
-    // android platform
     Icon icon;
     if (Theme.of(context).platform == TargetPlatform.iOS)
       icon = Icon(Icons.flip_camera_ios);
@@ -279,6 +270,7 @@ class CameraViewBuild {
   /// controller
   Widget cameraOptionsRow() {
     return SizeTransition(
+      // link to the animation
       sizeFactor: state.optionsRowAnimation,
       child: ClipRect(
         child: Column(
@@ -311,6 +303,7 @@ class CameraViewBuild {
   /// Returns: A row that holds the text and buttons for changing the
   /// camera resolution
   Widget changeResolutionWidget() {
+    // Get the current resolution from the camera controller
     String currentResolution = state.resolution.toString().substring(17);
     currentResolution = currentResolution.substring(0, 1).toUpperCase() +
         currentResolution.substring(1);
@@ -332,6 +325,7 @@ class CameraViewBuild {
             ),
           ],
         ),
+        // option to change resolutions
         cupertinoActionSheet(),
       ],
     );
@@ -344,6 +338,7 @@ class CameraViewBuild {
       onPressed: !controller.value.isRecordingVideo
           ? () async {
               final currentResolution = state.resolution.toString();
+              // store the returned result in a variable to use later
               var returned = await showCupertinoModalPopup<String>(
                 context: context,
                 builder: (BuildContext context) => CupertinoActionSheet(
@@ -351,6 +346,7 @@ class CameraViewBuild {
                       style: TextStyle(fontSize: 18)),
                   message: Text("The resolution is currently set at " +
                       currentResolution.substring(17)),
+                  // list of all options to choose from
                   actions: <CupertinoActionSheetAction>[
                     CupertinoActionSheetAction(
                         child: const Text('High'),
@@ -448,6 +444,10 @@ class CameraViewBuild {
     );
   }
 
+  /// Display all the currently selected action buttons on the home
+  /// screen.
+  /// Returns: A GridView widget that stores all the buttons in a grid
+  /// which can be adjusted to show more or less buttons at one time
   Widget captureActionRowWidget() {
     // We must create a list of widgets to add
     var cart = context.watch<CartModel>();
@@ -457,11 +457,9 @@ class CameraViewBuild {
       Widget button = TextButton(
           onPressed: controller != null &&
                   controller.value.isInitialized &&
-                  controller.value.isRecordingVideo
-              ? () {
+                  controller.value.isRecordingVideo ? () {
                   state.onActionButtonPressed(item.name);
-                }
-              : null,
+                } : null,
           child: Column(
             children: [
               Text(item.name, style: TextStyle(fontSize: 18),),
@@ -478,17 +476,14 @@ class CameraViewBuild {
       buttons.add(button);
     }
 
-    double height;
-    if (buttons.length > AddButton.NUMBER_OF_ACTION_BUTTONS/2)
-      height = 130;
-    else
-      height = 65;
     return Padding(
       padding: EdgeInsets.only(
         bottom: controller.value.isRecordingVideo ? 20 : 0,
       ),
       child: SizedBox(
-        height: height,
+        // Define the height of the gridview
+        height: buttons.length > AddButton.NUMBER_OF_ACTION_BUTTONS/2
+            ? 130 : 65,
         child: GridView.count(
           childAspectRatio: 2,
           crossAxisCount: AddButton.NUMBER_OF_ACTION_BUTTONS~/2,
@@ -507,6 +502,10 @@ class CameraViewBuild {
       return cupertinoDialog();
   }
 
+  /// Separate function to return a cupertino dialog box
+  /// instead of a material dialog box
+  /// Returns: A future widget object that does not return until
+  /// the user has chosen an option
   Future<Widget> cupertinoDialog() {
     return showCupertinoDialog<Widget>(
         // User cannot dismiss the dialog
@@ -542,6 +541,9 @@ class CameraViewBuild {
         });
   }
 
+  /// The widget object for prompting the user to upload their file
+  /// Returns: A future widget object that does not return until
+  /// the user has chosen an option
   Future<Widget> materialDialog() {
     return showDialog<Widget>(
         // User cannot dismiss the dialog
@@ -577,6 +579,10 @@ class CameraViewBuild {
         });
   }
 
+  /// Checks if the device is connected to the internet by trying
+  /// to access a simple domain
+  /// Returns: True if the device is connected to the internet, false
+  /// otherwise
   Future<bool> isInternetConnected() async {
     try {
       final result = await InternetAddress.lookup('example.com');
