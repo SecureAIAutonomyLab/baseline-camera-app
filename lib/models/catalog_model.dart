@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:io';
 import 'dart:math';
 
+import 'package:camera_app/camera_example_home.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:json_store/json_store.dart';
 
 /// A proxy of the catalog of items the user can buy.
@@ -17,6 +20,9 @@ import 'package:json_store/json_store.dart';
 class CatalogModel {
 
   CatalogModel();
+  List<Item> catalog;
+  static var deviceID;
+  final jsonStore = JsonStore();
 
   static List<String> itemNames = [
     'Control Flow',
@@ -52,8 +58,6 @@ class CatalogModel {
     return id;
   }
 
-  List<Item> catalog;
-
   // initialize the default model
   initializeDefaultModel() {
     catalog = [];
@@ -86,7 +90,19 @@ class CatalogModel {
     return getById(position);
   }
 
-  final jsonStore = JsonStore();
+  static Future<void> getDeviceID() async {
+    try {
+      if (Platform.isAndroid) {
+        final info = await CameraExampleHomeState.deviceInfoPlugin.androidInfo;
+        deviceID = info.id;
+      } else {
+        final info = await CameraExampleHomeState.deviceInfoPlugin.iosInfo;
+        deviceID = info.identifierForVendor;
+      }
+    } on PlatformException {
+      deviceID = "Failed to get deviceID";
+    }
+  }
 
   Future<void> saveCatalogModel() async {
     // clear the database first
@@ -95,7 +111,7 @@ class CatalogModel {
     final batch = await jsonStore.startBatch();
     await Future.forEach(catalog, (item) async {
       await jsonStore.setItem(
-        'deviceID-${item.id}',
+        '$deviceID-${item.id}',
         item.toJson(),
         batch: batch,
       );

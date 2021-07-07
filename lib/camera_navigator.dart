@@ -35,7 +35,10 @@ class CameraNavigator extends StatelessWidget {
   }
 
   void loadCatalogFromStorage() async {
-    List<Map<String, dynamic>> json = await jsonStore.getListLike('deviceID%');
+    // jsonStore.clearDataBase();
+    await CatalogModel.getDeviceID();
+    final deviceID = CatalogModel.deviceID;
+    List<Map<String, dynamic>> json = await jsonStore.getListLike('$deviceID%');
     if (json == null || json.isEmpty) {
       print('default model');
       catalogModel.initializeDefaultModel();
