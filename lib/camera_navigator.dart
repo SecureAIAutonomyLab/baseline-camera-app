@@ -44,7 +44,6 @@ class CameraNavigator extends StatelessWidget {
       catalogModel.initializeDefaultModel();
     } else {
       print('read from storage');
-      print('\nlength '+ json.length.toString());
       final items = json.map((item) => Item.fromJson(item)).toList();
       catalogModel.catalog = items;
     }

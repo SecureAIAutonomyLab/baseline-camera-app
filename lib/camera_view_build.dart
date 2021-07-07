@@ -9,9 +9,6 @@ import 'dart:io';
 
 import 'package:camera/camera.dart';
 import 'package:camera_app/camera_example_home.dart';
-import 'package:camera_app/session_cubit.dart';
-import 'package:camera_app/camera_navigator.dart';
-import 'package:camera_app/storage_repository.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -20,7 +17,6 @@ import 'camera_cubit.dart';
 import 'main.dart';
 import 'models/cart_model.dart';
 import 'models/catalog_model.dart';
-
 
 /// A wrapper class that wraps the upload file boolean variables
 class BooleanWrap {
@@ -37,16 +33,13 @@ class BooleanWrap {
 /// Wrapper class that stores the isVideoChunked boolean variable
 /// and the number of chunked videos created
 class ChunkVideoData {
-
   bool chunkVideo;
   int videoCount;
 
   ChunkVideoData({this.chunkVideo, this.videoCount});
 }
 
-
 class CameraViewBuild {
-
   BuildContext context;
   CameraExampleHomeState state;
   CameraController controller;
@@ -55,8 +48,13 @@ class CameraViewBuild {
   String uploadMessage;
 
   // named parameter constructor
-  CameraViewBuild({this.context, this.state, this.controller, this.isFileFinishedUploading,
-                  this.enableAudio, this.uploadMessage});
+  CameraViewBuild(
+      {this.context,
+      this.state,
+      this.controller,
+      this.isFileFinishedUploading,
+      this.enableAudio,
+      this.uploadMessage});
 
   /// Messages for the snack bar
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -94,8 +92,13 @@ class CameraViewBuild {
           captureActionRowWidget(),
           // Button to show camera options widget
           TextButton(
-              onPressed: controller != null ? state.onCameraOptionsButtonPressed : null,
-              child: Text("Camera Options", style: TextStyle(fontSize: 15),)),
+              onPressed: controller != null
+                  ? state.onCameraOptionsButtonPressed
+                  : null,
+              child: Text(
+                "Camera Options",
+                style: TextStyle(fontSize: 15),
+              )),
           // Display the camera options
           cameraOptionsWidget(),
         ],
@@ -104,24 +107,20 @@ class CameraViewBuild {
       bottomNavigationBar: BottomNavigationBar(
         items: [
           BottomNavigationBarItem(
-              icon: Icon(Icons.dashboard_customize),
-              label: "Action Catalog"
-          ),
+              icon: Icon(Icons.dashboard_customize), label: "Action Catalog"),
           BottomNavigationBarItem(
-              icon: Icon(Icons.pending_actions),
-              label: "Current Actions"
-          ),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: "Home"
-          )
+              icon: Icon(Icons.pending_actions), label: "Current Actions"),
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home")
         ],
         currentIndex: 2,
         onTap: controller != null &&
-            controller.value.isInitialized &&
-            !controller.value.isRecordingVideo &&
-            !isFileFinishedUploading.started
-            ? (index) {changePage(index, context);} : null,
+                controller.value.isInitialized &&
+                !controller.value.isRecordingVideo &&
+                !isFileFinishedUploading.started
+            ? (index) {
+                changePage(index, context);
+              }
+            : null,
       ),
     );
   }
@@ -129,44 +128,47 @@ class CameraViewBuild {
   void changePage(int index, BuildContext context) {
     if (index == 0)
       context.read<CameraCubit>().showActionCatalog();
-    else if (index == 1)
-      context.read<CameraCubit>().showActionList();
+    else if (index == 1) context.read<CameraCubit>().showActionList();
   }
 
   /// Chooses the appbar based on the device platform
   /// Returns: Appbar Widget
   Widget chooseAppBar() {
-    if (Theme.of(context).platform == TargetPlatform.iOS) {
-      return CupertinoNavigationBar(
-        // leading: TextButton(
-        //   child: Text("Sign Out", style: TextStyle(fontSize: 16),),
-        //   onPressed: () => BlocProvider.of<SessionCubit>(context).signOut(),
-        // ),
-        middle: Text("Camera Home"),
-        trailing: IconButton(
-          icon: Icon(Icons.flip_camera_ios),
+    // if (Theme.of(context).platform == TargetPlatform.iOS) {
+    //   return CupertinoNavigationBar(
+    //     // leading: TextButton(
+    //     //   child: Text("Sign Out", style: TextStyle(fontSize: 16),),
+    //     //   onPressed: () => BlocProvider.of<SessionCubit>(context).signOut(),
+    //     // ),
+    //     middle: Text("Camera Home"),
+    //     trailing: IconButton(
+    //       icon: Icon(Icons.flip_camera_ios),
+    //       onPressed: () {
+    //         // Switch to a different camera
+    //         state.cameraToggleButtonPressed();
+    //       },
+    //     ),
+    //   );
+    // }
+    // else {
+    // android platform
+    Icon icon;
+    if (Theme.of(context).platform == TargetPlatform.iOS)
+      icon = Icon(Icons.flip_camera_ios);
+    else
+      icon = Icon(Icons.flip_camera_android);
+    return AppBar(
+      title: Text("Camera Home"),
+      actions: [
+        IconButton(
+          icon: icon,
           onPressed: () {
             // Switch to a different camera
             state.cameraToggleButtonPressed();
           },
-        ),
-      );
-    }
-    else {
-      // android platform
-      return AppBar(
-        title: Text("Camera Home"),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.flip_camera_android),
-            onPressed: () {
-              // Switch to a different camera
-              state.cameraToggleButtonPressed();
-            },
-          )
-        ],
-      );
-    }
+        )
+      ],
+    );
   }
 
   /// Display the preview from the camera (or a message if the preview is not available).
@@ -225,7 +227,9 @@ class CameraViewBuild {
           'Enable Audio:',
           style: TextStyle(fontSize: 15),
         ),
-        SizedBox(width: 5,),
+        SizedBox(
+          width: 5,
+        ),
         // Android switch or IOS switch
         enableAudioSwitchType(),
       ],
@@ -239,12 +243,13 @@ class CameraViewBuild {
       // Use a cupertino switch if platform is IOS
       return CupertinoSwitch(
         value: state.enableAudio,
-        onChanged: !controller.value.isRecordingVideo ? (bool value) {
-          state.enableAudioSwitchChanged(value);
-        } : null,
+        onChanged: !controller.value.isRecordingVideo
+            ? (bool value) {
+                state.enableAudioSwitchChanged(value);
+              }
+            : null,
       );
-    }
-    else {
+    } else {
       // Use a material switch if platform is Android
       return Switch(
         value: state.enableAudio,
@@ -276,13 +281,15 @@ class CameraViewBuild {
                   state.displayId = state.displayId ? false : true;
                   state.updateUI();
                 },
-                child: state.displayId ? Text(
-                  state.deviceId,
-                  style: TextStyle(fontSize: 13, color: Colors.black),
-                ) : Text("Display Device ID",
-                  style: TextStyle(fontSize: 13, color: Colors.black),
-                )
-            ),
+                child: state.displayId
+                    ? Text(
+                        state.deviceId,
+                        style: TextStyle(fontSize: 13, color: Colors.black),
+                      )
+                    : Text(
+                        "Display Device ID",
+                        style: TextStyle(fontSize: 13, color: Colors.black),
+                      )),
           ],
         ),
       ),
@@ -294,16 +301,24 @@ class CameraViewBuild {
   /// camera resolution
   Widget changeResolutionWidget() {
     String currentResolution = state.resolution.toString().substring(17);
-    currentResolution = currentResolution.substring(0,1).toUpperCase() +
+    currentResolution = currentResolution.substring(0, 1).toUpperCase() +
         currentResolution.substring(1);
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         Row(
           children: [
-            Text("Resolution: ", style: TextStyle(fontSize: 18),),
-            SizedBox(width: 5,),
-            Text(currentResolution, style: TextStyle(fontSize: 15),),
+            Text(
+              "Resolution: ",
+              style: TextStyle(fontSize: 18),
+            ),
+            SizedBox(
+              width: 5,
+            ),
+            Text(
+              currentResolution,
+              style: TextStyle(fontSize: 15),
+            ),
           ],
         ),
         cupertinoActionSheet(),
@@ -315,37 +330,44 @@ class CameraViewBuild {
   /// Returns: A button that brings up an action sheet of choices
   Widget cupertinoActionSheet() {
     return CupertinoButton(
-      onPressed: !controller.value.isRecordingVideo ? () async {
-        final currentResolution = state.resolution.toString();
-        var returned = await showCupertinoModalPopup<String>(
-          context: context,
-          builder: (BuildContext context) => CupertinoActionSheet(
-            title: Text('Choose a resolution', style: TextStyle(fontSize: 18)),
-            message: Text("The resolution is currently set at " +
-                currentResolution.substring(17)),
-            actions: <CupertinoActionSheetAction>[
-              CupertinoActionSheetAction(
-                  child: const Text('High'),
-                  onPressed: () {Navigator.of(context).pop("high");}
-              ),
-              CupertinoActionSheetAction(
-                  child: const Text('Medium'),
-                  onPressed: () {Navigator.of(context).pop("medium");}
-              ),
-              CupertinoActionSheetAction(
-                  child: const Text('Low'),
-                  onPressed: () {Navigator.of(context).pop("low");}
-              )
-            ],
-            cancelButton: CupertinoActionSheetAction(
-                child: const Text('Cancel'),
-                onPressed: () {Navigator.of(context).pop("cancel");}
-            ),
-          ),
-        );
-        // call for resolution change
-        state.changeResolution(returned);
-      } : null,
+      onPressed: !controller.value.isRecordingVideo
+          ? () async {
+              final currentResolution = state.resolution.toString();
+              var returned = await showCupertinoModalPopup<String>(
+                context: context,
+                builder: (BuildContext context) => CupertinoActionSheet(
+                  title: Text('Choose a resolution',
+                      style: TextStyle(fontSize: 18)),
+                  message: Text("The resolution is currently set at " +
+                      currentResolution.substring(17)),
+                  actions: <CupertinoActionSheetAction>[
+                    CupertinoActionSheetAction(
+                        child: const Text('High'),
+                        onPressed: () {
+                          Navigator.of(context).pop("high");
+                        }),
+                    CupertinoActionSheetAction(
+                        child: const Text('Medium'),
+                        onPressed: () {
+                          Navigator.of(context).pop("medium");
+                        }),
+                    CupertinoActionSheetAction(
+                        child: const Text('Low'),
+                        onPressed: () {
+                          Navigator.of(context).pop("low");
+                        })
+                  ],
+                  cancelButton: CupertinoActionSheetAction(
+                      child: const Text('Cancel'),
+                      onPressed: () {
+                        Navigator.of(context).pop("cancel");
+                      }),
+                ),
+              );
+              // call for resolution change
+              state.changeResolution(returned);
+            }
+          : null,
       child: const Text('Change Resolution'),
     );
   }
@@ -358,37 +380,35 @@ class CameraViewBuild {
       mainAxisSize: MainAxisSize.max,
       children: <Widget>[
         IconButton(
-          icon: const Icon(Icons.camera_alt),
-          color: Colors.blue,
-          // If all boolean values are true, activate button otherwise do nothing
+            icon: const Icon(Icons.camera_alt),
+            color: Colors.blue,
+            // If all boolean values are true, activate button otherwise do nothing
             onPressed: () async {
               if (controller != null &&
-                  controller.value.isInitialized &&
-                  !controller.value.isRecordingVideo &&
-                  !isFileFinishedUploading.started // only if finished uploading
-              )
-                if (await isInternetConnected())
-                  state.onTakePictureButtonPressed();
-                else
-                  state.showInSnackBar("You are not connected to the internet");
-            }
-        ),
+                      controller.value.isInitialized &&
+                      !controller.value.isRecordingVideo &&
+                      !isFileFinishedUploading
+                          .started // only if finished uploading
+                  ) if (await isInternetConnected())
+                state.onTakePictureButtonPressed();
+              else
+                state.showInSnackBar("You are not connected to the internet");
+            }),
         IconButton(
-          icon: const Icon(Icons.videocam),
-          color: Colors.blue,
-          // If all boolean values are true, activate button otherwise do nothing
-          onPressed: () async {
-            if (controller != null &&
-                controller.value.isInitialized &&
-                !controller.value.isRecordingVideo &&
-                !isFileFinishedUploading.started // only if finished uploading
-            )
-            if (await isInternetConnected())
-              state.onVideoRecordButtonPressed();
-            else
-              state.showInSnackBar("You are not connected to the internet");
-          }
-        ),
+            icon: const Icon(Icons.videocam),
+            color: Colors.blue,
+            // If all boolean values are true, activate button otherwise do nothing
+            onPressed: () async {
+              if (controller != null &&
+                      controller.value.isInitialized &&
+                      !controller.value.isRecordingVideo &&
+                      !isFileFinishedUploading
+                          .started // only if finished uploading
+                  ) if (await isInternetConnected())
+                state.onVideoRecordButtonPressed();
+              else
+                state.showInSnackBar("You are not connected to the internet");
+            }),
         IconButton(
           icon: controller != null && controller.value.isRecordingPaused
               ? Icon(Icons.play_arrow)
@@ -396,11 +416,11 @@ class CameraViewBuild {
           color: Colors.blue,
           // If all boolean values are true, activate button otherwise do nothing
           onPressed: controller != null &&
-              controller.value.isInitialized &&
-              controller.value.isRecordingVideo
+                  controller.value.isInitialized &&
+                  controller.value.isRecordingVideo
               ? (controller != null && controller.value.isRecordingPaused
-              ? state.onResumeButtonPressed
-              : state.onPauseButtonPressed)
+                  ? state.onResumeButtonPressed
+                  : state.onPauseButtonPressed)
               : null,
         ),
         IconButton(
@@ -408,8 +428,8 @@ class CameraViewBuild {
           color: Colors.red,
           // If all boolean values are true, activate button otherwise do nothing
           onPressed: controller != null &&
-              controller.value.isInitialized &&
-              controller.value.isRecordingVideo
+                  controller.value.isInitialized &&
+                  controller.value.isRecordingVideo
               ? state.onStopButtonPressed
               : null,
         )
@@ -425,19 +445,22 @@ class CameraViewBuild {
     for (Item item in cart.items) {
       Widget button = TextButton(
           onPressed: controller != null &&
-              controller.value.isInitialized &&
-              controller.value.isRecordingVideo
-              ? () {state.onActionButtonPressed(item.name);}: null,
+                  controller.value.isInitialized &&
+                  controller.value.isRecordingVideo
+              ? () {
+                  state.onActionButtonPressed(item.name);
+                }
+              : null,
           child: Column(
             children: [
               SizedBox(
-                  width: 30, height: 10,
-                  child: DecoratedBox(decoration: BoxDecoration(color: item.color))
-              ),
+                  width: 30,
+                  height: 10,
+                  child: DecoratedBox(
+                      decoration: BoxDecoration(color: item.color))),
               Text(item.name),
             ],
-          )
-      );
+          ));
       buttons.add(button);
     }
 
@@ -447,7 +470,6 @@ class CameraViewBuild {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         mainAxisSize: MainAxisSize.max,
         children: buttons,
-
       ),
     );
   }
@@ -463,74 +485,72 @@ class CameraViewBuild {
 
   Future<Widget> cupertinoDialog() {
     return showCupertinoDialog<Widget>(
-      // User cannot dismiss the dialog
+        // User cannot dismiss the dialog
         barrierDismissible: false,
-        context: context, builder: (BuildContext context) {
-      return CupertinoAlertDialog(
-        title: Text(uploadMessage),
-        content: Text("Do you want to upload this file to AWS?"),
-        actions: [
-          // No button
-          CupertinoDialogAction(
-              onPressed: () {
-                isFileFinishedUploading.upload = false;
-                Navigator.of(context).pop();
-              },
-              child: Text("No")
-          ),
-          // Yes button
-          CupertinoDialogAction(
-              onPressed: () async {
-                final connected = await isInternetConnected();
-                Navigator.of(context).pop();
-                if (connected) {
-                  isFileFinishedUploading.upload = true;
-                } else {
-                  state.showInSnackBar("You are not connected to the internet");
-                }
-              },
-              child: Text("Yes")
-          )
-        ],
-      );
-    }
-    );
+        context: context,
+        builder: (BuildContext context) {
+          return CupertinoAlertDialog(
+            title: Text(uploadMessage),
+            content: Text("Do you want to upload this file to AWS?"),
+            actions: [
+              // No button
+              CupertinoDialogAction(
+                  onPressed: () {
+                    isFileFinishedUploading.upload = false;
+                    Navigator.of(context).pop();
+                  },
+                  child: Text("No")),
+              // Yes button
+              CupertinoDialogAction(
+                  onPressed: () async {
+                    final connected = await isInternetConnected();
+                    Navigator.of(context).pop();
+                    if (connected) {
+                      isFileFinishedUploading.upload = true;
+                    } else {
+                      state.showInSnackBar(
+                          "You are not connected to the internet");
+                    }
+                  },
+                  child: Text("Yes"))
+            ],
+          );
+        });
   }
 
   Future<Widget> materialDialog() {
     return showDialog<Widget>(
-      // User cannot dismiss the dialog
+        // User cannot dismiss the dialog
         barrierDismissible: false,
-        context: context, builder: (BuildContext context) {
-      return AlertDialog(
-        title: Text(uploadMessage),
-        content: Text("Do you want to upload this file to AWS?"),
-        actions: [
-          // No button
-          TextButton(
-              onPressed: () {
-                isFileFinishedUploading.upload = false;
-                Navigator.of(context).pop();
-              },
-              child: Text("No")
-          ),
-          // Yes button
-          TextButton(
-              onPressed: () async {
-                final connected = await isInternetConnected();
-                Navigator.of(context).pop();
-                if (connected) {
-                  isFileFinishedUploading.upload = true;
-                } else {
-                  state.showInSnackBar("You are not connected to the internet");
-                }
-              },
-              child: Text("Yes")
-          )
-        ],
-      );
-    }
-    );
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text(uploadMessage),
+            content: Text("Do you want to upload this file to AWS?"),
+            actions: [
+              // No button
+              TextButton(
+                  onPressed: () {
+                    isFileFinishedUploading.upload = false;
+                    Navigator.of(context).pop();
+                  },
+                  child: Text("No")),
+              // Yes button
+              TextButton(
+                  onPressed: () async {
+                    final connected = await isInternetConnected();
+                    Navigator.of(context).pop();
+                    if (connected) {
+                      isFileFinishedUploading.upload = true;
+                    } else {
+                      state.showInSnackBar(
+                          "You are not connected to the internet");
+                    }
+                  },
+                  child: Text("Yes"))
+            ],
+          );
+        });
   }
 
   Future<bool> isInternetConnected() async {

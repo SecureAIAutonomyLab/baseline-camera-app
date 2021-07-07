@@ -116,14 +116,16 @@ class StorageRepository {
     // save data to string buffer because strings are immutable
     var buffer = new StringBuffer();
     buffer.write("Recorded on device: " + id);
+    // header for csv file
+    buffer.write("\ntime_elapsed,datetime,longitude,latitude,name");
     actionTable.forEach((key, value) {
       String millisecond = (key.inMilliseconds % 1000).toString();
-      buffer.write("\ntime_elapsed:" + key.inSeconds.toString() + "." + millisecond);
-      buffer.write(",date:" + DateTime.now().toIso8601String().substring(0, 10));
-      buffer.write(",time:" + value.time);
-      buffer.write(",longitude:" + value.location.longitude.toString());
-      buffer.write(",latitude:" + value.location.latitude.toString());
-      buffer.write(",name:" + value.action);
+      buffer.write("\n" + key.inSeconds.toString() + "." + millisecond);
+      buffer.write("," + DateTime.now().toIso8601String().substring(0, 10));
+      buffer.write(" " + value.time);
+      buffer.write("," + value.location.longitude.toString());
+      buffer.write("," + value.location.latitude.toString());
+      buffer.write("," + value.action);
     });
     // to save time open file only once and write everything
     actionFile.writeAsString(buffer.toString());
