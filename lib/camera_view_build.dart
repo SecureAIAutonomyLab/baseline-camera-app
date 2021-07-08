@@ -445,6 +445,18 @@ class CameraViewBuild {
     );
   }
 
+  String getButtonTitle(Item item) {
+    int count = 0;
+    String title;
+    if (state.storageRepo.getCount(item.name) != null) {
+      count = state.storageRepo.getCount(item.name).count;
+      title = '${item.name} ($count)';
+    } else {
+      title = '${item.name}';
+    }
+    return title;
+  }
+
   /// Display all the currently selected action buttons on the home
   /// screen.
   /// Returns: A GridView widget that stores all the buttons in a grid
@@ -455,9 +467,7 @@ class CameraViewBuild {
     List<Widget> buttons = [];
     // cycle through the items list and create a button widget
     for (Item item in cart.items) {
-      int count = 0;
-      if (state.storageRepo.getCount(item.name) != null)
-        count = state.storageRepo.getCount(item.name).count;
+      String title = getButtonTitle(item);
       Widget button = TextButton(
           onPressed: controller != null &&
               controller.value.isInitialized &&
@@ -472,7 +482,7 @@ class CameraViewBuild {
                   width: 120,
                   height: 30,
                   child: DecoratedBox(
-                    child: Center(child: Text('${item.name} ($count)',
+                    child: Center(child: Text(title,
                       style: TextStyle(color: Colors.white))
                     ),
                       decoration: BoxDecoration(
