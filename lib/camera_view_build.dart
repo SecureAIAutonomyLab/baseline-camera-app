@@ -463,7 +463,7 @@ class CameraViewBuild {
               controller.value.isInitialized &&
               controller.value.isRecordingVideo ? () async {
             // update the UI to reflect the new count
-            state.onActionButtonPressed(item.name);
+            state.onActionButtonPressed(item.name, item.actionType);
             state.updateUI();
           } : null,
           child: Column(

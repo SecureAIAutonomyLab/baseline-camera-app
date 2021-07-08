@@ -21,10 +21,16 @@ class ActionEntry {
 
   String action;
   LocationData location;
-  String time;
+  String startDateTime;
+  String endDateTime;
   int count;
+  Duration startTime;
+  Duration endTime;
+  bool durationComplete;
 
-  ActionEntry({this.action, this.location, this.time, this.count});
+  ActionEntry({this.action, this.location, this.startDateTime,
+    this.count, this.startTime, this.endTime, this.durationComplete
+  });
 }
 
 /// This class handles interacting with the storage repository.
@@ -36,12 +42,19 @@ class StorageRepository {
   SortedMap<Duration, ActionEntry> actionTable;
   Stopwatch timeElapsed;
   List<ActionEntry> actionCount;
+  LocationData savedLocation; // default location data
 
   // initialize variables in the constructor
   StorageRepository() {
     timeElapsed = Stopwatch();
     actionTable = SortedMap<Duration, ActionEntry>(Ordering.byKey());
     actionCount = [];
+    getDefaultLocation();
+  }
+
+  Future<void> getDefaultLocation() async {
+    Location location = Location();
+    savedLocation = await location.getLocation();
   }
 
   /// Takes in a username, userId, File and extension and stores this information
@@ -132,15 +145,43 @@ class StorageRepository {
     var buffer = new StringBuffer();
     buffer.write("Recorded on device: " + id);
     // header for csv file
-    buffer.write("\ntime_elapsed,datetime,longitude,latitude,name");
+    buffer.write("\nstart_time,end_time,duration,start_datetime"
+        ",end_datetime,longitude,latitude,name");
     // loop through the action table and write the action to the buffer
     actionTable.forEach((key, value) {
       String millisecond = (key.inMilliseconds % 1000).toString();
       buffer.write("\n" + key.inSeconds.toString() + "." + millisecond);
-      buffer.write("," + DateTime.now().toIso8601String().substring(0, 10));
-      buffer.write(" " + value.time);
-      buffer.write("," + value.location.longitude.toString());
-      buffer.write("," + value.location.latitude.toString());
+      if (value.durationComplete == null) {
+        // we know it is a frequency action
+        buffer.write("," + key.inSeconds.toString() + "." + millisecond);
+        buffer.write(",0");
+        buffer.write("," + DateTime.now().toIso8601String().substring(0, 10));
+        buffer.write(" " + value.startDateTime);
+        buffer.write("," + DateTime.now().toIso8601String().substring(0, 10));
+        buffer.write(" " + value.startDateTime);
+      } else {
+        // we know it is a duration action
+        String millisecond = (value.endTime.inMilliseconds % 1000).toString();
+        buffer.write("," + value.endTime.inSeconds.toString() + "."+ millisecond);
+        var duration = value.endTime - value.startTime;
+        millisecond = (duration.inMilliseconds % 1000).toString();
+        buffer.write("," + duration.inSeconds.toString() + "." + millisecond);
+        buffer.write("," + DateTime.now().toIso8601String().substring(0, 10));
+        buffer.write(" " + value.startDateTime);
+        buffer.write("," + DateTime.now().toIso8601String().substring(0, 10));
+        buffer.write(" " + value.endDateTime);
+      }
+      // make sure location is not null
+      if (value.location == null && savedLocation == null) {
+        buffer.write(",null,null");
+      } else if (savedLocation != null) {
+        buffer.write("," + savedLocation.longitude.toString());
+        buffer.write("," + savedLocation.latitude.toString());
+      } else {
+        buffer.write("," + value.location.longitude.toString());
+        buffer.write("," + value.location.latitude.toString());
+      }
+      // the action name
       buffer.write("," + value.action);
     });
     // to save time open file only once and write everything
@@ -201,7 +242,7 @@ class StorageRepository {
     else
       entry.count++;
     actionTable[duration] =
-        ActionEntry(action: action, time: time);
+        ActionEntry(action: action, startDateTime: time);
     print("Action Time Submitted");
 
     // Record location data
@@ -212,6 +253,48 @@ class StorageRepository {
     if (entry == null)
       return 1;
     return entry.count;
+  }
+
+  void addActionDuration(String action) async {
+    // save entry in a table
+    final time = DateTime.now().toIso8601String().substring(11, 19);
+    final elapsed = timeElapsed.elapsed;
+
+    ActionEntry entry;
+    actionTable.forEach((key, value) {
+      if (value.action == action && !value.durationComplete)
+        entry = value;
+    });
+    if (entry == null) {
+      // add to the table
+      actionTable[elapsed] =
+          ActionEntry(action: action, startDateTime: time,
+              startTime: elapsed, durationComplete: false);
+
+      // Record location data
+      Location location = new Location();
+      print("starttime: " + elapsed.inSeconds.toString());
+      LocationData myLocation = await location.getLocation();
+      // set location after time because location is not synchronous
+      actionTable[elapsed].location = myLocation;
+    } else {
+      entry.durationComplete = true;
+      entry.endTime = timeElapsed.elapsed;
+      print("Endtime: " + entry.endTime.inSeconds.toString());
+      entry.endDateTime = time;
+    }
+  }
+
+  void stopAllDurationActions() {
+    actionTable.forEach((key, value) {
+      if (value.durationComplete == false) {
+        final time = DateTime.now().toIso8601String().substring(11, 19);
+        value.durationComplete = true;
+        value.endTime = timeElapsed.elapsed;
+        print("End time: " + value.endTime.inSeconds.toString());
+        value.endDateTime = time;
+      }
+    });
   }
 
   ActionEntry getCount(String action) {

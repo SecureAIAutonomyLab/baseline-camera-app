@@ -54,6 +54,7 @@ class EditActionState extends State<EditAction> {
   String title;
   // the type of action
   ActionType actionType;
+  final formKey = GlobalKey<FormState>();
 
   /// constructor that checks if an item was passed in to modify
   EditActionState({this.editingAction}) {
@@ -80,6 +81,7 @@ class EditActionState extends State<EditAction> {
       content: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Form(
+          key: formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
@@ -91,6 +93,13 @@ class EditActionState extends State<EditAction> {
                   icon: Icon(Icons.pending_actions),
                 ),
                 controller: nameController,
+                validator: (value) {
+                  if (value.isEmpty)
+                    return "Name cannot be empty";
+                  else if (value.length > 12)
+                    return "Maximum length is 12";
+                  return null;
+                },
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 15),
@@ -164,22 +173,24 @@ class EditActionState extends State<EditAction> {
         ElevatedButton(
             child: Text(buttonText),
             onPressed: () {
-              // create the new action
-              final item = Item(
+              if (formKey.currentState.validate()) {
+                // create the new action
+                final item = Item(
                   name: nameController.text,
                   color: pickerColor,
                   description: descriptionController.text,
                   actionType: actionType,
-              );
-              // copy over values
-              if (editingAction != null) {
-                editingAction.color = pickerColor;
-                editingAction.description = descriptionController.text;
-                editingAction.name = nameController.text;
-                editingAction.actionType = actionType;
+                );
+                // copy over values
+                if (editingAction != null) {
+                  editingAction.color = pickerColor;
+                  editingAction.description = descriptionController.text;
+                  editingAction.name = nameController.text;
+                  editingAction.actionType = actionType;
+                }
+                // return the new item from the popup
+                Navigator.pop(context, item);
               }
-              // return the new item from the popup
-              Navigator.pop(context, item);
             })
       ],
     );

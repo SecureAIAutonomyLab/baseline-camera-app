@@ -8,6 +8,7 @@ import 'package:amplify_storage_s3/amplify_storage_s3.dart';
 import 'package:camera_app/camera_view_build.dart';
 import 'package:camera_app/storage_repository.dart';
 
+import 'actions/edit_action.dart';
 import 'main.dart';
 import 'dart:async';
 import 'dart:io';
@@ -382,9 +383,12 @@ class CameraExampleHomeState extends State<CameraExampleHome>
   /// storage repository to add to the text file
   /// Parameters: ActionButton enumeration which indicates the action chosen
   /// Returns: How many times the action has occurred so far
-  void onActionButtonPressed(String name) async {
-    final count = await storageRepo.addAction(name);
-    print("Count is now: "+ count.toString());
+  void onActionButtonPressed(String name, ActionType type) async {
+    if (type == ActionType.frequency)
+      final count = await storageRepo.addAction(name);
+    else
+      storageRepo.addActionDuration(name);
+    //print("Count is now: "+ count.toString());
   }
 
   /// Set variables accordingly for taking a picture, calls takePicture()
@@ -479,6 +483,8 @@ class CameraExampleHomeState extends State<CameraExampleHome>
 
   /// Stops video recording, calls stopVideoRecording()
   void onStopButtonPressed() {
+    // stop all duration actions still running
+    storageRepo.stopAllDurationActions();
     // clear action count
     storageRepo.clearActionCount();
     if (chunkData.videoCount != 0)
