@@ -143,7 +143,6 @@ class Item {
   Item({this.id, this.name, this.color, this.description}) {
     // To make the items look nicer, each item is given one of the
     // Material Design primary colors.
-
     if (id != null && color == null) {
       color = Colors.primaries[id % Colors.primaries.length];
     }

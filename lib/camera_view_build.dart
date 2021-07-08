@@ -483,7 +483,7 @@ class CameraViewBuild {
       child: SizedBox(
         // Define the height of the gridview
         height: buttons.length > AddButton.NUMBER_OF_ACTION_BUTTONS/2
-            ? 130 : 65,
+            ? 130 : buttons.length == 0 ? 0 : 65,
         child: GridView.count(
           childAspectRatio: 2,
           crossAxisCount: AddButton.NUMBER_OF_ACTION_BUTTONS~/2,

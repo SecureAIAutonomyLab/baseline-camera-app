@@ -1,6 +1,7 @@
-// Copyright 2019 The Flutter team. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
+/*
+  Created By: Nathan Millwater
+  Description: The selected actions widget tree.
+ */
 
 import 'package:camera_app/actions/action_catalog.dart';
 import 'package:flutter/material.dart';
@@ -9,8 +10,11 @@ import 'package:provider/provider.dart';
 import '../camera_cubit.dart';
 import '../models/cart_model.dart';
 
+/// This class holds the widget tree for displaying the current
+/// selected actions.
 class MyCart extends StatelessWidget {
 
+  /// standard build method
   @override
   Widget build(BuildContext context) {
     int maxItems = AddButton.NUMBER_OF_ACTION_BUTTONS;
@@ -36,6 +40,7 @@ class MyCart extends StatelessWidget {
           ],
         ),
       ),
+      // navigation bar for changing between pages
       bottomNavigationBar: BottomNavigationBar(
         items: [
           BottomNavigationBarItem(
@@ -60,6 +65,10 @@ class MyCart extends StatelessWidget {
   }
 }
 
+/// Decide which navigation page to show next depending on the index
+/// chosen in the navigation bar
+/// Parameters: The index of the page chosen and the current build
+/// context which gives access to the camera cubit
 void changePage(int index, BuildContext context) {
   if (index == 0)
     context.read<CameraCubit>().showActionCatalog();
@@ -67,7 +76,10 @@ void changePage(int index, BuildContext context) {
     context.read<CameraCubit>().showHome();
 }
 
+/// The list widget that displays the currently selected actions
 class CartList extends StatelessWidget {
+
+  /// standard build method
   @override
   Widget build(BuildContext context) {
     var itemNameStyle = Theme.of(context).textTheme.headline6;
@@ -77,6 +89,7 @@ class CartList extends StatelessWidget {
     var cart = context.watch<CartModel>();
     var items = cart.items.length;
 
+    // only if there are actions selected
     if (items != 0)
     return ListView.builder(
       itemCount: items,

@@ -1,3 +1,8 @@
+/*
+  Created By: Nathan Millwater
+  Description: The action catalog widget tree. Users can modify,
+               remove, or add their own actions to the catalog
+ */
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -8,20 +13,25 @@ import '../models/catalog_model.dart';
 import 'edit_action.dart';
 import 'package:json_store/json_store.dart';
 
+/// Create a stateful widget to hold the catalog
 class MyCatalog extends StatefulWidget {
 
   @override
   MyCatalogState createState() => MyCatalogState();
 }
 
+/// The state of the catalog widget
 class MyCatalogState extends State<MyCatalog> {
 
   final jsonStore = JsonStore();
 
+  /// Standard build method of the widget
   @override
   Widget build(BuildContext context) {
+    // monitor the catalog for changes
     var catalog = context.watch<CatalogModel>();
     return Scaffold(
+      // The scroll view includes the appbar and a spacer at the bottom
       body: CustomScrollView(
         slivers: [
           MyAppBar(),
@@ -35,6 +45,7 @@ class MyCatalogState extends State<MyCatalog> {
           const SliverToBoxAdapter(child: SizedBox(height: 70))
         ],
       ),
+      // navigator bar to switch between pages
       bottomNavigationBar: BottomNavigationBar(
         items: [
           BottomNavigationBarItem(
@@ -55,6 +66,7 @@ class MyCatalogState extends State<MyCatalog> {
           changePage(index, context);
         },
       ),
+      // button to add actions to the catalog
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           onAddActionButtonPressed(catalog);
@@ -64,8 +76,12 @@ class MyCatalogState extends State<MyCatalog> {
     );
   }
 
+  /// Displays the dialog box for adding a new action to the catalog
+  /// Parameters: The catalog model to save the new action to
+  /// Returns: A future object indicating an asynchronous function
   Future<void> onAddActionButtonPressed(CatalogModel catalog) async {
     Item item = await showDialog(context: context, builder: (BuildContext context) {
+      // custom edit action widget
       return EditAction();
     });
     // create the id for the item
@@ -78,10 +94,15 @@ class MyCatalogState extends State<MyCatalog> {
     }
   }
 
+  /// Tell flutter to update the widget tree when needed
   void updateUI() {
     setState(() {});
   }
 
+  /// Decide which navigation page to show next depending on the index
+  /// chosen in the navigation bar
+  /// Parameters: The index of the page chosen and the current build
+  /// context which gives access to the camera cubit
   void changePage(int index, BuildContext context) {
     if (index == 1)
       context.read<CameraCubit>().showActionList();
@@ -90,8 +111,11 @@ class MyCatalogState extends State<MyCatalog> {
   }
 }
 
+/// The add button widget which allows the user to add the action
+/// to the selected actions page.
 class AddButton extends StatelessWidget {
   final Item item;
+  // max number of actions that can be selected at one time
   static const NUMBER_OF_ACTION_BUTTONS = 6;
 
   const AddButton({@required this.item});
@@ -136,6 +160,7 @@ class AddButton extends StatelessWidget {
   }
 }
 
+/// Simple appbar widget
 class MyAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -145,6 +170,7 @@ class MyAppBar extends StatelessWidget {
       actions: [
         IconButton(
           icon: const Icon(Icons.home),
+          // navigate to the home page
           onPressed: () => context.read<CameraCubit>().showHome(),
         ),
       ],
@@ -152,12 +178,14 @@ class MyAppBar extends StatelessWidget {
   }
 }
 
+/// The list item widget on the catalog page
 class MyListItem extends StatelessWidget {
   final int index;
   final MyCatalogState state;
 
   const MyListItem(this.index, this.state);
 
+  // standard build method
   @override
   Widget build(BuildContext context) {
     var item = context.select<CatalogModel, Item>(
@@ -178,6 +206,7 @@ class MyListItem extends StatelessWidget {
         if (cart.items.contains(item))
           cart.remove(item);
         catalog.removeFromCatalog(item);
+        // let flutter know the ui has changed
         state.updateUI();
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text('${item.name} Removed')));
@@ -186,6 +215,8 @@ class MyListItem extends StatelessWidget {
       },
       background: Container(color: Colors.red),
 
+      // we wrap the entire list tile in a button so the user can
+      // edit it
       child: TextButton(
         onLongPress: () {editActionPressed(context, item, catalog);},
         child: Padding(
@@ -214,7 +245,11 @@ class MyListItem extends StatelessWidget {
     );
   }
 
-  void editActionPressed(BuildContext context, Item item, CatalogModel model) async {
+  /// Show the edit action dialog box to change the action's attributes
+  /// Parameters: The build context to display the dialog onto, the item
+  /// being modified, and the catalog model to save to
+  /// Returns: A future object indicating an asynchronous function
+  Future<void> editActionPressed(BuildContext context, Item item, CatalogModel model) async {
     await showDialog(context: context, builder: (BuildContext context) {
       return EditAction(action: item);
     });
@@ -222,6 +257,9 @@ class MyListItem extends StatelessWidget {
     model.saveCatalogModel();
   }
 
+  /// Simple method to display a snackbar
+  /// Parameters: The build context to display the snackbar on and
+  /// the message to show in the snackbar
   void showSnackbar(BuildContext context, String message) {
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text(message)));

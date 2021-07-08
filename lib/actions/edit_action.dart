@@ -1,9 +1,17 @@
+/*
+  Created By: Nathan Millwater
+  Description: The edit action dialog box that allows the user
+               to add or modify existing action in the catalog
+ */
+
+
 import 'package:camera_app/models/catalog_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
-import 'package:provider/provider.dart';
 
+/// Stateful widget used to hold the dialog box because
+/// it must be updated
 class EditAction extends StatefulWidget {
   Item action;
 
@@ -13,15 +21,19 @@ class EditAction extends StatefulWidget {
   EditActionState createState() => EditActionState(editingAction: action);
 }
 
+/// The state of the widget
 class EditActionState extends State<EditAction> {
   final _formKey = GlobalKey<FormState>();
   Color pickerColor = Colors.black;
+  // use text editing controllers to get the text of the
+  // form fields
   final nameController = TextEditingController();
   final descriptionController = TextEditingController();
   Item editingAction;
   String buttonText;
   String title;
 
+  /// constructor that checks if an item was passed in to modify
   EditActionState({this.editingAction}) {
     if (editingAction != null) {
       nameController.text = editingAction.name;
@@ -35,6 +47,7 @@ class EditActionState extends State<EditAction> {
     }
   }
 
+  /// standard build method
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -47,6 +60,7 @@ class EditActionState extends State<EditAction> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Text("Name", style: TextStyle(fontWeight: FontWeight.bold)),
+              // Name form field
               TextFormField(
                 decoration: InputDecoration(
                   labelText: 'Name',
@@ -59,6 +73,7 @@ class EditActionState extends State<EditAction> {
                 child: Text("Description",
                     style: TextStyle(fontWeight: FontWeight.bold)),
               ),
+              // Description form field
               TextFormField(
                 decoration: InputDecoration(
                   labelText: 'Description',
@@ -73,6 +88,7 @@ class EditActionState extends State<EditAction> {
                 child: Text("Color",
                     style: TextStyle(fontWeight: FontWeight.bold)),
               ),
+              // The color of the action
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -94,6 +110,7 @@ class EditActionState extends State<EditAction> {
           ),
         ),
       ),
+      // button to confirm
       actions: [
         ElevatedButton(
             child: Text(buttonText),
@@ -117,11 +134,14 @@ class EditActionState extends State<EditAction> {
     );
   }
 
+  /// Function to open another dialog box for the user to choose
+  /// a color for their action
   void openColorPicker() {
     showDialog(
         context: context, builder: (BuildContext context) {
           return AlertDialog(
             title: Text("Select a Color"),
+            // third party color chooser widget
             content: MaterialPicker(
               onColorChanged: changeColor,
               pickerColor: pickerColor,
@@ -134,6 +154,9 @@ class EditActionState extends State<EditAction> {
     });
   }
 
+  /// update the state of the chosen color so the widget tree
+  /// knows to rebuild
+  /// Parameters: The color to update the variable with
   void changeColor(Color color) {
     setState(() => pickerColor = color);
   }
