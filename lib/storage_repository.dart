@@ -22,8 +22,9 @@ class ActionEntry {
   String action;
   LocationData location;
   String time;
+  int count;
 
-  ActionEntry({this.action, this.location, this.time});
+  ActionEntry({this.action, this.location, this.time, this.count});
 }
 
 /// This class handles interacting with the storage repository.
@@ -34,11 +35,13 @@ class StorageRepository {
   File actionFile;
   SortedMap<Duration, ActionEntry> actionTable;
   Stopwatch timeElapsed;
+  List<ActionEntry> actionCount;
 
   // initialize variables in the constructor
   StorageRepository() {
     timeElapsed = Stopwatch();
     actionTable = SortedMap<Duration, ActionEntry>(Ordering.byKey());
+    actionCount = [];
   }
 
   /// Takes in a username, userId, File and extension and stores this information
@@ -186,10 +189,17 @@ class StorageRepository {
   /// Adds an action to the action table data structure by storing
   /// all necessary data.
   /// Parameters: A string representing the name of the action
-  void addAction(String action) async {
+  /// Returns: How many times the action has occurred so far
+  Future<int> addAction(String action) async {
     // save entry in a table
     final time = DateTime.now().toIso8601String().substring(11, 19);
     final duration = timeElapsed.elapsed;
+
+    ActionEntry entry = getCount(action);
+    if (entry == null)
+      actionCount.add(ActionEntry(action: action, count: 1));
+    else
+      entry.count++;
     actionTable[duration] =
         ActionEntry(action: action, time: time);
     print("Action Time Submitted");
@@ -199,6 +209,23 @@ class StorageRepository {
     LocationData myLocation = await location.getLocation();
     // set location after time because location is not synchronous
     actionTable[duration].location = myLocation;
+    if (entry == null)
+      return 1;
+    return entry.count;
+  }
+
+  ActionEntry getCount(String action) {
+    var entry;
+    actionCount.forEach((element) {
+      if (element.action == action) {
+        entry = element;
+      }
+    });
+    return entry;
+  }
+
+  void clearActionCount() {
+    actionCount.clear();
   }
 
 }

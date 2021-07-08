@@ -381,8 +381,10 @@ class CameraExampleHomeState extends State<CameraExampleHome>
   /// Handles the action button being pressed. Passes the action to the
   /// storage repository to add to the text file
   /// Parameters: ActionButton enumeration which indicates the action chosen
-  void onActionButtonPressed(String name) {
-    storageRepo.addAction(name);
+  /// Returns: How many times the action has occurred so far
+  void onActionButtonPressed(String name) async {
+    final count = await storageRepo.addAction(name);
+    print("Count is now: "+ count.toString());
   }
 
   /// Set variables accordingly for taking a picture, calls takePicture()
@@ -477,6 +479,8 @@ class CameraExampleHomeState extends State<CameraExampleHome>
 
   /// Stops video recording, calls stopVideoRecording()
   void onStopButtonPressed() {
+    // clear action count
+    storageRepo.clearActionCount();
     if (chunkData.videoCount != 0)
       chunkData.videoCount++;
     // Stop the video chunk timer

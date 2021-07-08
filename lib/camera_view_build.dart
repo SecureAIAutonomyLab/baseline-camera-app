@@ -13,6 +13,7 @@ import 'package:camera_app/camera_example_home.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:camera_app/actions/edit_action.dart';
 
 import 'camera_cubit.dart';
 import 'main.dart';
@@ -454,23 +455,33 @@ class CameraViewBuild {
     List<Widget> buttons = [];
     // cycle through the items list and create a button widget
     for (Item item in cart.items) {
+      int count = 0;
+      if (state.storageRepo.getCount(item.name) != null)
+        count = state.storageRepo.getCount(item.name).count;
       Widget button = TextButton(
           onPressed: controller != null &&
-                  controller.value.isInitialized &&
-                  controller.value.isRecordingVideo ? () {
-                  state.onActionButtonPressed(item.name);
-                } : null,
+              controller.value.isInitialized &&
+              controller.value.isRecordingVideo ? () async {
+            // update the UI to reflect the new count
+            state.onActionButtonPressed(item.name);
+            state.updateUI();
+          } : null,
           child: Column(
             children: [
-              Text(item.name, style: TextStyle(fontSize: 18),),
               SizedBox(
-                  width: 100,
+                  width: 120,
                   height: 30,
                   child: DecoratedBox(
+                    child: Center(child: Text('${item.name} ($count)',
+                      style: TextStyle(color: Colors.white))
+                    ),
                       decoration: BoxDecoration(
-                          color: item.color,
-                        borderRadius: BorderRadius.all(Radius.circular(4))
+                        color: item.color,
+                        borderRadius: BorderRadius.all(Radius.circular(4)),
                       ))),
+              Text(item.actionType.toShortString(),
+                  style: TextStyle(fontSize: 12, color: Colors.black)
+              )
             ],
           ));
       buttons.add(button);
@@ -483,9 +494,9 @@ class CameraViewBuild {
       child: SizedBox(
         // Define the height of the gridview
         height: buttons.length > AddButton.NUMBER_OF_ACTION_BUTTONS/2
-            ? 130 : buttons.length == 0 ? 0 : 65,
+            ? 125 : buttons.length == 0 ? 0 : 62.5,
         child: GridView.count(
-          childAspectRatio: 2,
+          childAspectRatio: 2.2,
           crossAxisCount: AddButton.NUMBER_OF_ACTION_BUTTONS~/2,
           children: buttons,
         ),
