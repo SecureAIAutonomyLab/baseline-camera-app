@@ -7,6 +7,7 @@
 import 'dart:io';
 import 'dart:math';
 
+import 'package:camera_app/actions/edit_action.dart';
 import 'package:camera_app/camera_example_home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -65,7 +66,8 @@ class CatalogModel {
     catalog = [];
     for (int i = 0; i < itemNames.length; i++) {
       int temp = uniqueID();
-      final item = Item(id: temp, name: itemNames[i]);
+      final item =
+        Item(id: temp, name: itemNames[i], actionType: ActionType.frequency);
       catalog.add(item);
     }
   }
@@ -139,8 +141,9 @@ class Item {
   String name;
   Color color;
   String description;
+  ActionType actionType;
 
-  Item({this.id, this.name, this.color, this.description}) {
+  Item({this.id, this.name, this.color, this.description, this.actionType}) {
     // To make the items look nicer, each item is given one of the
     // Material Design primary colors.
     if (id != null && color == null) {
@@ -158,6 +161,7 @@ class Item {
       'name' : name,
       'color' : color.value,
       'description' : description,
+      'action type' : actionType.toString(),
     };
     return json;
   }
@@ -166,10 +170,12 @@ class Item {
   /// Parameters: the json data structure which holds the
   /// item information
   Item.fromJson(Map<String, dynamic> json) {
+    ActionType type;
     this.id = json['id'];
     this.name = json['name'];
     this.color = Color(json['color']);
     this.description = json['description'];
+    this.actionType = type.fromString(json['action type']);
   }
 
   @override

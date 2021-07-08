@@ -235,7 +235,11 @@ class MyListItem extends StatelessWidget {
                 Expanded(
                   child: Text(item.name, style: textTheme),
                 ),
+                Text(item.actionType.toShortString(),
+                  style: TextStyle(fontSize: 13, color: Colors.black),
+                ),
                 const SizedBox(width: 24),
+
                 AddButton(item: item),
               ],
             ),

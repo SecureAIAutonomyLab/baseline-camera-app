@@ -10,6 +10,26 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 
+
+enum ActionType {frequency, duration}
+
+extension ParseToString on ActionType {
+  String toShortString() {
+    final type = this.toString().split('.').last;
+    if (this == ActionType.duration)
+      return type.substring(0, 1).toUpperCase() + type.substring(1) + '   ';
+    else
+      return type.substring(0, 1).toUpperCase() + type.substring(1);
+  }
+
+  ActionType fromString(String s) {
+    if (s == 'ActionType.frequency')
+      return ActionType.frequency;
+    else
+      return ActionType.duration;
+  }
+}
+
 /// Stateful widget used to hold the dialog box because
 /// it must be updated
 class EditAction extends StatefulWidget {
@@ -32,6 +52,8 @@ class EditActionState extends State<EditAction> {
   Item editingAction;
   String buttonText;
   String title;
+  // the type of action
+  ActionType actionType;
 
   /// constructor that checks if an item was passed in to modify
   EditActionState({this.editingAction}) {
@@ -39,9 +61,11 @@ class EditActionState extends State<EditAction> {
       nameController.text = editingAction.name;
       descriptionController.text = editingAction.description;
       pickerColor = editingAction.color;
+      actionType = editingAction.actionType;
       buttonText = "Done";
       title = "Editing an Action";
     } else {
+      actionType = ActionType.frequency;
       buttonText = "Add";
       title = "Add an Action";
     }
@@ -106,6 +130,31 @@ class EditActionState extends State<EditAction> {
                   )
                 ],
               ),
+              // Toggle a duration or a tap button
+              Padding(
+                padding: const EdgeInsets.only(top: 20),
+                child: Column(
+                  children: [
+                    RadioListTile(
+                      title: Text("Frequency"),
+                      value: ActionType.frequency,
+                      groupValue: actionType,
+                      onChanged: (ActionType value) {
+                        setState(() {actionType = value;});
+
+                      }
+                    ),
+                    RadioListTile(
+                        title: Text("Duration"),
+                        value: ActionType.duration,
+                        groupValue: actionType,
+                        onChanged: (ActionType value) {
+                          setState(() {actionType = value;});
+                        }
+                    )
+                  ],
+                ),
+              ),
             ],
           ),
         ),
@@ -119,13 +168,15 @@ class EditActionState extends State<EditAction> {
               final item = Item(
                   name: nameController.text,
                   color: pickerColor,
-                  description: descriptionController.text
+                  description: descriptionController.text,
+                  actionType: actionType,
               );
               // copy over values
               if (editingAction != null) {
                 editingAction.color = pickerColor;
                 editingAction.description = descriptionController.text;
                 editingAction.name = nameController.text;
+                editingAction.actionType = actionType;
               }
               // return the new item from the popup
               Navigator.pop(context, item);
