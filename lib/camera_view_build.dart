@@ -480,7 +480,8 @@ class CameraViewBuild {
       Widget button = TextButton(
           onPressed: controller != null &&
               controller.value.isInitialized &&
-              controller.value.isRecordingVideo ? () async {
+              controller.value.isRecordingVideo &&
+              !controller.value.isRecordingPaused ? () async {
             // update the UI to reflect the new count
             state.onActionButtonPressed(item.name, item.actionType);
             state.updateUI();
@@ -512,11 +513,11 @@ class CameraViewBuild {
       ),
       child: SizedBox(
         // Define the height of the gridview
-        height: buttons.length > AddButton.NUMBER_OF_ACTION_BUTTONS/2
+        height: buttons.length > 3
             ? 125 : buttons.length == 0 ? 0 : 62.5,
         child: GridView.count(
           childAspectRatio: 2.2,
-          crossAxisCount: AddButton.NUMBER_OF_ACTION_BUTTONS~/2,
+          crossAxisCount: 3,
           children: buttons,
         ),
       ),

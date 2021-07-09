@@ -494,7 +494,6 @@ class CameraExampleHomeState extends State<CameraExampleHome>
     print(chunkTimer.toString());
     // stop and reset the stopwatch
     storageRepo.timeElapsed.stop();
-    storageRepo.timeElapsed.reset();
     stopVideoRecording().then((_) {
       if (mounted) setState(() {});
       //showInSnackBar('Video recorded to gallery.');
@@ -619,6 +618,8 @@ class CameraExampleHomeState extends State<CameraExampleHome>
       _showCameraException(e);
       return null;
     }
+    // reset the stopwatch
+    storageRepo.timeElapsed.reset();
     // change variable back to initial state
     chunkData.chunkVideo = false;
     chunkData.videoCount = 0;

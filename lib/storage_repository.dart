@@ -146,6 +146,8 @@ class StorageRepository {
     // save data to string buffer because strings are immutable
     var buffer = new StringBuffer();
     buffer.write("Recorded on device: " + id);
+    buffer.write("\nTotal length of video " + timeElapsed.elapsed.inSeconds.toString());
+    buffer.write("."+timeElapsed.elapsed.inMilliseconds.toString());
     // header for csv file
     buffer.write("\nstart_time,end_time,duration,start_datetime"
         ",end_datetime,longitude,latitude,name");

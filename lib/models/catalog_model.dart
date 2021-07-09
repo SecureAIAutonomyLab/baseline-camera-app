@@ -26,20 +26,19 @@ class CatalogModel {
 
   // a list of strings which are the default action names
   static List<String> itemNames = [
-    'Control Flow',
-    'Interpreter',
-    'Recursion',
-    'Sprint',
-    'Heisenbug',
-    'Spaghetti',
-    'Hydra Code',
-    'Off-By-One',
-    'Scope',
-    'Callback',
-    'Closure',
-    'Automata',
-    'Bit Shift',
-    'Currying',
+    'Running',
+    'Speaking',
+    'Yelling',
+    'Sitting',
+    'Standing',
+    'Walking',
+    'Jumping',
+    'Sleeping',
+    'Talking',
+    'Hiding',
+    'Crying',
+    'Happy',
+    'Sad',
   ];
 
   /// Generates a unique ID integer between 0 and 10000

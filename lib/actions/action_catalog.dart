@@ -116,7 +116,7 @@ class MyCatalogState extends State<MyCatalog> {
 class AddButton extends StatelessWidget {
   final Item item;
   // max number of actions that can be selected at one time
-  static const NUMBER_OF_ACTION_BUTTONS = 6;
+  static const NUMBER_OF_ACTION_BUTTONS = 9;
 
   const AddButton({@required this.item});
 
