@@ -457,6 +457,14 @@ class CameraViewBuild {
     return title;
   }
 
+  String getButtonSubtitle(Item item) {
+    if (item.actionType == ActionType.duration &&
+        state.storageRepo.isActionRunning(item.name)) {
+      return item.actionType.toShortString() + " Running";
+    }
+    return item.actionType.toShortString();
+  }
+
   /// Display all the currently selected action buttons on the home
   /// screen.
   /// Returns: A GridView widget that stores all the buttons in a grid
@@ -468,6 +476,7 @@ class CameraViewBuild {
     // cycle through the items list and create a button widget
     for (Item item in cart.items) {
       String title = getButtonTitle(item);
+      String subtitle = getButtonSubtitle(item);
       Widget button = TextButton(
           onPressed: controller != null &&
               controller.value.isInitialized &&
@@ -489,7 +498,7 @@ class CameraViewBuild {
                         color: item.color,
                         borderRadius: BorderRadius.all(Radius.circular(4)),
                       ))),
-              Text(item.actionType.toShortString(),
+              Text(subtitle,
                   style: TextStyle(fontSize: 12, color: Colors.black)
               )
             ],

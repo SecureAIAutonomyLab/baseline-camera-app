@@ -14,6 +14,8 @@ import 'package:location/location.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sortedmap/sortedmap.dart';
 
+import 'actions/edit_action.dart';
+
 
 
 /// Holds values related to an action entry
@@ -305,6 +307,16 @@ class StorageRepository {
       }
     });
     return entry;
+  }
+
+  bool isActionRunning(String name) {
+    bool result = false;
+    actionTable.forEach((key, value) {
+      if (value.action == name && !value.durationComplete) {
+        result = true;
+      }
+    });
+    return result;
   }
 
   void clearActionCount() {
