@@ -1,8 +1,8 @@
 {
-    "identityPoolName": "cameraapp2ae09210e_identitypool_ae09210e",
+    "identityPoolName": "cloudbehaviorcaptureb69f264e_identitypool_b69f264e",
     "allowUnauthenticatedIdentities": true,
-    "resourceNameTruncated": "cameraae09210e",
-    "userPoolName": "cameraapp2ae09210e_userpool_ae09210e",
+    "resourceNameTruncated": "cloudbb69f264e",
+    "userPoolName": "cloudbehaviorcaptureb69f264e_userpool_b69f264e",
     "autoVerifiedAttributes": [
         "email"
     ],
@@ -28,10 +28,10 @@
     "userpoolClientReadAttributes": [
         "email"
     ],
-    "userpoolClientLambdaRole": "cameraae09210e_userpoolclient_lambda_role",
+    "userpoolClientLambdaRole": "cloudbb69f264e_userpoolclient_lambda_role",
     "userpoolClientSetAttributes": false,
-    "sharedId": "ae09210e",
-    "resourceName": "cameraapp2ae09210e",
+    "sharedId": "b69f264e",
+    "resourceName": "cloudbehaviorcaptureb69f264e",
     "authSelections": "identityPoolAndUserPool",
     "authRoleArn": {
         "Fn::GetAtt": [
@@ -45,20 +45,9 @@
             "Arn"
         ]
     },
-    "useDefault": "manual",
+    "useDefault": "default",
     "userPoolGroupList": [],
     "serviceName": "Cognito",
     "usernameCaseSensitive": false,
-    "dependsOn": [],
-    "thirdPartyAuth": false,
-    "userPoolGroups": false,
-    "adminQueries": false,
-    "triggers": "{}",
-    "hostedUI": false,
-    "parentStack": {
-        "Ref": "AWS::StackId"
-    },
-    "breakCircularDependency": true,
-    "permissions": [],
-    "authProviders": []
+    "dependsOn": []
 }

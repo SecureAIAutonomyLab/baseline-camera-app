@@ -1,20 +1,6 @@
 {
-  "auth": {
-    "cameraapp2ae09210e": {
-      "service": "Cognito",
-      "providerPlugin": "awscloudformation",
-      "dependsOn": [],
-      "customAuth": false
-    }
-  },
-  "storage": {
-    "cameraapp2": {
-      "service": "S3",
-      "providerPlugin": "awscloudformation"
-    }
-  },
   "api": {
-    "CameraApp2": {
+    "CloudBehaviorCapture": {
       "service": "AppSync",
       "providerPlugin": "awscloudformation",
       "output": {
@@ -33,6 +19,20 @@
           ]
         }
       }
+    }
+  },
+  "auth": {
+    "cloudbehaviorcaptureb69f264e": {
+      "service": "Cognito",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [],
+      "customAuth": false
+    }
+  },
+  "storage": {
+    "s36884af96": {
+      "service": "S3",
+      "providerPlugin": "awscloudformation"
     }
   }
 }
