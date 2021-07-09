@@ -17,7 +17,7 @@ extension ParseToString on ActionType {
   String toShortString() {
     final type = this.toString().split('.').last;
     if (this == ActionType.duration)
-      return type.substring(0, 1).toUpperCase() + type.substring(1) + '   ';
+      return type.substring(0, 1).toUpperCase() + type.substring(1);
     else
       return type.substring(0, 1).toUpperCase() + type.substring(1);
   }

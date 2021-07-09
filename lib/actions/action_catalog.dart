@@ -235,7 +235,8 @@ class MyListItem extends StatelessWidget {
                 Expanded(
                   child: Text(item.name, style: textTheme),
                 ),
-                Text(item.actionType.toShortString(),
+                Text(item.actionType == ActionType.frequency ?
+                item.actionType.toShortString() : item.actionType.toShortString() + '   ',
                   style: TextStyle(fontSize: 13, color: Colors.black),
                 ),
                 const SizedBox(width: 24),
