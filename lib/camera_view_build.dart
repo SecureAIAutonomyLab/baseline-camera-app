@@ -238,7 +238,67 @@ class CameraViewBuild {
         ),
         // Android switch or IOS switch
         enableAudioSwitchType(),
+        SizedBox(
+          width: 10,
+        ),
+        chunkRateActionSheet(),
       ],
+    );
+  }
+
+  Widget chunkRateActionSheet() {
+    return CupertinoButton(
+      onPressed: !controller.value.isRecordingVideo
+          ? () async {
+        final currentResolution = state.resolution.toString();
+        // store the returned result in a variable to use later
+        var returned = await showCupertinoModalPopup<String>(
+          context: context,
+          builder: (BuildContext context) => CupertinoActionSheet(
+            title: Text('Choose a video chunking rate',
+                style: TextStyle(fontSize: 18)),
+            message: Text("The chunk rate is currently set at " +
+                CameraExampleHomeState.getVideoChunkRateString()),
+            // list of all options to choose from
+            actions: <CupertinoActionSheetAction>[
+              CupertinoActionSheetAction(
+                  child: const Text('None'),
+                  onPressed: () {
+                    Navigator.of(context).pop("none");
+                  }),
+              CupertinoActionSheetAction(
+                  child: const Text('10 Minutes'),
+                  onPressed: () {
+                    Navigator.of(context).pop("10");
+                  }),
+              CupertinoActionSheetAction(
+                  child: const Text('5 Minutes'),
+                  onPressed: () {
+                    Navigator.of(context).pop("5");
+                  }),
+              CupertinoActionSheetAction(
+                  child: const Text('1 Minute'),
+                  onPressed: () {
+                    Navigator.of(context).pop("1");
+                  }),
+              CupertinoActionSheetAction(
+                  child: const Text('30 Seconds'),
+                  onPressed: () {
+                    Navigator.of(context).pop("0.5");
+                  })
+            ],
+            cancelButton: CupertinoActionSheetAction(
+                child: const Text('Cancel'),
+                onPressed: () {
+                  Navigator.of(context).pop("cancel");
+                }),
+          ),
+        );
+        // call for chunking rate change
+        state.changeVideoChunkRate(returned);
+      }
+          : null,
+      child: const Text('Video Chunk Rate'),
     );
   }
 

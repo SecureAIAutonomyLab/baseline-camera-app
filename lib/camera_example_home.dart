@@ -48,7 +48,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
   bool displayId = false; // display the device id or not
   ChunkVideoData chunkData;
   CameraViewBuild widgets; // the camera view widgets
-  static const VIDEO_CHUNK_RATE = 61; // in seconds
+  static int videoChunkRate = 10000000; // in seconds
   Timer chunkTimer; // timer for video chunking
   // animation objects that control simple animations
   AnimationController optionsAnimationController;
@@ -58,6 +58,17 @@ class CameraExampleHomeState extends State<CameraExampleHome>
 
 
   static final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
+  static String getVideoChunkRateString() {
+    if (CameraExampleHomeState.videoChunkRate > 600)
+      return "None";
+    else if (CameraExampleHomeState.videoChunkRate < 60)
+      return CameraExampleHomeState.videoChunkRate.toString() + " Seconds";
+    else if (CameraExampleHomeState.videoChunkRate == 60)
+      return "1 Minute";
+    else
+      return (CameraExampleHomeState.videoChunkRate~/60).toString()
+          + " Minutes";
+  }
   Map<String, dynamic> _deviceData = <String, dynamic>{};
 
   // Constructor
@@ -78,6 +89,8 @@ class CameraExampleHomeState extends State<CameraExampleHome>
       ResolutionPreset.medium,
       enableAudio: enableAudio,
     );
+    controller.initialize();
+
     // initialize the following animation control objects
     optionsAnimationController = AnimationController(
       duration: const Duration(milliseconds: 300),
@@ -98,7 +111,6 @@ class CameraExampleHomeState extends State<CameraExampleHome>
     // start by showing the camera options button
     actionsAnimationController.value = 1;
 
-    controller.initialize();
     // initialize storage repository
     storageRepo = StorageRepository();
     // initialize boolean wrap object
@@ -379,6 +391,20 @@ class CameraExampleHomeState extends State<CameraExampleHome>
     }
   }
 
+  void changeVideoChunkRate(String option) {
+    if (option == "none")
+      videoChunkRate = 1000000000;
+    else if (option == "10")
+      videoChunkRate = 600;
+    else if (option == "5")
+      videoChunkRate = 300;
+    else if (option == "1")
+      videoChunkRate = 60;
+    else if (option == "0.5")
+      videoChunkRate = 30;
+    print("Set chunk rate to " + option);
+  }
+
   /// Handles the action button being pressed. Passes the action to the
   /// storage repository to add to the text file
   /// Parameters: ActionButton enumeration which indicates the action chosen
@@ -422,7 +448,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
       if (mounted) setState(() {});
       //if (filePath != null) showInSnackBar('Video recording started.');
       // Run the timer to chunk the video at the specified time
-        final duration = Duration(seconds: VIDEO_CHUNK_RATE);
+        final duration = Duration(seconds: videoChunkRate);
         // save time so it can be canceled later
         chunkTimer = Timer.periodic(duration, chunkVideo);
         return chunkTimer;
@@ -518,7 +544,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
   Timer onResumeButtonPressed() {
     // resume stopwatch
     storageRepo.timeElapsed.start();
-    final duration = Duration(seconds: VIDEO_CHUNK_RATE);
+    final duration = Duration(seconds: videoChunkRate);
     resumeVideoRecording().then((_) {
       if (mounted) setState(() {});
       //showInSnackBar('Video recording resumed.');
