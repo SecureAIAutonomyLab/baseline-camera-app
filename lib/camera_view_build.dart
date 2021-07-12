@@ -214,9 +214,12 @@ class CameraViewBuild {
       }
     } else {
       // Show camera preview
-      return AspectRatio(
-        aspectRatio: controller.value.aspectRatio,
-        child: CameraPreview(controller),
+      return RotatedBox(
+        quarterTurns: MediaQuery.of(context).orientation == Orientation.landscape ? 3 : 0,
+        child: AspectRatio(
+          aspectRatio: controller.value.aspectRatio,
+          child: CameraPreview(controller),
+        ),
       );
     }
   }
@@ -489,7 +492,6 @@ class CameraViewBuild {
           child: Column(
             children: [
               SizedBox(
-                  width: 120,
                   height: 30,
                   child: DecoratedBox(
                     child: Center(child: Text(title,
@@ -516,7 +518,7 @@ class CameraViewBuild {
         height: buttons.length > 3
             ? 125 : buttons.length == 0 ? 0 : 62.5,
         child: GridView.count(
-          childAspectRatio: 2.2,
+          childAspectRatio: MediaQuery.of(context).size.width/219.428,
           crossAxisCount: 3,
           children: buttons,
         ),
