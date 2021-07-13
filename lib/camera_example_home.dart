@@ -36,7 +36,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
   bool enableAudio = true;
   ResolutionPreset resolution = ResolutionPreset.medium;
   String deviceId;
-  String latitudeAndLongitude; // latittude-longitude
+  String latitudeAndLongitude; // latitude-longitude
   int cameraDescriptionIndex = 0;
   StorageRepository storageRepo;
   BooleanWrap isFileFinishedUploading;
@@ -83,12 +83,20 @@ class CameraExampleHomeState extends State<CameraExampleHome>
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     initPlatformState();
-    // initialize camera controller
-    controller = CameraController(
-      cameras[cameraDescriptionIndex],
-      ResolutionPreset.medium,
-      enableAudio: enableAudio,
-    );
+    if (cameras.isNotEmpty) {
+      // initialize camera controller
+      controller = CameraController(
+        cameras[cameraDescriptionIndex],
+        ResolutionPreset.medium,
+        enableAudio: enableAudio,
+      );
+    } else {
+      controller = CameraController(
+        CameraDescription(),
+        ResolutionPreset.medium,
+        enableAudio: enableAudio,
+      );
+    }
     controller.initialize();
 
     // initialize the following animation control objects
@@ -271,6 +279,9 @@ class CameraExampleHomeState extends State<CameraExampleHome>
       enableAudio: this.enableAudio,
       uploadMessage: this.uploadMessage
     );
+    if (!controller.value.isRecordingVideo) {
+      actionsAnimationController.value = 1;
+    }
     return widgets.build();
   }
 
@@ -437,8 +448,6 @@ class CameraExampleHomeState extends State<CameraExampleHome>
   /// Starts video recording and displays a snack bar,
   /// calls startVideoRecording()
   Timer onVideoRecordButtonPressed() {
-    // hide the camera options button
-    hideCameraOptionsButton();
     uploadMessage = "Upload";
     // create the action file for video
     storageRepo.createActionTextFile();
@@ -584,6 +593,10 @@ class CameraExampleHomeState extends State<CameraExampleHome>
       _showCameraException(e);
       return null;
     }
+
+    // hide the camera options button
+    hideCameraOptionsButton();
+
     return filePath;
   }
 

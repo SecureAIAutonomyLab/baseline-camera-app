@@ -201,17 +201,15 @@ class CameraViewBuild {
       }
     }
     // Display the camera preview
-    if (!state.controllerInitialized) {
-      if (cameras.isEmpty) {
-        return const Text(
-          'No cameras detected',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 24.0,
-            fontWeight: FontWeight.w900,
-          ),
-        );
-      }
+    if (cameras.isEmpty || !state.controller.value.isInitialized) {
+      return const Text(
+        'No cameras detected',
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: 24.0,
+          fontWeight: FontWeight.w900,
+        ),
+      );
     } else {
       // Show camera preview
       return RotatedBox(
