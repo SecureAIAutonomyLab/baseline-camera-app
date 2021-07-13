@@ -60,6 +60,7 @@ class CameraAppState extends State<CameraApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       // Make sure amplify is configured before showing the app
       home: _isAmplifyConfigured ? setupApp(context) : LoadingView(),
     );

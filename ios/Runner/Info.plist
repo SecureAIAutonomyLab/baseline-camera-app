@@ -34,13 +34,13 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
-	<string>Message for permission to access camera</string>
+	<string>Enable access to take images and videos for uploading to AWS</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Need location access always.</string>
+	<string>Enable location access to store in metadata of the video</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Need location access.</string>
+	<string>Enable location access to store in metadata of the video</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>Need microphone access for uploading videos</string>
+	<string>Enable microphone access for recording video from the camera</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Message for permission to access gallery</string>
 	<key>UILaunchStoryboardName</key>
