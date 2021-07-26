@@ -231,7 +231,7 @@ class StorageRepository {
     return file;
   }
 
-  /// Adds an action to the action table data structure by storing
+  /// Adds a frequency action to the action table data structure by storing
   /// all necessary data.
   /// Parameters: A string representing the name of the action
   /// Returns: How many times the action has occurred so far
@@ -240,11 +240,14 @@ class StorageRepository {
     final time = DateTime.now().toIso8601String().substring(11, 19);
     final duration = timeElapsed.elapsed;
 
-    ActionEntry entry = getCount(action);
+    // get how many times the action has occured so far
+    ActionEntry entry = getAction(action);
     if (entry == null)
+      // first time the user has tapped the button
       actionCount.add(ActionEntry(action: action, count: 1));
     else
       entry.count++;
+    // log the time
     actionTable[duration] =
         ActionEntry(action: action, startDateTime: time);
     print("Action Time Submitted");
@@ -259,11 +262,15 @@ class StorageRepository {
     return entry.count;
   }
 
+  /// Adds a duration action to the action table. Keeps track of
+  /// whether the action is complete or not
+  /// Parameters: A string representing the name of the action
   void addActionDuration(String action) async {
     // save entry in a table
     final time = DateTime.now().toIso8601String().substring(11, 19);
     final elapsed = timeElapsed.elapsed;
 
+    // find the action in the table
     ActionEntry entry;
     actionTable.forEach((key, value) {
       if (value.action == action && !value.durationComplete)
@@ -289,6 +296,8 @@ class StorageRepository {
     }
   }
 
+  /// Stops all duration actions if there are any still running when
+  /// the user stops recording video.
   void stopAllDurationActions() {
     actionTable.forEach((key, value) {
       if (value.durationComplete == false) {
@@ -301,7 +310,10 @@ class StorageRepository {
     });
   }
 
-  ActionEntry getCount(String action) {
+  /// Gets the action associated with the string name
+  /// Parameters: The string name of the action to find
+  /// Returns: The action entry object found or null if no match was found
+  ActionEntry getAction(String action) {
     var entry;
     actionCount.forEach((element) {
       if (element.action == action) {
@@ -311,6 +323,9 @@ class StorageRepository {
     return entry;
   }
 
+  /// Find the action in the table and it's running status
+  /// Parameters: The string name of the action to find
+  /// Returns: True if the action is still running, false otherwise
   bool isActionRunning(String name) {
     bool result = false;
     actionTable.forEach((key, value) {
@@ -321,6 +336,7 @@ class StorageRepository {
     return result;
   }
 
+  /// Clear the action count list
   void clearActionCount() {
     actionCount.clear();
   }

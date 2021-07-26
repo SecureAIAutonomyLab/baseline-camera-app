@@ -58,6 +58,10 @@ class CameraExampleHomeState extends State<CameraExampleHome>
 
 
   static final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
+
+  /// A static method that gets the string representation of the
+  /// chunk rate
+  /// Returns: A string representing the chunk rate
   static String getVideoChunkRateString() {
     if (CameraExampleHomeState.videoChunkRate > 600)
       return "None";
@@ -402,6 +406,9 @@ class CameraExampleHomeState extends State<CameraExampleHome>
     }
   }
 
+  /// Changes the chunk rate variable to the option chosen by the user
+  /// Parameters: The string option that the user chose in the
+  /// cupertino action sheet
   void changeVideoChunkRate(String option) {
     if (option == "none")
       videoChunkRate = 1000000000;
