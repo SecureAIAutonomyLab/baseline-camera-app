@@ -54,8 +54,13 @@ To build a release for the IOS app store
 - See https://flutter.dev/docs/deployment/ios for in depth documentation about submitting to the appstore
 - Open project in xcode 
 - Check modify the version number/build number for the release in Runner->Targets->General
-- In Signining and Capabilities, make sure your development team is selected
+- In Signining and Capabilities, make sure Dr. Rad's development account is selected
+    If not, follow the instructions above to sign into his account
 - Go to Product->Archive, this will build the file for app store connect
+- When the archive is finished, click on distrubute app. This will upload the archive to app store connect
+    If this fails because you don't have the signing certificate, copy it from this machine. The certificate
+    is currently located in the home directory.
+- Go to appstore connect to submit the new build
 
 To build a release for the google play store
 - See https://flutter.dev/docs/deployment/android for in depth documentation about submitting to the google play store
