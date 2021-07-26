@@ -42,10 +42,9 @@ To run and build on a device: Iphone
 - run "flutter pub get" in the root directory to get all the necessary dependencies 
 - Copy the amplify configuration file from the lib folder on the current machine and put it on the new machine
 - Right click your project in Android studio and go to Flutter->Open IOS Module in Xcode
-- Go to Runner->Targets->Signing and Capabilities and choose a developer account
-    If you don't have one, an account by signing in with your apple ID. Then go to manage certificates and add 
-    a developer certificate
-- Create a unique bundle ID
+- Go to Runner->Targets->Signing and Capabilities and select the AILA lab account under "Team"
+    If that is not an option, choose add an acount and sign in with the lab account. 
+    Add a apple development certificate for your computer by clicking the + and choosing apple development
 - Run the app through Xcode first to make sure everything is working, then you can run it throuhg Android Studio
 - You can use features such as hot reloading when running the app on a device. Cmd + s will save any changes 
     you made and reload the app display without having to rerun the app.
@@ -54,8 +53,8 @@ To build a release for the IOS app store
 - See https://flutter.dev/docs/deployment/ios for in depth documentation about submitting to the appstore
 - Open project in xcode 
 - Check modify the version number/build number for the release in Runner->Targets->General
-- In Signining and Capabilities, make sure Dr. Rad's development account is selected
-    If not, follow the instructions above to sign into his account
+- In Signining and Capabilities, make sure the AILA lab development account is selected
+    If not, follow the instructions above to sign into the account
 - Go to Product->Archive, this will build the file for app store connect
 - When the archive is finished, click on distrubute app. This will upload the archive to app store connect
     If this fails because you don't have the signing certificate, copy it from this machine. The certificate
