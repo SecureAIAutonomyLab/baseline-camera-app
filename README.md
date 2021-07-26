@@ -30,13 +30,7 @@ Steps to Connect to another backend.
 - Install API, DataStore, and Auth in that order
 - Auth should be installed last
 
-Licenses
-- U.I. design, BSD License
-    https://github.com/flutter/plugins/blob/master/packages/camera/example/lib/main.dart
-- Device Info, BSD License (only used parts).
-    https://github.com/flutter/plugins/blob/master/packages/device_info/example/lib/main.dart
-
-To run and build on a device
+To run and build on a device: Android
 - run "flutter pub get" in the root directory to get all the necessary dependencies 
 - Copy the amplify configuration file from the lib folder on the current machine and put it on the new machine
 - run "flutter run" to build the debug version for the connected device
@@ -44,12 +38,24 @@ To run and build on a device
 - Alternatively you can run inside android studio by clicking the play button in the top bar 
 - You can use features such as hot reloading when running the app on a device. Cmd + s will save any changes 
     you made and reload the app display without having to rerun the app.
+    
+To run and build on a device: Iphone
+- run "flutter pub get" in the root directory to get all the necessary dependencies 
+- Copy the amplify configuration file from the lib folder on the current machine and put it on the new machine
+- Right click your project in Android studio and go to Flutter->Open IOS Module in Xcode
+- Go to Runner->Targets->Signing and Capabilities and choose a developer account
+    If you don't have one, an account by signing in with your apple ID. Then go to manage certificates and add 
+    a developer certificate
+- Create a unique bundle ID
+- Run the app through Xcode first to make sure everything is working, then you can run it throuhg Android Studio
+- You can use features such as hot reloading when running the app on a device. Cmd + s will save any changes 
+    you made and reload the app display without having to rerun the app.
  
 To build a release for the IOS app store
 - See https://flutter.dev/docs/deployment/ios for in depth documentation about submitting to the appstore
 - Open project in xcode 
 - Check modify the version number/build number for the release in Runner->Targets->General
-- In Signining and Capibilities, make sure your development team is selected
+- In Signining and Capabilities, make sure your development team is selected
 - Go to Product->Archive, this will build the file for app store connect
 
 To build a release for the google play store
@@ -62,5 +68,13 @@ To build a release for the google play store
     Then configure the location of that file in the key.properties. See "Reference the keystore from the app" in the flutter documentation
 - Sign into the google play console with the lab account and choose the app
 - Go to the production tab and choose create new release
-- Upload the apk file from [project]/build/app/outputs/bundle/release/app.aab
+- Upload the bundle file from [project]/build/app/outputs/bundle/release/app.aab
 - Submit the release
+
+Troubleshooting : Error when building ios in Xcode
+If you're sure you followed the steps correctly you may need to clean your workspace
+- Run "flutter clean"
+
+Troubleshooting: Iproxy cannot be verified
+- Navigate to the directory containing the flutter SDK
+- Run "sudo xattr -d com.apple.quarantine flutter/bin/cache/artifacts/usbmuxd/iproxy"
