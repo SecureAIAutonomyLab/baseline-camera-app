@@ -63,6 +63,7 @@ To build a release for the IOS app store
 
 To build a release for the google play store
 - See https://flutter.dev/docs/deployment/android for in depth documentation about submitting to the google play store
+- Edit the pubspec.yaml file to increase the version number
 - Commit project to github repository 
 - Go to release workstation and pull the changes
 - run "flutter build appbundle" this creates the bundle file
