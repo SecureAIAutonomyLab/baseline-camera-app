@@ -16,7 +16,6 @@ NOTE: Camera does not work on ios emulator. Emulator does not have that capabili
     https://flutter.dev/docs/get-started/install/macos
     https://www.youtube.com/watch?v=Jn7o4Gy3F7Q&t=197s
 - "pod install" in the ios directory.
-- If "pod install" does not work delete Podfile and Podfile.lock from ios folder and run "flutter build ios" in project folder 
 - Install amplify cli
     "curl -sL https://aws-amplify.github.io/amplify-cli/install | bash && $SHELL"
 
@@ -74,7 +73,12 @@ To build a release for the google play store
 Troubleshooting : Error when building ios in Xcode
 If you're sure you followed the steps correctly you may need to clean your workspace
 - Run "flutter clean"
+- If that doesn't work, run "flutter pub get"
+- Run "pod install" in ios directory
 
 Troubleshooting: Iproxy cannot be verified
 - Navigate to the directory containing the flutter SDK
 - Run "sudo xattr -d com.apple.quarantine flutter/bin/cache/artifacts/usbmuxd/iproxy"
+
+Troubleshooting: pod install does not work
+- Delete Podfile and Podfile.lock from ios folder and run "flutter build ios" in project folder 
