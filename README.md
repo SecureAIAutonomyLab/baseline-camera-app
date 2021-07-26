@@ -35,6 +35,7 @@ Licenses
 
 To run and build on a device
 - run "flutter pub get" in the root directory to get all the necessary dependencies 
+- Copy the amplify configuration file from the lib folder on the current machine and put it on the new machine
 - run "flutter run" to build the debug version for the connected device
     You can run "flutter run --release" to build the release version of the app on the connected device
 - Alternatively you can run inside android studio by clicking the play button in the top bar 
