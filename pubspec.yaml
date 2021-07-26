@@ -11,19 +11,25 @@ description: A new Flutter project.
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.0.0+1
+version: 1.0.0+2
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: ">=2.11.0 <3.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
 
+  amplify_flutter: <1.0.0
+  amplify_datastore: <1.0.0
+  amplify_api:
+  amplify_auth_cognito:
+  amplify_storage_s3:
+
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.2
-  camera:
+  camera: ^0.5.8+8
   path_provider:
   path:
   video_player:
@@ -31,11 +37,24 @@ dependencies:
   device_info:
   gallery_saver:
   location:
+  flutter_bloc: ^7.0.1
+  intl: ^0.17.0
+  sortedmap: ^0.5.1
+  provider: ^5.0.0
+  flutter_colorpicker: ^0.4.0
+  json_store: ^1.4.0
+  holding_gesture: ^1.1.0
 
 dev_dependencies:
+  flutter_launcher_icons: "^0.8.0"
   flutter_test:
     sdk: flutter
 
+
+flutter_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/camera_app.jpg"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -48,6 +67,8 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
+  assets:
+    - assets/
   # To add assets to your application, add an assets section, like this:
   # assets:
   #  - images/a_dot_burr.jpeg
