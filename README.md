@@ -32,3 +32,31 @@ Licenses
     https://github.com/flutter/plugins/blob/master/packages/camera/example/lib/main.dart
 - Device Info, BSD License (only used parts).
     https://github.com/flutter/plugins/blob/master/packages/device_info/example/lib/main.dart
+
+To run and build on a device
+- run "flutter pub get" in the root directory to get all the necessary dependencies 
+- run "flutter run" to build the debug version for the connected device
+    You can run "flutter run --release" to build the release version of the app on the connected device
+- Alternatively you can run inside android studio by clicking the play button in the top bar 
+- You can use features such as hot reloading when running the app on a device. Cmd + s will save any changes 
+    you made and reload the app display without having to rerun the app.
+ 
+To build a release for the IOS app store
+- See https://flutter.dev/docs/deployment/ios for in depth documentation about submitting to the appstore
+- Open project in xcode 
+- Check modify the version number/build number for the release in Runner->Targets->General
+- In Signining and Capibilities, make sure your development team is selected
+- Go to Product->Archive, this will build the file for app store connect
+
+To build a release for the google play store
+- See https://flutter.dev/docs/deployment/android for in depth documentation about submitting to the google play store
+- Commit project to github repository 
+- Go to release workstation and pull the changes
+- run "flutter build appbundle" this creates the bundle file
+    The keystore file for signing should already be on both machines. On the macbook it is located in the home folder
+    If you want to build the release on a new machine you need to transfer this keystore file to that machine.
+    Then configure the location of that file in the key.properties. See "Reference the keystore from the app" in the flutter documentation
+- Sign into the google play console with the lab account and choose the app
+- Go to the production tab and choose create new release
+- Upload the apk file from [project]/build/app/outputs/bundle/release/app.aab
+- Submit the release
