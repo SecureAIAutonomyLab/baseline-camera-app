@@ -40,7 +40,7 @@ To run and build on a device: Android
     
 To run and build on a device: Iphone
 - run "flutter pub get" in the root directory to get all the necessary dependencies 
-- Copy the amplify configuration file from the lib folder on the current machine and put it on the new machine
+- Copy the amplify configuration file from the lib folder on the current workstation and move it to the same folder on the new workstation
 - Right click your project in Android studio and go to Flutter->Open IOS Module in Xcode
 - Go to Runner->Targets->Signing and Capabilities and select the AILA lab account under "Team"
     If that is not an option, choose add an acount and sign in with the lab account. 
