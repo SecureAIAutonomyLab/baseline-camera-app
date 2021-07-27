@@ -1,4 +1,4 @@
-# camera_app
+# VideoTagged
 
 
 Steps to install.
