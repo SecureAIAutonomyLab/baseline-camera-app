@@ -87,3 +87,9 @@ Troubleshooting: Iproxy cannot be verified
 
 Troubleshooting: pod install does not work
 - Delete Podfile and Podfile.lock from ios folder and run "flutter build ios" in project folder 
+
+Troubleshooting: Unable to install Runner
+This is due to your development profile not being trusted and verified
+- Make sure your testing device is connected to the internet
+- Navigate to settings->general->device management and choose your development profiel
+- Trust and verify the development profile
