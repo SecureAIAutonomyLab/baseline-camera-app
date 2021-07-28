@@ -63,7 +63,7 @@ class CameraExampleHomeState extends State<CameraExampleHome>
   /// chunk rate
   /// Returns: A string representing the chunk rate
   static String getVideoChunkRateString() {
-    if (CameraExampleHomeState.videoChunkRate > 600)
+    if (CameraExampleHomeState.videoChunkRate > 1800)
       return "None";
     else if (CameraExampleHomeState.videoChunkRate < 60)
       return CameraExampleHomeState.videoChunkRate.toString() + " Seconds";
@@ -412,6 +412,8 @@ class CameraExampleHomeState extends State<CameraExampleHome>
   void changeVideoChunkRate(String option) {
     if (option == "none")
       videoChunkRate = 1000000000;
+    else if (option == "30")
+      videoChunkRate = 1800;
     else if (option == "10")
       videoChunkRate = 600;
     else if (option == "5")

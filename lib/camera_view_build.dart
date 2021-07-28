@@ -267,6 +267,11 @@ class CameraViewBuild {
                     Navigator.of(context).pop("none");
                   }),
               CupertinoActionSheetAction(
+                  child: const Text('30 Minutes'),
+                  onPressed: () {
+                    Navigator.of(context).pop("30");
+                  }),
+              CupertinoActionSheetAction(
                   child: const Text('10 Minutes'),
                   onPressed: () {
                     Navigator.of(context).pop("10");
