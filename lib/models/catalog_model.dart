@@ -74,11 +74,12 @@ class CatalogModel {
   /// returns the catalog object
   List<Item> getCatalog() => catalog;
 
-  //
+  /// add the item to the catalog
   void addToCatalog(Item item) {
     this.catalog.add(item);
   }
 
+  /// remove the item from the catalog
   void removeFromCatalog(Item item) {
     this.catalog.remove(item);
   }

@@ -19,6 +19,7 @@ class CartModel extends ChangeNotifier {
   /// The current catalog. Used to construct items from numeric ids.
   CatalogModel get catalog => _catalog;
 
+  /// set the catalog model variable to a new model
   set catalog(CatalogModel newCatalog) {
     _catalog = newCatalog;
     // Notify listeners, in case the new catalog provides information

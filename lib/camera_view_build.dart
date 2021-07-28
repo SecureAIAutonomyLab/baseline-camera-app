@@ -244,6 +244,8 @@ class CameraViewBuild {
     );
   }
 
+  /// A function that holds the action sheet for changing the chunk rate
+  /// Returns: An action sheet widget
   Widget chunkRateActionSheet() {
     return CupertinoButton(
       onPressed: !controller.value.isRecordingVideo
@@ -296,6 +298,7 @@ class CameraViewBuild {
         state.changeVideoChunkRate(returned);
       }
           : null,
+      // The text of the button
       child: const Text('Video Chunk Rate'),
     );
   }
@@ -506,11 +509,14 @@ class CameraViewBuild {
     );
   }
 
+  /// Gets the associated action entry name from the Item object
+  /// Parameters: The item from the action catalog
+  /// Returns: The string name of the item
   String getButtonTitle(Item item) {
     int count = 0;
     String title;
-    if (state.storageRepo.getCount(item.name) != null) {
-      count = state.storageRepo.getCount(item.name).count;
+    if (state.storageRepo.getAction(item.name) != null) {
+      count = state.storageRepo.getAction(item.name).count;
       title = '${item.name} ($count)';
     } else {
       title = '${item.name}';
@@ -518,6 +524,9 @@ class CameraViewBuild {
     return title;
   }
 
+  /// Gets the text for displaying under the button
+  /// Parameters: The item from the action catalog
+  /// Returns: The string of what to display under the button
   String getButtonSubtitle(Item item) {
     if (item.actionType == ActionType.duration &&
         state.storageRepo.isActionRunning(item.name)) {
