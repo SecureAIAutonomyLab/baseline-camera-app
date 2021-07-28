@@ -19,9 +19,10 @@ NOTE: Camera does not work on ios emulator. Emulator does not have that capabili
 ```
     pod install
 ```
+- Navigate to https://nodejs.org/en/download/ to install node.js
 - Install amplify cli
 ```
-    curl -sL https://aws-amplify.github.io/amplify-cli/install | bash && $SHELL
+    sudo npm install -g @aws-amplify/cli
 ```
 
 
