@@ -31,15 +31,16 @@ NOTE: Camera does not work on ios emulator. Emulator does not have that capabili
 ```
     amplify delete
 ```
-- Setup new backend on AWS
-- Install API, Storage
+- Setup a new amplify backend on AWS
+- Pull the backend changes into your new project
+- Install Storage
 ```
-    amplify add api
     amplify add storage
 ```
 - Amplify will install Auth along with storage 
+- Make sure to allow unautheticated logins to your app
 
-To run and build on a device: Android
+## To run and build on a device: Android
 - Get all the necessary dependencies. In the root directory run
 ```
     flutter pub get
