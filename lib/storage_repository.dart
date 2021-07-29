@@ -84,20 +84,17 @@ class StorageRepository {
       storedDate = DateTime.now().toIso8601String();
     if (chunk.videoCount == 0 && actionTable.isEmpty) {
       // single video no actions listed
-      fileName = '$userId/$type/${userId}_' + DateTime.now().toIso8601String().substring(0, 19);
+      fileName = '$userId/${userId}_' + DateTime.now().toIso8601String().substring(0, 19);
       fileName = fileName.replaceAll('T', '_');
     } else if (chunk.videoCount == 0 && actionTable.isNotEmpty) {
       // single video with actions
-      fileName = '$userId/$type/' + DateTime.now().toIso8601String().substring(0, 19);
-      fileName += ("/${userId}_" + DateTime.now().toIso8601String().substring(0, 19));
+      fileName = '$userId/${userId}_' + DateTime.now().toIso8601String().substring(0, 19);
       fileName = fileName.replaceAll("T", "_");
       storedDate = DateTime.now().toIso8601String();
     } else {
       // chunked video with actions
-      fileName = '$userId/$type/' + storedDate.substring(0, 19);
-      // trim time off of fileName
-      fileName += ("/${userId}_" + DateTime.now().toIso8601String().substring(0, 19) + "--"
-          + chunk.videoCount.toString());
+      fileName = '$userId/$userId' + storedDate.substring(0, 19) + "--"
+          + chunk.videoCount.toString();
       fileName = fileName.replaceAll('T', '_');
     }
 
@@ -130,8 +127,7 @@ class StorageRepository {
     }
     print("Now uploading text file");
     // store the csv file in the same directory as the video file(s)
-    String fileName = '$userId/videos/' + storedDate.substring(0, 19);
-    fileName += ("/${userId}_" + DateTime.now().toIso8601String().substring(0, 19));
+    String fileName = '$userId/$userId' + storedDate.substring(0, 19);
     fileName = fileName.replaceAll("T", "_");
     // Amplify upload function
     await Amplify.Storage.uploadFile(

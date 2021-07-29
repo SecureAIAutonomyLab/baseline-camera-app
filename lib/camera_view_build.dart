@@ -48,6 +48,9 @@ class CameraViewBuild {
   BooleanWrap isFileFinishedUploading;
   bool enableAudio;
   String uploadMessage;
+  final formKey = GlobalKey<FormState>();
+  final titleController = TextEditingController();
+  final descriptionController = TextEditingController();
 
   // named parameter constructor
   CameraViewBuild(
@@ -132,8 +135,9 @@ class CameraViewBuild {
       child: ClipRect(
         child: Center(
           child: TextButton(
-              onPressed:
-                  controller != null ? state.onCameraOptionsButtonPressed : null,
+              onPressed: controller != null
+                  ? state.onCameraOptionsButtonPressed
+                  : null,
               child: Text(
                 "Camera Options",
                 style: TextStyle(fontSize: 15),
@@ -213,7 +217,8 @@ class CameraViewBuild {
     } else {
       // Show camera preview
       return RotatedBox(
-        quarterTurns: MediaQuery.of(context).orientation == Orientation.landscape ? 3 : 0,
+        quarterTurns:
+            MediaQuery.of(context).orientation == Orientation.landscape ? 3 : 0,
         child: AspectRatio(
           aspectRatio: controller.value.aspectRatio,
           child: CameraPreview(controller),
@@ -250,58 +255,58 @@ class CameraViewBuild {
     return CupertinoButton(
       onPressed: !controller.value.isRecordingVideo
           ? () async {
-        final currentResolution = state.resolution.toString();
-        // store the returned result in a variable to use later
-        var returned = await showCupertinoModalPopup<String>(
-          context: context,
-          builder: (BuildContext context) => CupertinoActionSheet(
-            title: Text('Choose a video chunking rate',
-                style: TextStyle(fontSize: 18)),
-            message: Text("The chunk rate is currently set at " +
-                CameraExampleHomeState.getVideoChunkRateString()),
-            // list of all options to choose from
-            actions: <CupertinoActionSheetAction>[
-              CupertinoActionSheetAction(
-                  child: const Text('None'),
-                  onPressed: () {
-                    Navigator.of(context).pop("none");
-                  }),
-              CupertinoActionSheetAction(
-                  child: const Text('30 Minutes'),
-                  onPressed: () {
-                    Navigator.of(context).pop("30");
-                  }),
-              CupertinoActionSheetAction(
-                  child: const Text('10 Minutes'),
-                  onPressed: () {
-                    Navigator.of(context).pop("10");
-                  }),
-              CupertinoActionSheetAction(
-                  child: const Text('5 Minutes'),
-                  onPressed: () {
-                    Navigator.of(context).pop("5");
-                  }),
-              CupertinoActionSheetAction(
-                  child: const Text('1 Minute'),
-                  onPressed: () {
-                    Navigator.of(context).pop("1");
-                  }),
-              CupertinoActionSheetAction(
-                  child: const Text('30 Seconds'),
-                  onPressed: () {
-                    Navigator.of(context).pop("0.5");
-                  })
-            ],
-            cancelButton: CupertinoActionSheetAction(
-                child: const Text('Cancel'),
-                onPressed: () {
-                  Navigator.of(context).pop("cancel");
-                }),
-          ),
-        );
-        // call for chunking rate change
-        state.changeVideoChunkRate(returned);
-      }
+              final currentResolution = state.resolution.toString();
+              // store the returned result in a variable to use later
+              var returned = await showCupertinoModalPopup<String>(
+                context: context,
+                builder: (BuildContext context) => CupertinoActionSheet(
+                  title: Text('Choose a video chunking rate',
+                      style: TextStyle(fontSize: 18)),
+                  message: Text("The chunk rate is currently set at " +
+                      CameraExampleHomeState.getVideoChunkRateString()),
+                  // list of all options to choose from
+                  actions: <CupertinoActionSheetAction>[
+                    CupertinoActionSheetAction(
+                        child: const Text('None'),
+                        onPressed: () {
+                          Navigator.of(context).pop("none");
+                        }),
+                    CupertinoActionSheetAction(
+                        child: const Text('30 Minutes'),
+                        onPressed: () {
+                          Navigator.of(context).pop("30");
+                        }),
+                    CupertinoActionSheetAction(
+                        child: const Text('10 Minutes'),
+                        onPressed: () {
+                          Navigator.of(context).pop("10");
+                        }),
+                    CupertinoActionSheetAction(
+                        child: const Text('5 Minutes'),
+                        onPressed: () {
+                          Navigator.of(context).pop("5");
+                        }),
+                    CupertinoActionSheetAction(
+                        child: const Text('1 Minute'),
+                        onPressed: () {
+                          Navigator.of(context).pop("1");
+                        }),
+                    CupertinoActionSheetAction(
+                        child: const Text('30 Seconds'),
+                        onPressed: () {
+                          Navigator.of(context).pop("0.5");
+                        })
+                  ],
+                  cancelButton: CupertinoActionSheetAction(
+                      child: const Text('Cancel'),
+                      onPressed: () {
+                        Navigator.of(context).pop("cancel");
+                      }),
+                ),
+              );
+              // call for chunking rate change
+              state.changeVideoChunkRate(returned);
+            }
           : null,
       // The text of the button
       child: const Text('Video Chunk Rate'),
@@ -554,28 +559,29 @@ class CameraViewBuild {
       String subtitle = getButtonSubtitle(item);
       Widget button = TextButton(
           onPressed: controller != null &&
-              controller.value.isInitialized &&
-              controller.value.isRecordingVideo &&
-              !controller.value.isRecordingPaused ? () async {
-            // update the UI to reflect the new count
-            state.onActionButtonPressed(item.name, item.actionType);
-            state.updateUI();
-          } : null,
+                  controller.value.isInitialized &&
+                  controller.value.isRecordingVideo &&
+                  !controller.value.isRecordingPaused
+              ? () async {
+                  // update the UI to reflect the new count
+                  state.onActionButtonPressed(item.name, item.actionType);
+                  state.updateUI();
+                }
+              : null,
           child: Column(
             children: [
               SizedBox(
                   height: 30,
                   child: DecoratedBox(
-                    child: Center(child: Text(title,
-                      style: TextStyle(color: Colors.white))
-                    ),
+                      child: Center(
+                          child: Text(title,
+                              style: TextStyle(color: Colors.white))),
                       decoration: BoxDecoration(
                         color: item.color,
                         borderRadius: BorderRadius.all(Radius.circular(4)),
                       ))),
               Text(subtitle,
-                  style: TextStyle(fontSize: 12, color: Colors.black)
-              )
+                  style: TextStyle(fontSize: 12, color: Colors.black))
             ],
           ));
       buttons.add(button);
@@ -588,9 +594,12 @@ class CameraViewBuild {
       child: SizedBox(
         // Define the height of the gridview
         height: buttons.length > 3
-            ? 125 : buttons.length == 0 ? 0 : 62.5,
+            ? 125
+            : buttons.length == 0
+                ? 0
+                : 62.5,
         child: GridView.count(
-          childAspectRatio: MediaQuery.of(context).size.width/219.428,
+          childAspectRatio: MediaQuery.of(context).size.width / 219.428,
           crossAxisCount: 3,
           children: buttons,
         ),
@@ -604,7 +613,7 @@ class CameraViewBuild {
     if (Theme.of(context).platform == TargetPlatform.android)
       return materialDialog();
     else
-      return cupertinoDialog();
+      return materialDialog();
   }
 
   /// Separate function to return a cupertino dialog box
@@ -649,15 +658,50 @@ class CameraViewBuild {
   /// The widget object for prompting the user to upload their file
   /// Returns: A future widget object that does not return until
   /// the user has chosen an option
-  Future<Widget> materialDialog() {
+  Future<Widget> materialDialog() async {
     return showDialog<Widget>(
         // User cannot dismiss the dialog
         barrierDismissible: false,
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text(uploadMessage),
-            content: Text("Do you want to upload this file to AWS?"),
+            scrollable: true,
+            title: Text("Additional Parameters"),
+            content: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Form(
+                key: formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text("Title", style: TextStyle(fontWeight: FontWeight.bold)),
+                    // Name form field
+                    TextFormField(
+                      decoration: InputDecoration(
+                        labelText: 'Title',
+                        icon: Icon(Icons.pending_actions),
+                      ),
+                      controller: titleController,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 15),
+                      child: Text("Description",
+                          style: TextStyle(fontWeight: FontWeight.bold)),
+                    ),
+                    // Description form field
+                    TextFormField(
+                      decoration: InputDecoration(
+                        labelText: 'Description',
+                        icon: Icon(Icons.message),
+                      ),
+                      controller: descriptionController,
+                      minLines: 1,
+                      maxLines: 5,
+                    ),
+                  ],
+                ),
+              ),
+            ),
             actions: [
               // No button
               TextButton(
@@ -665,7 +709,7 @@ class CameraViewBuild {
                     isFileFinishedUploading.upload = false;
                     Navigator.of(context).pop();
                   },
-                  child: Text("No")),
+                  child: Text("Cancel")),
               // Yes button
               TextButton(
                   onPressed: () async {
@@ -673,12 +717,14 @@ class CameraViewBuild {
                     Navigator.of(context).pop();
                     if (connected) {
                       isFileFinishedUploading.upload = true;
+                      // upload title and description
+                      // upload image
                     } else {
                       state.showInSnackBar(
                           "You are not connected to the internet");
                     }
                   },
-                  child: Text("Yes"))
+                  child: Text("Submit"))
             ],
           );
         });
