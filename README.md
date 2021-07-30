@@ -8,10 +8,15 @@
 - Install the flutter plugin in android studio
 - Install Git
 - Install cocoapods
-- Install emulator for android device on Visual Studio (for emulator testing).
-- Install ios device emulator on xcode.
-NOTE: Camera does not work on ios emulator. Emulator does not have that capability.
 - Check Flutter doctor to make sure everything is installed.
+```
+    flutter doctor
+```
+- Add the flutter path variable if `flutter doctor` does not run
+Navigate to the directory containing the flutter SDK
+```
+    export PATH="$PATH:`pwd`/flutter/bin"
+```
 - Running it on a physical device (ios)
     https://flutter.dev/docs/get-started/install/macos
     https://www.youtube.com/watch?v=Jn7o4Gy3F7Q&t=197s
@@ -24,6 +29,7 @@ NOTE: Camera does not work on ios emulator. Emulator does not have that capabili
 ```
     sudo npm install -g @aws-amplify/cli
 ```
+
 
 
 ## Steps to Connect to another backend.
