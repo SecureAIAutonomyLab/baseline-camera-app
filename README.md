@@ -2,12 +2,16 @@
 
 
 ## Steps to install.
-- Download VSCode. xCode and Android Studio 2019.
+- Download XCode and Android Studio 2019.
 - Install Flutter and Dart.
     https://flutter.dev/docs/get-started/install
 - Install the flutter plugin in android studio
 - Install Git
+    https://git-scm.com/downloads
 - Install cocoapods
+```
+    sudo gem install cocoapods
+```
 - Check Flutter doctor to make sure everything is installed.
 ```
     flutter doctor
